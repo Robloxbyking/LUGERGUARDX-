@@ -111,6 +111,11 @@ local noclipConnection = nil
 local fullBrightEnabled = false
 local originalLightingSettings = {}
 
+-- ========== SKYBOX ПЕРЕМЕННЫЕ ==========
+local customSkyboxEnabled = false
+local originalSky = nil
+local nightSkyboxId = "rbxassetid://15803128405"
+
 -- ========== FULLBRIGHT ФУНКЦИИ ==========
 local function enableFullBright()
     if fullBrightEnabled then return end
@@ -173,11 +178,62 @@ local function toggleFullBright()
     end
 end
 
+-- ========== SKYBOX ФУНКЦИИ ==========
+local function saveOriginalSky()
+    originalSky = Lighting.Sky
+end
+
+local function setCustomSkybox()
+    if not customSkyboxEnabled then return end
+    
+    -- Если уже есть кастомный Sky, удаляем его
+    if Lighting:FindFirstChild("LugerGuardSky") then
+        Lighting:FindFirstChild("LugerGuardSky"):Destroy()
+    end
+    
+    -- Создаём новый Sky объект
+    local sky = Instance.new("Sky")
+    sky.Name = "LugerGuardSky"
+    sky.SkyboxBk = nightSkyboxId
+    sky.SkyboxDn = nightSkyboxId
+    sky.SkyboxFt = nightSkyboxId
+    sky.SkyboxLf = nightSkyboxId
+    sky.SkyboxRt = nightSkyboxId
+    sky.SkyboxUp = nightSkyboxId
+    sky.Parent = Lighting
+end
+
+local function restoreOriginalSky()
+    -- Удаляем кастомный Sky
+    if Lighting:FindFirstChild("LugerGuardSky") then
+        Lighting:FindFirstChild("LugerGuardSky"):Destroy()
+    end
+    
+    -- Если был оригинальный Sky, восстанавливаем его
+    if originalSky and originalSky.Parent then
+        -- Оригинальный Sky уже существует, ничего не делаем
+    end
+end
+
+local function enableCustomSkybox()
+    if customSkyboxEnabled then return end
+    customSkyboxEnabled = true
+    setCustomSkybox()
+end
+
+local function disableCustomSkybox()
+    if not customSkyboxEnabled then return end
+    customSkyboxEnabled = false
+    restoreOriginalSky()
+end
+
+-- Сохраняем оригинальный Sky при запуске
+saveOriginalSky()
+
 -- Авто-восстановление FullBright при смене карты/раунда (если включён)
 Lighting:GetPropertyChangedSignal("ClockTime"):Connect(function()
     if fullBrightEnabled then
         task.wait(0.05)
-        -- Восстанавливаем только если всё ещё включён
         if fullBrightEnabled then
             Lighting.Ambient = Color3.fromRGB(255, 255, 255)
             Lighting.Brightness = 2
@@ -187,6 +243,16 @@ Lighting:GetPropertyChangedSignal("ClockTime"):Connect(function()
             Lighting.GlobalShadows = false
             Lighting.FogEnd = 100000
             Lighting.FogStart = 0
+        end
+    end
+end)
+
+-- Сброс Skybox при смене карты (если включён)
+Lighting:GetPropertyChangedSignal("Sky"):Connect(function()
+    if customSkyboxEnabled then
+        task.wait(0.05)
+        if customSkyboxEnabled then
+            setCustomSkybox()
         end
     end
 end)
@@ -478,6 +544,10 @@ LocalPlayer.CharacterAdded:Connect(function(character)
     if fullBrightEnabled then
         disableFullBright()
         enableFullBright()
+    end
+    if customSkyboxEnabled then
+        disableCustomSkybox()
+        enableCustomSkybox()
     end
 end)
 
@@ -912,8 +982,25 @@ local function updateContent()
                 else 
                     disableFullBright() 
                 end
-                -- Обновляем состояние свитча в UI
                 setFullBrightState(state)
+            end
+        )
+        
+        -- Skybox свитч (Ночное небо)
+        local skyboxContainer, setSkyboxState = createSwitchWithDesc(
+            contentContainer, 
+            20, 
+            125, 
+            "Night Skybox", 
+            currentLang == "ru" and "Красивое ночное небо с звёздами" or "Beautiful night sky with stars", 
+            customSkyboxEnabled, 
+            function(state)
+                if state then 
+                    enableCustomSkybox() 
+                else 
+                    disableCustomSkybox() 
+                end
+                setSkyboxState(state)
             end
         )
         
