@@ -110,7 +110,13 @@ local noclipConnection = nil
 -- ========== FULLBRIGHT ПЕРЕМЕННЫЕ ==========
 local fullBrightEnabled = false
 local originalLightingSettings = {}
+-- ========== SKYBOX ПЕРЕМЕННЫЕ ==========
+local customSkyboxEnabled = false
+local nightSkyboxId = "rbxassetid://15803128405"
 
+-- ========== FULLBRIGHT ПЕРЕМЕННЫЕ ==========
+local fullBrightEnabled = false
+local originalLightingSettings = {}
 -- ========== FULLBRIGHT ФУНКЦИИ ==========
 local function enableFullBright()
     if fullBrightEnabled then return end
@@ -165,6 +171,42 @@ local function disableFullBright()
     originalLightingSettings = {}
 end
 
+-- ========== SKYBOX ФУНКЦИИ ==========
+local function setCustomSkybox()
+    if not customSkyboxEnabled then return end
+    
+    if Lighting:FindFirstChild("LugerGuardSky") then
+        Lighting:FindFirstChild("LugerGuardSky"):Destroy()
+    end
+    
+    local sky = Instance.new("Sky")
+    sky.Name = "LugerGuardSky"
+    sky.SkyboxBk = nightSkyboxId
+    sky.SkyboxDn = nightSkyboxId
+    sky.SkyboxFt = nightSkyboxId
+    sky.SkyboxLf = nightSkyboxId
+    sky.SkyboxRt = nightSkyboxId
+    sky.SkyboxUp = nightSkyboxId
+    sky.Parent = Lighting
+end
+
+local function restoreOriginalSky()
+    if Lighting:FindFirstChild("LugerGuardSky") then
+        Lighting:FindFirstChild("LugerGuardSky"):Destroy()
+    end
+end
+
+local function enableCustomSkybox()
+    if customSkyboxEnabled then return end
+    customSkyboxEnabled = true
+    setCustomSkybox()
+end
+
+local function disableCustomSkybox()
+    if not customSkyboxEnabled then return end
+    customSkyboxEnabled = false
+    restoreOriginalSky()
+end
 local function toggleFullBright()
     if fullBrightEnabled then
         disableFullBright()
@@ -172,6 +214,20 @@ local function toggleFullBright()
         enableFullBright()
     end
 end
+
+-- Авто-восстановление FullBright при смене карты/раунда (если включён)
+Lighting:GetPropertyChangedSignal("ClockTime"):Connect(function()
+    ...
+end)
+-- Авто-восстановление Skybox
+Lighting:GetPropertyChangedSignal("Sky"):Connect(function()
+    if customSkyboxEnabled then
+        task.wait(0.05)
+        if customSkyboxEnabled then
+            setCustomSkybox()
+        end
+    end
+end)
 
 -- Авто-восстановление FullBright при смене карты/раунда (если включён)
 Lighting:GetPropertyChangedSignal("ClockTime"):Connect(function()
@@ -279,6 +335,14 @@ local function startAntiAfk()
                 local cf = camera.CFrame
                 TweenService:Create(camera, TweenInfo.new(0.1), {CFrame = cf * CFrame.Angles(0, 0.01, 0)}):Play()
                 TweenService:Create(camera, TweenInfo.new(0.1), {CFrame = cf}):Play()
+    if fullBrightEnabled then
+        disableFullBright()
+        enableFullBright()
+    end
+    if customSkyboxEnabled then
+        disableCustomSkybox()
+        enableCustomSkybox()
+    end
             end
         end
     end)
@@ -654,7 +718,42 @@ local function updateContent()
                 end
             end
         end)
+                -- FullBright свитч
+        local fullBrightContainer, setFullBrightState = createSwitchWithDesc(
+            contentContainer, 
+            20, 
+            55, 
+            "FullBright", 
+            currentLang == "ru" and "Полная яркость на карте (видно всё)" or "Maximum brightness on map (see everything)", 
+            fullBrightEnabled, 
+            function(state)
+                if state then 
+                    enableFullBright() 
+                else 
+                    disableFullBright() 
+                end
+                setFullBrightState(state)
+            end
+        )
         
+        -- Night Skybox свитч
+        local skyboxContainer, setSkyboxState = createSwitchWithDesc(
+            contentContainer, 
+            20, 
+            125, 
+            "Night Skybox", 
+            currentLang == "ru" and "Красивое ночное небо с звёздами" or "Beautiful night sky with stars", 
+            customSkyboxEnabled, 
+            function(state)
+                if state then 
+                    enableCustomSkybox() 
+                else 
+                    disableCustomSkybox() 
+                end
+                setSkyboxState(state)
+            end
+        )
+
         local speedBox = Instance.new("TextBox")
         speedBox.Size = UDim2.new(0, 150, 0, 35)
         speedBox.Position = UDim2.new(0, 20, 0, 55)
