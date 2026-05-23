@@ -1,110 +1,105 @@
-local _0x0004 = _0x0005:_0x0006(string.char(80, 108, 97, 121, 101, 114, 115))
-local _0x0007 = _0x0004._0x0007
-local _0x0008 = _0x0005:_0x0006(string.char(85, 115, 101, 114, 73, 110, 112, 117, 116, 83, 101, 114, 118, 105, 99, 101))
-local _0x0009 = _0x0005:_0x0006(string.char(84, 119, 101, 101, 110, 83, 101, 114, 118, 105, 99, 101))
-local _0x000a = _0x0005:_0x0006(string.char(82, 117, 110, 83, 101, 114, 118, 105, 99, 101))
-local _0x000b = _0x0005:_0x0006(string.char(86, 105, 114, 116, 117, 97, 108, 85, 115, 101, 114))
-local _0x000c = _0x000a:_0x000d()
-local _0x000e = _0x000c and _0x0007:_0x000f(string.char(80, 108, 97, 121, 101, 114, 71, 117, 105)) or _0x0005:_0x0006(string.char(67, 111, 114, 101, 71, 117, 105))
-local _0x0010 = _0x0011._0x0012(string.char(83, 99, 114, 101, 101, 110, 71, 117, 105))
-_0x0010._0x0013 = string.char(76, 117, 103, 101, 114, 71, 117, 97, 114, 100, 88)
-_0x0010._0x0014 = _0x000e
-local _0x0015 = _0x0011._0x0012(string.char(70, 114, 97, 109, 101))
-_0x0015._0x0016 = _0x0017._0x0012(0, (150 + 150), 0, (75 + 75))
-_0x0015._0x0018 = _0x0017._0x0012(0.5, -150, 0.5, -(150 / 2))
-_0x0015._0x0019 = _0x001a._0x001b(20, (41 - 21), (104 - 79))
-_0x0015._0x001c = 0.1
-_0x0015._0x001d = 0
-_0x0015._0x0014 = _0x0010
-local _0x001e = _0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))
-_0x001e._0x001f = _0x0020._0x0012(0, 16)
-_0x001e._0x0014 = _0x0015
-local _0x0021 = _0x0011._0x0012(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108))
-_0x0021._0x0016 = _0x0017._0x0012(1, 0, 0, (22 + 23))
-_0x0021._0x0022 = string.char(1042, 1099, 1073, 1077, 1088, 1080, 1090, 1077, 32, 1103, 1079, 1099, 1082, 32, 47, 32, 67, 104, 111, 111, 115, 101, 32, 108, 97, 110, 103, 117, 97, 103, 101)
-_0x0021._0x0023 = _0x001a._0x001b(0, (100 + 100), (298 - 43))
-_0x0021._0x001c = 1
-_0x0021._0x0024 = _0x0025._0x0024._0x0026
-_0x0021._0x0027 = 14
-_0x0021._0x0028 = _0x0025._0x0028._0x0029
-_0x0021._0x0014 = _0x0015
-local _0x002a = _0x0011._0x0012(string.char(84, 101, 120, 116, 66, 117, 116, 116, 111, 110))
-_0x002a._0x0016 = _0x0017._0x0012(0, (240 / 2), 0, 45)
-_0x002a._0x0018 = _0x0017._0x0012(0.5, -(390 / 3), 0, 55)
-_0x002a._0x0022 = string.char(55356, 56823, 55356, 56826, 32, 1056, 1091, 1089, 1089, 1082, 1080, 1081)
-_0x002a._0x0023 = _0x001a._0x001b((127 + 128), 255, 255)
-_0x002a._0x0019 = _0x001a._0x001b(0, 100, (720 / 4))
-_0x002a._0x001c = 0.3
-_0x002a._0x001d = 0
-_0x002a._0x0024 = _0x0025._0x0024._0x0026
-_0x002a._0x0027 = (28 / 2)
-_0x002a._0x0014 = _0x0015
-local _0x002b = _0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))
-_0x002b._0x001f = _0x0020._0x0012(0, (24 / 3))
-_0x002b._0x0014 = _0x002a
-local _0x002c = _0x0011._0x0012(string.char(84, 101, 120, 116, 66, 117, 116, 116, 111, 110))
-_0x002c._0x0016 = _0x0017._0x0012(0, (188 - 68), 0, (22 + 23))
-_0x002c._0x0018 = _0x0017._0x0012(0.5, (20 / 2), 0, (27 + 28))
-_0x002c._0x0022 = string.char(55356, 56826, 55356, 56824, 32, 69, 110, 103, 108, 105, 115, 104)
-_0x002c._0x0023 = _0x001a._0x001b((765 / 3), (510 / 2), 255)
-_0x002c._0x0019 = _0x001a._0x001b(0, (50 + 50), 180)
-_0x002c._0x001c = 0.3
-_0x002c._0x001d = 0
-_0x002c._0x0024 = _0x0025._0x0024._0x0026
-_0x002c._0x0027 = 14
-_0x002c._0x0014 = _0x0015
-local _0x002d = _0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))
-_0x002d._0x001f = _0x0020._0x0012(0, 8)
-_0x002d._0x0014 = _0x002c
-local _0x002e = nil
-local _0x002f = (573 - 73)
-local _0x0030 = (200 + 200)
-local _0x0031 = 1000
-local _0x0032 = (350 + 350)
-local _0x0033 = (832 - 82)
-local _0x0034 = (587 - 67)
-local _0x0035, _0x0036, _0x0037, _0x0038, _0x0039, _0x003a
-local _0x003b = {}
-local _0x003c = string.char(77, 97, 105, 110)
-local _0x003d = 16
-local _0x003e = (124 - 74)
-local _0x003f = false
-local _0x0040 = false
-local _0x0041 = false
-local _0x0042 = nil
-local _0x0043 = 0
-local _0x0044 = false
-local _0x0045 = (25 + 25)
-local _0x0046 = nil
-local _0x0047 = nil
-local _0x0048 = {_0x0049 = 0, _0x004a = 0, _0x004b = 0, _0x004c = 0}
-local _0x004d = {_0x0049 = 0, _0x004a = 0, _0x004b = 0, _0x004c = 0}
-local _0x004e = 50
-local _0x004f = 200
-local _0x0050 = nil
-local _0x0051 = false
-local _0x0052 = nil
-local function _0x0056()
-if (5 == 5) and not _0x003a then return end
-for _0x0057, _0x0058 in pairs(_0x003a:_0x0059()) do
-if (1 + 1 == 2) and _0x0058:_0x005a(string.char(70, 114, 97, 109, 101)) then
-local _0x005b = _0x0058:_0x005c(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108))
-if _0x005b and (_0x005b._0x0022 == string.char(70, 108, 121, 32, 77, 111, 100, 101) or _0x005b._0x0022 == string.char(1056, 1077, 1078, 1080, 1084, 32, 1087, 1086, 1083, 1105, 1090, 1072)) then
-local _0x005d = nil
-for _0x0057, _0x005e in pairs(_0x0058:_0x0059()) do
-if (2 * 3 > 5) and _0x005e:_0x005a(string.char(70, 114, 97, 109, 101)) and _0x005e ~= _0x005b and _0x005e._0x0016 == _0x0017._0x0012(0, 40, 0, 20) then
-_0x005d = _0x005e
+local a=game:GetService("Players")
+local b=a.LocalPlayer
+local c=game:GetService("UserInputService")
+local d=game:GetService("TweenService")
+local e=game:GetService("RunService")
+local f=game:GetService("VirtualUser")
+local g=e:IsStudio()
+local h=g and b:WaitForChild("PlayerGui")or game:GetService("CoreGui")
+local i=Instance.new("ScreenGui")
+i.Name="LugerGuardX"
+i.Parent=h
+local j=Instance.new("Frame")
+j.Size=UDim2.new(0,300,0,150)
+j.Position=UDim2.new(0.5,-150,0.5,-75)
+j.BackgroundColor3=Color3.fromRGB(20,20,25)
+j.BackgroundTransparency=0.1
+j.BorderSizePixel=0
+j.Parent=i
+local k=Instance.new("UICorner")
+k.CornerRadius=UDim.new(0,16)
+k.Parent=j
+local l=Instance.new("TextLabel")
+l.Size=UDim2.new(1,0,0,45)
+l.Text="Выберите язык / Choose language"
+l.TextColor3=Color3.fromRGB(0,200,255)
+l.BackgroundTransparency=1
+l.Font=Enum.Font.GothamBold
+l.TextSize=14
+l.TextYAlignment=Enum.TextYAlignment.Center
+l.Parent=j
+local m=Instance.new("TextButton")
+m.Size=UDim2.new(0,120,0,45)
+m.Position=UDim2.new(0.5,-130,0,55)
+m.Text="🇷🇺 Русский"
+m.TextColor3=Color3.fromRGB(255,255,255)
+m.BackgroundColor3=Color3.fromRGB(0,100,180)
+m.BackgroundTransparency=0.3
+m.BorderSizePixel=0
+m.Font=Enum.Font.GothamBold
+m.TextSize=14
+m.Parent=j
+local n=Instance.new("UICorner")
+n.CornerRadius=UDim.new(0,8)
+n.Parent=m
+local o=Instance.new("TextButton")
+o.Size=UDim2.new(0,120,0,45)
+o.Position=UDim2.new(0.5,10,0,55)
+o.Text="🇺🇸 English"
+o.TextColor3=Color3.fromRGB(255,255,255)
+o.BackgroundColor3=Color3.fromRGB(0,100,180)
+o.BackgroundTransparency=0.3
+o.BorderSizePixel=0
+o.Font=Enum.Font.GothamBold
+o.TextSize=14
+o.Parent=j
+local p=Instance.new("UICorner")
+p.CornerRadius=UDim.new(0,8)
+p.Parent=o
+local q=nil
+local r=nil
+local s=nil
+local t={}
+local u="Main"
+local v=16
+local w=50
+local x=false
+local y=false
+local z=false
+local A=nil
+local B=0
+local C=false
+local D=50
+local E=nil
+local F=nil
+local G={f=0,b=0,l=0,r=0}
+local H={f=0,b=0,l=0,r=0}
+local I=50
+local J=200
+local K=nil
+local L=false
+local M=nil
+local function N()
+if not s then return end
+for _,O in pairs(s:GetChildren())do
+if O:IsA("Frame")then
+local P=O:FindFirstChildOfClass("TextLabel")
+if P and(P.Text=="Fly Mode"or P.Text=="Режим полёта")then
+local Q=nil
+for _,R in pairs(O:GetChildren())do
+if R:IsA("Frame")and R~=P and R.Size==UDim2.new(0,40,0,20)then
+Q=R
 break
 end
 end
-if _0x005d then
-local _0x005f = _0x005d:_0x005c(string.char(70, 114, 97, 109, 101))
-if (5 == 5) and _0x0044 then
-_0x005d._0x0019 = _0x001a._0x001b(0, 150, 255)
-if _0x005f then _0x005f._0x0018 = _0x0017._0x0012(1, -18, 0, 2) end
+if Q then
+local S=Q:FindFirstChildOfClass("Frame")
+if C then
+Q.BackgroundColor3=Color3.fromRGB(0,150,255)
+if S then S.Position=UDim2.new(1,-18,0,2)end
 else
-_0x005d._0x0019 = _0x001a._0x001b(80, (96 - 16), 90)
-if (5 == 5) and _0x005f then _0x005f._0x0018 = _0x0017._0x0012(0, 2, 0, 2) end
+Q.BackgroundColor3=Color3.fromRGB(80,80,90)
+if S then S.Position=UDim2.new(0,2,0,2)end
 end
 end
 break
@@ -112,977 +107,874 @@ end
 end
 end
 end
-local function _0x0060(_0x0061)
-_0x002e = _0x0061
-_0x0015:_0x0062()
-local sub = _0x0010:_0x0063(string.char(83, 117, 98, 116, 105, 116, 108, 101, 76, 97, 98, 101, 108))
-if (1 + 1 == 2) and sub then
-if _0x0061 == string.char(114, 117) then
-sub._0x0022 = string.char(80, 114, 101, 109, 105, 117, 109, 32, 77, 117, 114, 100, 101, 114, 32, 77, 121, 115, 116, 101, 114, 121, 32, 50, 32, 83, 99, 114, 105, 112, 116)
-else
-sub._0x0022 = string.char(80, 114, 101, 109, 105, 117, 109, 32, 77, 117, 114, 100, 101, 114, 32, 77, 121, 115, 116, 101, 114, 121, 32, 50, 32, 83, 99, 114, 105, 112, 116)
-end
-end
-for _0x0064, _0x0065 in pairs(_0x003b) do
-if (true or false) and _0x0061 == string.char(114, 117) then
-if _0x0064 == string.char(77, 97, 105, 110) then _0x0065._0x0022 = string.char(1043, 1083, 1072, 1074, 1085, 1072, 1103)
-elseif _0x0064 == string.char(86, 105, 115, 117, 97, 108) then _0x0065._0x0022 = string.char(1042, 1080, 1079, 1091, 1072, 1083)
-elseif _0x0064 == string.char(80, 108, 97, 121, 101, 114, 115) then _0x0065._0x0022 = string.char(1048, 1075, 1088, 1086, 1082, 1080)
-elseif _0x0064 == string.char(84, 101, 108, 101, 112, 111, 114, 116) then _0x0065._0x0022 = string.char(1058, 1077, 1083, 1077, 1087, 1086, 1088, 1090)
-elseif _0x0064 == string.char(69, 83, 80) then _0x0065._0x0022 = string.char(69, 83, 80)
-elseif _0x0064 == string.char(83, 101, 116, 116, 105, 110, 103, 115) then _0x0065._0x0022 = string.char(1053, 1072, 1089, 1090, 1088, 1086, 1081, 1082, 1080)
+local function T(U)
+q=U
+j:Destroy()
+local V=i:FindFirstChild("SubtitleLabel")
+if V then V.Text="Premium Murder Mystery 2 Script"end
+for W,X in pairs(t)do
+if U=="ru"then
+if W=="Main"then X.Text="Главная"
+elseif W=="Visual"then X.Text="Визуал"
+elseif W=="Players"then X.Text="Игроки"
+elseif W=="Teleport"then X.Text="Телепорт"
+elseif W=="ESP"then X.Text="ESP"
+elseif W=="Settings"then X.Text="Настройки"
 end
 else
-if (true or false) and _0x0064 == string.char(77, 97, 105, 110) then _0x0065._0x0022 = string.char(77, 97, 105, 110)
-elseif _0x0064 == string.char(86, 105, 115, 117, 97, 108) then _0x0065._0x0022 = string.char(86, 105, 115, 117, 97, 108)
-elseif _0x0064 == string.char(80, 108, 97, 121, 101, 114, 115) then _0x0065._0x0022 = string.char(80, 108, 97, 121, 101, 114, 115)
-elseif _0x0064 == string.char(84, 101, 108, 101, 112, 111, 114, 116) then _0x0065._0x0022 = string.char(84, 101, 108, 101, 112, 111, 114, 116)
-elseif _0x0064 == string.char(69, 83, 80) then _0x0065._0x0022 = string.char(69, 83, 80)
-elseif _0x0064 == string.char(83, 101, 116, 116, 105, 110, 103, 115) then _0x0065._0x0022 = string.char(83, 101, 116, 116, 105, 110, 103, 115)
+if W=="Main"then X.Text="Main"
+elseif W=="Visual"then X.Text="Visual"
+elseif W=="Players"then X.Text="Players"
+elseif W=="Teleport"then X.Text="Teleport"
+elseif W=="ESP"then X.Text="ESP"
+elseif W=="Settings"then X.Text="Settings"
 end
 end
 end
-_0x0066()
+Y()
 end
-local function _0x0067()
-if (5 == 5) and _0x0041 then return end
-_0x0041 = true
-_0x0042 = _0x000a._0x0068:_0x0069(function()
-if (true or false) and not _0x0041 then return end
-_0x0043 = _0x0043 + 1
-if _0x0043 >= (180 / 3) then
-_0x0043 = 0
+local function Z()
+if z then return end
+z=true
+A=e.RenderStepped:Connect(function()
+if not z then return end
+B=B+1
+if B>=60 then
+B=0
 pcall(function()
-_0x000b:_0x006a()
-_0x000b:_0x006b(_0x006c._0x0012())
+f:CaptureController()
+f:ClickButton2(Vector2.new())
 end)
-local _0x006d = _0x006e._0x006f
-if _0x006d then
-local _0x0070 = _0x006d._0x0071
-_0x0009:_0x0072(_0x006d, _0x0073._0x0012(0.1), {_0x0071 = _0x0070 * _0x0071._0x0074(0, 0.01, 0)}):_0x0075()
-_0x0009:_0x0072(_0x006d, _0x0073._0x0012(0.1), {_0x0071 = _0x0070}):_0x0075()
+local a0=workspace.CurrentCamera
+if a0 then
+local a1=a0.CFrame
+d:Create(a0,TweenInfo.new(0.1),{CFrame=a1*CFrame.Angles(0,0.01,0)}):Play()
+d:Create(a0,TweenInfo.new(0.1),{CFrame=a1}):Play()
 end
 end
 end)
 end
-local function _0x0076()
-if not _0x0041 then return end
-_0x0041 = false
-if (true or false) and _0x0042 then
-_0x0042:_0x0077()
-_0x0042 = nil
+local function a2()
+if not z then return end
+z=false
+if A then A:Disconnect()A=nil end
+B=0
 end
-_0x0043 = 0
-end
-local function _0x0078()
-if _0x0051 then return end
-_0x0051 = true
-_0x0052 = _0x000a._0x0079:_0x0069(function()
-if (5 == 5) and not _0x0051 then return end
-local char = _0x0007._0x007a
-if char then
-for _0x0057, _0x007b in pairs(char:_0x007c()) do
-if (true or false) and _0x007b:_0x005a(string.char(66, 97, 115, 101, 80, 97, 114, 116)) then
-_0x007b._0x007d = false
+local function a3()
+if L then return end
+L=true
+M=e.Stepped:Connect(function()
+if not L then return end
+local a4=b.Character
+if a4 then
+for _,a5 in pairs(a4:GetDescendants())do
+if a5:IsA("BasePart")then
+a5.CanCollide=false
 end
 end
 end
 end)
 end
-local function _0x007e()
-if not _0x0051 then return end
-_0x0051 = false
-if _0x0052 then
-_0x0052:_0x0077()
-_0x0052 = nil
-end
-local char = _0x0007._0x007a
-if char then
-for _0x0057, _0x007b in pairs(char:_0x007c()) do
-if (1 + 1 == 2) and _0x007b:_0x005a(string.char(66, 97, 115, 101, 80, 97, 114, 116)) then
-_0x007b._0x007d = true
+local function a6()
+if not L then return end
+L=false
+if M then M:Disconnect()M=nil end
+local a4=b.Character
+if a4 then
+for _,a5 in pairs(a4:GetDescendants())do
+if a5:IsA("BasePart")then
+a5.CanCollide=true
 end
 end
 end
 end
-local function _0x007f()
-if (2 * 3 > 5) and _0x0044 then return end
-_0x0044 = true
-local char = _0x0007._0x007a
-if (5 == 5) and not char then return end
-local _0x0080 = char:_0x005c(string.char(72, 117, 109, 97, 110, 111, 105, 100))
-if (true or false) and not _0x0080 then return end
-local _0x0081 = char:_0x0063(string.char(84, 111, 114, 115, 111)) or char:_0x0063(string.char(85, 112, 112, 101, 114, 84, 111, 114, 115, 111))
-if (true or false) and not _0x0081 then return end
-_0x0080._0x0082 = true
-_0x0047 = _0x0011._0x0012(string.char(66, 111, 100, 121, 71, 121, 114, 111))
-_0x0047._0x0083 = 9e4
-_0x0047._0x0084 = _0x0085._0x0012(9e9, 9e9, 9e9)
-_0x0047._0x0086 = _0x0081._0x0071
-_0x0047._0x0014 = _0x0081
-_0x0046 = _0x0011._0x0012(string.char(66, 111, 100, 121, 86, 101, 108, 111, 99, 105, 116, 121))
-_0x0046._0x0087 = _0x0085._0x0012(0, 0.1, 0)
-_0x0046._0x0088 = _0x0085._0x0012(9e9, 9e9, 9e9)
-_0x0046._0x0014 = _0x0081
-local function _0x0089()
-while (1 * 1 >= 0) and _0x0044 and char and char._0x0014 do
-_0x008a._0x008b()
-if not _0x0044 then break end
-local _0x008c = _0x0085._0x0012(_0x0048._0x004c - _0x0048._0x004b, 0, _0x0048._0x0049 - _0x0048._0x004a)
-if _0x008c._0x008d > 0 then
-_0x004e = _0x004e + 0.5 + (_0x004e / _0x004f)
-if _0x004e > _0x004f then _0x004e = _0x004f end
-elseif _0x004e ~= 0 then
-_0x004e = _0x004e - 1
-if (2 * 3 > 5) and _0x004e < 0 then _0x004e = 0 end
+local function a7()
+if C then return end
+C=true
+local a4=b.Character
+if not a4 then return end
+local a8=a4:FindFirstChildOfClass("Humanoid")
+if not a8 then return end
+local a9=a4:FindFirstChild("Torso")or a4:FindFirstChild("UpperTorso")
+if not a9 then return end
+a8.PlatformStand=true
+E=Instance.new("BodyGyro")
+E.P=9e4
+E.maxTorque=Vector3.new(9e9,9e9,9e9)
+E.cframe=a9.CFrame
+E.Parent=a9
+F=Instance.new("BodyVelocity")
+F.velocity=Vector3.new(0,0.1,0)
+F.maxForce=Vector3.new(9e9,9e9,9e9)
+F.Parent=a9
+local function aa()
+while C and a4 and a4.Parent do
+task.wait()
+if not C then break end
+local ab=Vector3.new(G.r-G.l,0,G.f-G.b)
+if ab.Magnitude>0 then
+I=I+0.5+(I/J)
+if I>J then I=J end
+elseif I~=0 then
+I=I-1
+if I<0 then I=0 end
 end
-local _0x006d = _0x006e._0x006f
-local _0x0070 = _0x006d._0x008e
-if _0x008c._0x008d > 0 then
-local _0x0087 = (_0x0070._0x008f * (_0x0048._0x0049 - _0x0048._0x004a)) + (_0x0070._0x0090 * (_0x0048._0x004c - _0x0048._0x004b))
-_0x0046._0x0087 = _0x0087 * _0x004e
-_0x004d = {_0x0049 = _0x0048._0x0049, _0x004a = _0x0048._0x004a, _0x004b = _0x0048._0x004b, _0x004c = _0x0048._0x004c}
-elseif _0x004e ~= 0 then
-local _0x0087 = (_0x0070._0x008f * (_0x004d._0x0049 - _0x004d._0x004a)) + (_0x0070._0x0090 * (_0x004d._0x004c - _0x004d._0x004b))
-_0x0046._0x0087 = _0x0087 * _0x004e
+local ac=workspace.CurrentCamera
+local ad=ac.CoordinateFrame
+if ab.Magnitude>0 then
+local ae=(ad.LookVector*(G.f-G.b))+(ad.RightVector*(G.r-G.l))
+F.velocity=ae*I
+H={f=G.f,b=G.b,l=G.l,r=G.r}
+elseif I~=0 then
+local ae=(ad.LookVector*(H.f-H.b))+(ad.RightVector*(H.r-H.l))
+F.velocity=ae*I
 else
-_0x0046._0x0087 = _0x0085._0x0012(0, 0, 0)
+F.velocity=Vector3.new(0,0,0)
 end
-if _0x0047 then
-_0x0047._0x0086 = _0x006d._0x008e * _0x0071._0x0074(-math.rad((_0x0048._0x0049 + _0x0048._0x004a) * 50 * _0x004e / _0x004f), 0, 0)
+if E then
+E.cframe=ac.CoordinateFrame*CFrame.Angles(-math.rad((G.f+G.b)*50*I/J),0,0)
 end
 end
 end
-_0x0008._0x0091:_0x0069(function(_0x0092, _0x0093)
-if _0x0093 then return end
-local _0x0094 = _0x0092._0x0095
-if (2 * 3 > 5) and _0x0094 == _0x0025._0x0095._0x0096 then _0x0048._0x0049 = 1
-elseif _0x0094 == _0x0025._0x0095._0x0097 then _0x0048._0x004a = 1
-elseif _0x0094 == _0x0025._0x0095._0x0098 then _0x0048._0x004b = 1
-elseif _0x0094 == _0x0025._0x0095._0x0099 then _0x0048._0x004c = 1 end
+c.InputBegan:Connect(function(af,ag)
+if ag then return end
+local ah=af.KeyCode
+if ah==Enum.KeyCode.W then G.f=1
+elseif ah==Enum.KeyCode.S then G.b=1
+elseif ah==Enum.KeyCode.A then G.l=1
+elseif ah==Enum.KeyCode.D then G.r=1 end
 end)
-_0x0008._0x009a:_0x0069(function(_0x0092)
-local _0x0094 = _0x0092._0x0095
-if (true or false) and _0x0094 == _0x0025._0x0095._0x0096 then _0x0048._0x0049 = 0
-elseif _0x0094 == _0x0025._0x0095._0x0097 then _0x0048._0x004a = 0
-elseif _0x0094 == _0x0025._0x0095._0x0098 then _0x0048._0x004b = 0
-elseif _0x0094 == _0x0025._0x0095._0x0099 then _0x0048._0x004c = 0 end
+c.InputEnded:Connect(function(af)
+local ah=af.KeyCode
+if ah==Enum.KeyCode.W then G.f=0
+elseif ah==Enum.KeyCode.S then G.b=0
+elseif ah==Enum.KeyCode.A then G.l=0
+elseif ah==Enum.KeyCode.D then G.r=0 end
 end)
-coroutine._0x009b(_0x0089)()
-_0x0056()
+coroutine.wrap(aa)()
+N()
 end
-local function _0x009c()
-if (5 == 5) and not _0x0044 then return end
-_0x0044 = false
-local char = _0x0007._0x007a
-if (1 + 1 == 2) and char then
-local _0x0080 = char:_0x005c(string.char(72, 117, 109, 97, 110, 111, 105, 100))
-if (true or false) and _0x0080 then _0x0080._0x0082 = false end
+local function ai()
+if not C then return end
+C=false
+local a4=b.Character
+if a4 then
+local a8=a4:FindFirstChildOfClass("Humanoid")
+if a8 then a8.PlatformStand=false end
 end
-if _0x0046 then _0x0046:_0x0062() _0x0046 = nil end
-if _0x0047 then _0x0047:_0x0062() _0x0047 = nil end
-_0x0048 = {_0x0049 = 0, _0x004a = 0, _0x004b = 0, _0x004c = 0}
-_0x004d = {_0x0049 = 0, _0x004a = 0, _0x004b = 0, _0x004c = 0}
-_0x004e = _0x0045
-_0x0056()
+if F then F:Destroy()F=nil end
+if E then E:Destroy()E=nil end
+G={f=0,b=0,l=0,r=0}
+H={f=0,b=0,l=0,r=0}
+I=D
+N()
 end
-_0x0050 = _0x0008._0x0091:_0x0069(function(_0x0092, _0x0093)
-if _0x0093 then return end
-if (true or false) and _0x0092._0x0095 == _0x0025._0x0095._0x009d then
-if (1 + 1 == 2) and _0x0044 then
-_0x009c()
-else
-_0x007f()
-end
+K=c.InputBegan:Connect(function(af,ag)
+if ag then return end
+if af.KeyCode==Enum.KeyCode.Q then
+if C then ai()else a7()end
 end
 end)
-local function _0x009e(_0x009f)
-_0x0045 = math._0x00a0(_0x009f, 10, 500)
-_0x004f = _0x0045 * (57 - 53)
+local function aj(ak)
+D=math.clamp(ak,10,500)
+J=D*4
 end
-local function _0x00a1(_0x00a2)
-_0x003d = math._0x00a0(_0x00a2, 1, 1000)
-if _0x003f then
-local _0x00a3 = _0x0007._0x007a
-if _0x00a3 and _0x00a3:_0x0063(string.char(72, 117, 109, 97, 110, 111, 105, 100)) then
-_0x00a3._0x00a4._0x00a5 = _0x003d
-end
-end
-end
-local function _0x00a6(_0x00a7)
-_0x003e = math._0x00a0(_0x00a7, 1, (250 + 250))
-if _0x0040 then
-local _0x00a3 = _0x0007._0x007a
-if _0x00a3 and _0x00a3:_0x0063(string.char(72, 117, 109, 97, 110, 111, 105, 100)) then
-_0x00a3._0x00a4._0x00a8 = _0x003e
+local function al(am)
+v=math.clamp(am,1,1000)
+if x then
+local a4=b.Character
+if a4 and a4:FindFirstChild("Humanoid")then
+a4.Humanoid.WalkSpeed=v
 end
 end
 end
-_0x0007._0x00a9:_0x0069(function(_0x00a3)
-_0x00a3:_0x000f(string.char(72, 117, 109, 97, 110, 111, 105, 100))
-_0x008a._0x008b(0.5)
-if _0x003f then
-_0x00a3._0x00a4._0x00a5 = _0x003d
-else
-_0x00a3._0x00a4._0x00a5 = 16
+local function an(ao)
+w=math.clamp(ao,1,500)
+if y then
+local a4=b.Character
+if a4 and a4:FindFirstChild("Humanoid")then
+a4.Humanoid.JumpPower=w
 end
-if (5 == 5) and _0x0040 then
-_0x00a3._0x00a4._0x00a8 = _0x003e
-else
-_0x00a3._0x00a4._0x00a8 = 50
 end
-if _0x0044 then _0x009c() end
-if _0x0051 then _0x007e() end
+end
+b.CharacterAdded:Connect(function(ap)
+ap:WaitForChild("Humanoid")
+task.wait(0.5)
+if x then ap.Humanoid.WalkSpeed=v else ap.Humanoid.WalkSpeed=16 end
+if y then ap.Humanoid.JumpPower=w else ap.Humanoid.JumpPower=50 end
+if C then ai()end
+if L then a6()end
 end)
-local function _0x00aa(_0x00ab, _0x00ac, _0x00ad, _0x00ae, _0x00af, _0x00b0)
-local _0x00b1 = _0x0011._0x0012(string.char(70, 114, 97, 109, 101))
-_0x00b1._0x0016 = _0x0017._0x0012(0, (277 - 77), 0, 30)
-_0x00b1._0x0018 = _0x0017._0x0012(0, _0x00ac, 0, _0x00ad)
-_0x00b1._0x001c = 1
-_0x00b1._0x0014 = _0x00ab
-local _0x005b = _0x0011._0x0012(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108))
-_0x005b._0x0016 = _0x0017._0x0012(0, 120, 1, 0)
-_0x005b._0x0018 = _0x0017._0x0012(0, 0, 0, 0)
-_0x005b._0x0022 = _0x00ae
-_0x005b._0x0023 = _0x001a._0x001b((600 / 3), (630 / 3), (460 / 2))
-_0x005b._0x001c = 1
-_0x005b._0x0024 = _0x0025._0x0024._0x00b2
-_0x005b._0x0027 = (7 + 7)
-_0x005b._0x00b3 = _0x0025._0x00b3._0x00b4
-_0x005b._0x0028 = _0x0025._0x0028._0x0029
-_0x005b._0x0014 = _0x00b1
-local _0x005d = _0x0011._0x0012(string.char(70, 114, 97, 109, 101))
-_0x005d._0x0016 = _0x0017._0x0012(0, 40, 0, (80 / 4))
-_0x005d._0x0018 = _0x0017._0x0012(1, -(102 - 57), 0, (68 - 63))
-_0x005d._0x0019 = _0x00af and _0x001a._0x001b(0, (450 / 3), (1020 / 4)) or _0x001a._0x001b((40 + 40), (152 - 72), (45 + 45))
-_0x005d._0x001c = 0.3
-_0x005d._0x001d = 0
-_0x005d._0x0014 = _0x00b1
-local _0x00b5 = _0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))
-_0x00b5._0x001f = _0x0020._0x0012(1, 0)
-_0x00b5._0x0014 = _0x005d
-local _0x00b6 = _0x0011._0x0012(string.char(70, 114, 97, 109, 101))
-_0x00b6._0x0016 = _0x0017._0x0012(0, 16, 0, 16)
-_0x00b6._0x0018 = _0x00af and _0x0017._0x0012(1, -18, 0, 2) or _0x0017._0x0012(0, 2, 0, 2)
-_0x00b6._0x0019 = _0x001a._0x001b(255, 255, 255)
-_0x00b6._0x001c = 0
-_0x00b6._0x001d = 0
-_0x00b6._0x0014 = _0x005d
-local _0x00b7 = _0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))
-_0x00b7._0x001f = _0x0020._0x0012(1, 0)
-_0x00b7._0x0014 = _0x00b6
-local function _0x00b8(_0x00b9)
-_0x00af = _0x00b9
-_0x005d._0x0019 = _0x00af and _0x001a._0x001b(0, (600 / 4), (510 / 2)) or _0x001a._0x001b((240 / 3), 80, (270 / 3))
-_0x00b6._0x0018 = _0x00af and _0x0017._0x0012(1, -18, 0, 2) or _0x0017._0x0012(0, 2, 0, 2)
+local function aq()
+for _,ar in pairs(s:GetChildren())do
+ar:Destroy()
 end
-local _0x0065 = _0x0011._0x0012(string.char(84, 101, 120, 116, 66, 117, 116, 116, 111, 110))
-_0x0065._0x0016 = _0x0017._0x0012(1, 0, 1, 0)
-_0x0065._0x001c = 1
-_0x0065._0x0022 = ""
-_0x0065._0x0014 = _0x00b1
-_0x0065._0x00ba:_0x0069(function()
-_0x00b8(not _0x00af)
-_0x00b0(_0x00af)
+end
+local function as()
+aq()
+if u=="Main"then
+local at=function(au,av,aw,ax,ay,az)
+local aA=Instance.new("Frame")
+aA.Size=UDim2.new(0,200,0,30)
+aA.Position=UDim2.new(0,av,0,aw)
+aA.BackgroundTransparency=1
+aA.Parent=au
+local aB=Instance.new("TextLabel")
+aB.Size=UDim2.new(0,120,1,0)
+aB.Position=UDim2.new(0,0,0,0)
+aB.Text=ax
+aB.TextColor3=Color3.fromRGB(200,210,230)
+aB.BackgroundTransparency=1
+aB.Font=Enum.Font.Gotham
+aB.TextSize=14
+aB.TextXAlignment=Enum.TextXAlignment.Left
+aB.TextYAlignment=Enum.TextYAlignment.Center
+aB.Parent=aA
+local aC=Instance.new("Frame")
+aC.Size=UDim2.new(0,40,0,20)
+aC.Position=UDim2.new(1,-45,0,5)
+aC.BackgroundColor3=ay and Color3.fromRGB(0,150,255)or Color3.fromRGB(80,80,90)
+aC.BackgroundTransparency=0.3
+aC.BorderSizePixel=0
+aC.Parent=aA
+local aD=Instance.new("UICorner")
+aD.CornerRadius=UDim.new(1,0)
+aD.Parent=aC
+local aE=Instance.new("Frame")
+aE.Size=UDim2.new(0,16,0,16)
+aE.Position=ay and UDim2.new(1,-18,0,2)or UDim2.new(0,2,0,2)
+aE.BackgroundColor3=Color3.fromRGB(255,255,255)
+aE.BackgroundTransparency=0
+aE.BorderSizePixel=0
+aE.Parent=aC
+local aF=Instance.new("UICorner")
+aF.CornerRadius=UDim.new(1,0)
+aF.Parent=aE
+local function aG(aH)
+ay=aH
+aC.BackgroundColor3=ay and Color3.fromRGB(0,150,255)or Color3.fromRGB(80,80,90)
+aE.Position=ay and UDim2.new(1,-18,0,2)or UDim2.new(0,2,0,2)
+end
+local aI=Instance.new("TextButton")
+aI.Size=UDim2.new(1,0,1,0)
+aI.BackgroundTransparency=1
+aI.Text=""
+aI.Parent=aA
+aI.MouseButton1Click:Connect(function()
+aG(not ay)
+az(ay)
 end)
-return _0x00b1, _0x00b8
+return aA,aG
 end
-local function _0x00bb(_0x00ab, _0x00ac, _0x00ad, _0x00ae, _0x00bc, _0x00af, _0x00b0)
-local _0x00b1 = _0x0011._0x0012(string.char(70, 114, 97, 109, 101))
-_0x00b1._0x0016 = _0x0017._0x0012(0, 280, 0, (27 + 28))
-_0x00b1._0x0018 = _0x0017._0x0012(0, _0x00ac, 0, _0x00ad)
-_0x00b1._0x001c = 1
-_0x00b1._0x0014 = _0x00ab
-local _0x005b = _0x0011._0x0012(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108))
-_0x005b._0x0016 = _0x0017._0x0012(0, 150, 0, (36 - 11))
-_0x005b._0x0018 = _0x0017._0x0012(0, 0, 0, 0)
-_0x005b._0x0022 = _0x00ae
-_0x005b._0x0023 = _0x001a._0x001b((226 - 26), 210, (297 - 67))
-_0x005b._0x001c = 1
-_0x005b._0x0024 = _0x0025._0x0024._0x0026
-_0x005b._0x0027 = (87 - 73)
-_0x005b._0x00b3 = _0x0025._0x00b3._0x00b4
-_0x005b._0x0028 = _0x0025._0x0028._0x0029
-_0x005b._0x0014 = _0x00b1
-local _0x00bd = _0x0011._0x0012(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108))
-_0x00bd._0x0016 = _0x0017._0x0012(0, (266 - 16), 0, 20)
-_0x00bd._0x0018 = _0x0017._0x0012(0, 0, 0, (118 - 96))
-_0x00bd._0x0022 = _0x00bc
-_0x00bd._0x0023 = _0x001a._0x001b((600 / 4), 150, (85 + 85))
-_0x00bd._0x001c = 1
-_0x00bd._0x0024 = _0x0025._0x0024._0x00b2
-_0x00bd._0x0027 = (33 / 3)
-_0x00bd._0x00b3 = _0x0025._0x00b3._0x00b4
-_0x00bd._0x0028 = _0x0025._0x0028._0x0029
-_0x00bd._0x0014 = _0x00b1
-local _0x005d = _0x0011._0x0012(string.char(70, 114, 97, 109, 101))
-_0x005d._0x0016 = _0x0017._0x0012(0, (79 - 39), 0, 20)
-_0x005d._0x0018 = _0x0017._0x0012(1, -(74 - 29), 0, 5)
-_0x005d._0x0019 = _0x00af and _0x001a._0x001b(0, (600 / 4), 255) or _0x001a._0x001b((138 - 58), 80, (45 + 45))
-_0x005d._0x001c = 0.3
-_0x005d._0x001d = 0
-_0x005d._0x0014 = _0x00b1
-local _0x00b5 = _0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))
-_0x00b5._0x001f = _0x0020._0x0012(1, 0)
-_0x00b5._0x0014 = _0x005d
-local _0x00b6 = _0x0011._0x0012(string.char(70, 114, 97, 109, 101))
-_0x00b6._0x0016 = _0x0017._0x0012(0, 16, 0, (72 - 56))
-_0x00b6._0x0018 = _0x00af and _0x0017._0x0012(1, -18, 0, 2) or _0x0017._0x0012(0, 2, 0, 2)
-_0x00b6._0x0019 = _0x001a._0x001b((304 - 49), 255, (127 + 128))
-_0x00b6._0x001c = 0
-_0x00b6._0x001d = 0
-_0x00b6._0x0014 = _0x005d
-local _0x00b7 = _0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))
-_0x00b7._0x001f = _0x0020._0x0012(1, 0)
-_0x00b7._0x0014 = _0x00b6
-local function _0x00b8(_0x00b9)
-_0x00af = _0x00b9
-_0x005d._0x0019 = _0x00af and _0x001a._0x001b(0, (201 - 51), 255) or _0x001a._0x001b(80, 80, (180 / 2))
-_0x00b6._0x0018 = _0x00af and _0x0017._0x0012(1, -(9 + 9), 0, 2) or _0x0017._0x0012(0, 2, 0, 2)
-end
-local _0x0065 = _0x0011._0x0012(string.char(84, 101, 120, 116, 66, 117, 116, 116, 111, 110))
-_0x0065._0x0016 = _0x0017._0x0012(1, 0, 1, 0)
-_0x0065._0x001c = 1
-_0x0065._0x0022 = ""
-_0x0065._0x0014 = _0x00b1
-_0x0065._0x00ba:_0x0069(function()
-_0x00b8(not _0x00af)
-_0x00b0(_0x00af)
-end)
-return _0x00b1, _0x00b8
-end
-local function _0x00be()
-local _0x00bf = 0
-for _0x0057, _0x0058 in pairs(_0x003a:_0x0059()) do
-if (1 + 1 == 2) and _0x0058:_0x005a(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108)) or _0x0058:_0x005a(string.char(84, 101, 120, 116, 66, 111, 120)) or _0x0058:_0x005a(string.char(84, 101, 120, 116, 66, 117, 116, 116, 111, 110)) or _0x0058:_0x005a(string.char(70, 114, 97, 109, 101)) then
-_0x00bf = _0x00bf + _0x0058._0x0016._0x00c0._0x00c1 + (72 - 62)
-end
-end
-_0x003a._0x0016 = _0x0017._0x0012(1, 0, 0, math.max(_0x00bf + 20, _0x0039._0x0016._0x00c0._0x00c1))
-_0x0039._0x00c2 = _0x0017._0x0012(0, 0, 0, _0x00bf + 30)
-end
-local function _0x0066()
-for _0x0057, _0x0058 in pairs(_0x003a:_0x0059()) do
-_0x0058:_0x0062()
-end
-if (true or false) and _0x003c == string.char(77, 97, 105, 110) then
-local _0x00c4, _0x00c5 = _0x00aa(_0x003a, (80 / 4), (80 / 4), _0x002e == string.char(114, 117) and string.char(1057, 1082, 1086, 1088, 1086, 1089, 1090, 1100) or string.char(83, 112, 101, 101, 100), _0x003f, function(_0x00c6)
-_0x003f = _0x00c6
-if _0x003f then
-local _0x00a3 = _0x0007._0x007a
-if (5 == 5) and _0x00a3 and _0x00a3:_0x0063(string.char(72, 117, 109, 97, 110, 111, 105, 100)) then
-_0x00a3._0x00a4._0x00a5 = _0x003d
-end
-else
-local _0x00a3 = _0x0007._0x007a
-if (5 == 5) and _0x00a3 and _0x00a3:_0x0063(string.char(72, 117, 109, 97, 110, 111, 105, 100)) then
-_0x00a3._0x00a4._0x00a5 = 16
-end
+at(s,20,20,q=="ru"and"Скорость"or"Speed",x,function(aJ)
+x=aJ
+local a4=b.Character
+if a4 and a4:FindFirstChild("Humanoid")then
+a4.Humanoid.WalkSpeed=x and v or 16
 end
 end)
-local _0x00c7 = _0x0011._0x0012(string.char(84, 101, 120, 116, 66, 111, 120))
-_0x00c7._0x0016 = _0x0017._0x0012(0, (207 - 57), 0, (17 + 18))
-_0x00c7._0x0018 = _0x0017._0x0012(0, 20, 0, (27 + 28))
-_0x00c7._0x00c8 = string.char(49, 45, 40, 53, 48, 48, 32, 43, 32, 53, 48, 48, 41)
-_0x00c7._0x0022 = tostring(_0x003d)
-_0x00c7._0x0023 = _0x001a._0x001b(255, (302 - 47), 255)
-_0x00c7._0x0019 = _0x001a._0x001b(25, (104 - 79), 35)
-_0x00c7._0x001c = 0.3
-_0x00c7._0x001d = 0
-_0x00c7._0x0024 = _0x0025._0x0024._0x00b2
-_0x00c7._0x0027 = (56 / 4)
-_0x00c7._0x0014 = _0x003a
-_0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))._0x001f = _0x0020._0x0012(0, (24 / 3))
-_0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))._0x0014 = _0x00c7
-local _0x00c9 = _0x0011._0x0012(string.char(84, 101, 120, 116, 66, 117, 116, 116, 111, 110))
-_0x00c9._0x0016 = _0x0017._0x0012(0, (50 + 50), 0, 35)
-_0x00c9._0x0018 = _0x0017._0x0012(0, 180, 0, 55)
-_0x00c9._0x0022 = _0x002e == string.char(114, 117) and string.char(1055, 1088, 1080, 1084, 1077, 1085, 1080, 1090, 1100) or string.char(65, 112, 112, 108, 121)
-_0x00c9._0x0023 = _0x001a._0x001b((279 - 24), (127 + 128), (1020 / 4))
-_0x00c9._0x0019 = _0x001a._0x001b(0, 100, 180)
-_0x00c9._0x001c = 0.3
-_0x00c9._0x001d = 0
-_0x00c9._0x0024 = _0x0025._0x0024._0x0026
-_0x00c9._0x0027 = (42 / 3)
-_0x00c9._0x0014 = _0x003a
-_0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))._0x001f = _0x0020._0x0012(0, (16 / 2))
-_0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))._0x0014 = _0x00c9
-_0x00c9._0x00ba:_0x0069(function()
-local _0x00ca = tonumber(_0x00c7._0x0022)
-if (true or false) and _0x00ca then
-_0x003d = math._0x00a0(_0x00ca, 1, 1000)
-if (2 * 3 > 5) and _0x003f and _0x0007._0x007a and _0x0007._0x007a:_0x0063(string.char(72, 117, 109, 97, 110, 111, 105, 100)) then
-_0x0007._0x007a._0x00a4._0x00a5 = _0x003d
-end
+local aK=Instance.new("TextBox")
+aK.Size=UDim2.new(0,150,0,35)
+aK.Position=UDim2.new(0,20,0,55)
+aK.PlaceholderText="1-1000"
+aK.Text=tostring(v)
+aK.TextColor3=Color3.fromRGB(255,255,255)
+aK.BackgroundColor3=Color3.fromRGB(25,25,35)
+aK.BackgroundTransparency=0.3
+aK.BorderSizePixel=0
+aK.Font=Enum.Font.Gotham
+aK.TextSize=14
+aK.Parent=s
+local aL=Instance.new("UICorner")
+aL.CornerRadius=UDim.new(0,8)
+aL.Parent=aK
+local aM=Instance.new("TextButton")
+aM.Size=UDim2.new(0,100,0,35)
+aM.Position=UDim2.new(0,180,0,55)
+aM.Text=q=="ru"and"Применить"or"Apply"
+aM.TextColor3=Color3.fromRGB(255,255,255)
+aM.BackgroundColor3=Color3.fromRGB(0,100,180)
+aM.BackgroundTransparency=0.3
+aM.BorderSizePixel=0
+aM.Font=Enum.Font.GothamBold
+aM.TextSize=14
+aM.Parent=s
+local aN=Instance.new("UICorner")
+aN.CornerRadius=UDim.new(0,8)
+aN.Parent=aM
+aM.MouseButton1Click:Connect(function()
+local aO=tonumber(aK.Text)
+if aO then al(aO)end
+end)
+local aP=Instance.new("TextLabel")
+aP.Size=UDim2.new(0,350,0,20)
+aP.Position=UDim2.new(0,20,0,95)
+aP.Text=q=="ru"and"Вы можете установить скорость от 16 до 1000"or"You can set speed from 16 to 1000"
+aP.TextColor3=Color3.fromRGB(150,150,170)
+aP.BackgroundTransparency=1
+aP.Font=Enum.Font.Gotham
+aP.TextSize=12
+aP.TextXAlignment=Enum.TextXAlignment.Left
+aP.Parent=s
+at(s,20,125,q=="ru"and"Сила прыжка"or"Jump Power",y,function(aJ)
+y=aJ
+local a4=b.Character
+if a4 and a4:FindFirstChild("Humanoid")then
+a4.Humanoid.JumpPower=y and w or 50
 end
 end)
-local _0x00cb = _0x0011._0x0012(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108))
-_0x00cb._0x0016 = _0x0017._0x0012(0, 350, 0, (80 / 4))
-_0x00cb._0x0018 = _0x0017._0x0012(0, 20, 0, (167 - 72))
-_0x00cb._0x0022 = _0x002e == string.char(114, 117) and string.char(1042, 1099, 32, 1084, 1086, 1078, 1077, 1090, 1077, 32, 1091, 1089, 1090, 1072, 1085, 1086, 1074, 1080, 1090, 1100, 32, 1089, 1082, 1086, 1088, 1086, 1089, 1090, 1100, 32, 1086, 1090, 32, 40, 54, 52, 32, 47, 32, 52, 41, 32, 1076, 1086, 32, 40, 49, 48, 53, 53, 32, 45, 32, 53, 53, 41) or string.char(89, 111, 117, 32, 99, 97, 110, 32, 115, 101, 116, 32, 115, 112, 101, 101, 100, 32, 102, 114, 111, 109, 32, 40, 51, 50, 32, 47, 32, 50, 41, 32, 116, 111, 32, 40, 49, 48, 57, 50, 32, 45, 32, 57, 50, 41)
-_0x00cb._0x0023 = _0x001a._0x001b((75 + 75), (75 + 75), 170)
-_0x00cb._0x001c = 1
-_0x00cb._0x0024 = _0x0025._0x0024._0x00b2
-_0x00cb._0x0027 = 12
-_0x00cb._0x00b3 = _0x0025._0x00b3._0x00b4
-_0x00cb._0x0014 = _0x003a
-local _0x00ce, _0x00cf = _0x00aa(_0x003a, (111 - 91), 125, _0x002e == string.char(114, 117) and string.char(1057, 1080, 1083, 1072, 32, 1087, 1088, 1099, 1078, 1082, 1072) or string.char(74, 117, 109, 112, 32, 80, 111, 119, 101, 114), _0x0040, function(_0x00c6)
-_0x0040 = _0x00c6
-if (true or false) and _0x0040 then
-local _0x00a3 = _0x0007._0x007a
-if _0x00a3 and _0x00a3:_0x0063(string.char(72, 117, 109, 97, 110, 111, 105, 100)) then
-_0x00a3._0x00a4._0x00a8 = _0x003e
-end
-else
-local _0x00a3 = _0x0007._0x007a
-if (1 + 1 == 2) and _0x00a3 and _0x00a3:_0x0063(string.char(72, 117, 109, 97, 110, 111, 105, 100)) then
-_0x00a3._0x00a4._0x00a8 = (25 + 25)
-end
-end
+local aQ=Instance.new("TextBox")
+aQ.Size=UDim2.new(0,150,0,35)
+aQ.Position=UDim2.new(0,20,0,160)
+aQ.PlaceholderText="1-500"
+aQ.Text=tostring(w)
+aQ.TextColor3=Color3.fromRGB(255,255,255)
+aQ.BackgroundColor3=Color3.fromRGB(25,25,35)
+aQ.BackgroundTransparency=0.3
+aQ.BorderSizePixel=0
+aQ.Font=Enum.Font.Gotham
+aQ.TextSize=14
+aQ.Parent=s
+local aR=Instance.new("UICorner")
+aR.CornerRadius=UDim.new(0,8)
+aR.Parent=aQ
+local aS=Instance.new("TextButton")
+aS.Size=UDim2.new(0,100,0,35)
+aS.Position=UDim2.new(0,180,0,160)
+aS.Text=q=="ru"and"Применить"or"Apply"
+aS.TextColor3=Color3.fromRGB(255,255,255)
+aS.BackgroundColor3=Color3.fromRGB(0,100,180)
+aS.BackgroundTransparency=0.3
+aS.BorderSizePixel=0
+aS.Font=Enum.Font.GothamBold
+aS.TextSize=14
+aS.Parent=s
+local aT=Instance.new("UICorner")
+aT.CornerRadius=UDim.new(0,8)
+aT.Parent=aS
+aS.MouseButton1Click:Connect(function()
+local aU=tonumber(aQ.Text)
+if aU then an(aU)end
 end)
-local _0x00d0 = _0x0011._0x0012(string.char(84, 101, 120, 116, 66, 111, 120))
-_0x00d0._0x0016 = _0x0017._0x0012(0, (163 - 13), 0, 35)
-_0x00d0._0x0018 = _0x0017._0x0012(0, (91 - 71), 0, 160)
-_0x00d0._0x00c8 = string.char(49, 45, 40, 53, 56, 55, 32, 45, 32, 56, 55, 41)
-_0x00d0._0x0022 = tostring(_0x003e)
-_0x00d0._0x0023 = _0x001a._0x001b(255, (765 / 3), (765 / 3))
-_0x00d0._0x0019 = _0x001a._0x001b(25, (12 + 13), (17 + 18))
-_0x00d0._0x001c = 0.3
-_0x00d0._0x001d = 0
-_0x00d0._0x0024 = _0x0025._0x0024._0x00b2
-_0x00d0._0x0027 = 14
-_0x00d0._0x0014 = _0x003a
-_0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))._0x001f = _0x0020._0x0012(0, 8)
-_0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))._0x0014 = _0x00d0
-local _0x00d1 = _0x0011._0x0012(string.char(84, 101, 120, 116, 66, 117, 116, 116, 111, 110))
-_0x00d1._0x0016 = _0x0017._0x0012(0, (50 + 50), 0, 35)
-_0x00d1._0x0018 = _0x0017._0x0012(0, 180, 0, (259 - 99))
-_0x00d1._0x0022 = _0x002e == string.char(114, 117) and string.char(1055, 1088, 1080, 1084, 1077, 1085, 1080, 1090, 1100) or string.char(65, 112, 112, 108, 121)
-_0x00d1._0x0023 = _0x001a._0x001b((127 + 128), (765 / 3), 255)
-_0x00d1._0x0019 = _0x001a._0x001b(0, 100, (219 - 39))
-_0x00d1._0x001c = 0.3
-_0x00d1._0x001d = 0
-_0x00d1._0x0024 = _0x0025._0x0024._0x0026
-_0x00d1._0x0027 = (42 / 3)
-_0x00d1._0x0014 = _0x003a
-_0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))._0x001f = _0x0020._0x0012(0, (4 + 4))
-_0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))._0x0014 = _0x00d1
-_0x00d1._0x00ba:_0x0069(function()
-local _0x00d2 = tonumber(_0x00d0._0x0022)
-if (5 == 5) and _0x00d2 then
-_0x003e = math._0x00a0(_0x00d2, 1, (1000 / 2))
-if (2 * 3 > 5) and _0x0040 and _0x0007._0x007a and _0x0007._0x007a:_0x0063(string.char(72, 117, 109, 97, 110, 111, 105, 100)) then
-_0x0007._0x007a._0x00a4._0x00a8 = _0x003e
+local aV=Instance.new("TextLabel")
+aV.Size=UDim2.new(0,350,0,20)
+aV.Position=UDim2.new(0,20,0,200)
+aV.Text=q=="ru"and"Вы можете установить силу прыжка от 50 до 500"or"You can set jump power from 50 to 500"
+aV.TextColor3=Color3.fromRGB(150,150,170)
+aV.BackgroundTransparency=1
+aV.Font=Enum.Font.Gotham
+aV.TextSize=12
+aV.TextXAlignment=Enum.TextXAlignment.Left
+aV.Parent=s
+local function aW(aX,aY,aZ,a0,a1,a2)
+local a3=Instance.new("Frame")
+a3.Size=UDim2.new(0,280,0,55)
+a3.Position=UDim2.new(0,aY,0,aZ)
+a3.BackgroundTransparency=1
+a3.Parent=aX
+local a4=Instance.new("TextLabel")
+a4.Size=UDim2.new(0,150,0,25)
+a4.Position=UDim2.new(0,0,0,0)
+a4.Text=a0
+a4.TextColor3=Color3.fromRGB(200,210,230)
+a4.BackgroundTransparency=1
+a4.Font=Enum.Font.GothamBold
+a4.TextSize=14
+a4.TextXAlignment=Enum.TextXAlignment.Left
+a4.TextYAlignment=Enum.TextYAlignment.Center
+a4.Parent=a3
+local a5=Instance.new("TextLabel")
+a5.Size=UDim2.new(0,250,0,20)
+a5.Position=UDim2.new(0,0,0,22)
+a5.Text=a1
+a5.TextColor3=Color3.fromRGB(150,150,170)
+a5.BackgroundTransparency=1
+a5.Font=Enum.Font.Gotham
+a5.TextSize=11
+a5.TextXAlignment=Enum.TextXAlignment.Left
+a5.TextYAlignment=Enum.TextYAlignment.Center
+a5.Parent=a3
+local a6=Instance.new("Frame")
+a6.Size=UDim2.new(0,40,0,20)
+a6.Position=UDim2.new(1,-45,0,5)
+a6.BackgroundColor3=a2 and Color3.fromRGB(0,150,255)or Color3.fromRGB(80,80,90)
+a6.BackgroundTransparency=0.3
+a6.BorderSizePixel=0
+a6.Parent=a3
+local a7=Instance.new("UICorner")
+a7.CornerRadius=UDim.new(1,0)
+a7.Parent=a6
+local a8=Instance.new("Frame")
+a8.Size=UDim2.new(0,16,0,16)
+a8.Position=a2 and UDim2.new(1,-18,0,2)or UDim2.new(0,2,0,2)
+a8.BackgroundColor3=Color3.fromRGB(255,255,255)
+a8.BackgroundTransparency=0
+a8.BorderSizePixel=0
+a8.Parent=a6
+local a9=Instance.new("UICorner")
+a9.CornerRadius=UDim.new(1,0)
+a9.Parent=a8
+local function aa(ab)
+a2=ab
+a6.BackgroundColor3=a2 and Color3.fromRGB(0,150,255)or Color3.fromRGB(80,80,90)
+a8.Position=a2 and UDim2.new(1,-18,0,2)or UDim2.new(0,2,0,2)
 end
+local ac=Instance.new("TextButton")
+ac.Size=UDim2.new(1,0,1,0)
+ac.BackgroundTransparency=1
+ac.Text=""
+ac.Parent=a3
+ac.MouseButton1Click:Connect(function()
+aa(not a2)
+ad(a2)
+end)
+return a3,aa
 end
+aW(s,20,235,q=="ru"and"Анти-AFK"or"Anti-AFK",q=="ru"and"Защита от автоматического отключения"or"Anti-AFK protection",z,function(aJ)
+if aJ then Z()else a2()end
 end)
-local _0x00d3 = _0x0011._0x0012(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108))
-_0x00d3._0x0016 = _0x0017._0x0012(0, 350, 0, (10 + 10))
-_0x00d3._0x0018 = _0x0017._0x0012(0, (10 + 10), 0, (800 / 4))
-_0x00d3._0x0022 = _0x002e == string.char(114, 117) and string.char(1042, 1099, 32, 1084, 1086, 1078, 1077, 1090, 1077, 32, 1091, 1089, 1090, 1072, 1085, 1086, 1074, 1080, 1090, 1100, 32, 1089, 1080, 1083, 1091, 32, 1087, 1088, 1099, 1078, 1082, 1072, 32, 1086, 1090, 32, 53, 48, 32, 1076, 1086, 32, 40, 53, 49, 49, 32, 45, 32, 49, 49, 41) or string.char(89, 111, 117, 32, 99, 97, 110, 32, 115, 101, 116, 32, 106, 117, 109, 112, 32, 112, 111, 119, 101, 114, 32, 102, 114, 111, 109, 32, 40, 50, 53, 32, 43, 32, 50, 53, 41, 32, 116, 111, 32, 40, 49, 48, 48, 48, 32, 47, 32, 50, 41)
-_0x00d3._0x0023 = _0x001a._0x001b((75 + 75), 150, 170)
-_0x00d3._0x001c = 1
-_0x00d3._0x0024 = _0x0025._0x0024._0x00b2
-_0x00d3._0x0027 = (6 + 6)
-_0x00d3._0x00b3 = _0x0025._0x00b3._0x00b4
-_0x00d3._0x0014 = _0x003a
-local _0x00d6, _0x00d7 = _0x00bb(_0x003a, (60 / 3), (277 - 42), _0x002e == string.char(114, 117) and string.char(1040, 1085, 1090, 1080, 45, 65, 70, 75) or string.char(65, 110, 116, 105, 45, 65, 70, 75), _0x002e == string.char(114, 117) and string.char(1047, 1072, 1097, 1080, 1090, 1072, 32, 1086, 1090, 32, 1072, 1074, 1090, 1086, 1084, 1072, 1090, 1080, 1095, 1077, 1089, 1082, 1086, 1075, 1086, 32, 1086, 1090, 1082, 1083, 1102, 1095, 1077, 1085, 1080, 1103) or string.char(65, 110, 116, 105, 45, 65, 70, 75, 32, 112, 114, 111, 116, 101, 99, 116, 105, 111, 110), _0x0041, function(_0x00c6)
-if _0x00c6 then _0x0067() else _0x0076() end
+aW(s,20,300,q=="ru"and"Режим полёта"or"Fly Mode","",C,function(aJ)
+if aJ then a7()else ai()end
 end)
-local _0x00d8, _0x00d9 = _0x00aa(_0x003a, 20, (900 / 3), _0x002e == string.char(114, 117) and string.char(1056, 1077, 1078, 1080, 1084, 32, 1087, 1086, 1083, 1105, 1090, 1072) or string.char(70, 108, 121, 32, 77, 111, 100, 101), _0x0044, function(_0x00c6)
-if (2 * 3 > 5) and _0x00c6 then _0x007f() else _0x009c() end
-end)
-local _0x00da = _0x0011._0x0012(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108))
-_0x00da._0x0016 = _0x0017._0x0012(0, 200, 0, 30)
-_0x00da._0x0018 = _0x0017._0x0012(0, (80 / 4), 0, (382 - 42))
-_0x00da._0x0022 = _0x002e == string.char(114, 117) and string.char(1057, 1082, 1086, 1088, 1086, 1089, 1090, 1100, 32, 1087, 1086, 1083, 1105, 1090, 1072) or string.char(70, 108, 121, 32, 83, 112, 101, 101, 100)
-_0x00da._0x0023 = _0x001a._0x001b(0, 200, 255)
-_0x00da._0x001c = 1
-_0x00da._0x0024 = _0x0025._0x0024._0x0026
-_0x00da._0x0027 = 18
-_0x00da._0x00b3 = _0x0025._0x00b3._0x00b4
-_0x00da._0x0014 = _0x003a
-local _0x00db = _0x0011._0x0012(string.char(84, 101, 120, 116, 66, 111, 120))
-_0x00db._0x0016 = _0x0017._0x0012(0, (300 / 2), 0, (93 - 58))
-_0x00db._0x0018 = _0x0017._0x0012(0, 20, 0, (187 + 188))
-_0x00db._0x00c8 = string.char(40, 53, 32, 43, 32, 53, 41, 45, 40, 53, 50, 57, 32, 45, 32, 50, 57, 41)
-_0x00db._0x0022 = tostring(_0x0045)
-_0x00db._0x0023 = _0x001a._0x001b(255, 255, 255)
-_0x00db._0x0019 = _0x001a._0x001b(25, 25, (17 + 18))
-_0x00db._0x001c = 0.3
-_0x00db._0x001d = 0
-_0x00db._0x0024 = _0x0025._0x0024._0x00b2
-_0x00db._0x0027 = (56 / 4)
-_0x00db._0x0014 = _0x003a
-_0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))._0x001f = _0x0020._0x0012(0, (24 / 3))
-_0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))._0x0014 = _0x00db
-local _0x00dc = _0x0011._0x0012(string.char(84, 101, 120, 116, 66, 117, 116, 116, 111, 110))
-_0x00dc._0x0016 = _0x0017._0x0012(0, (125 - 25), 0, 35)
-_0x00dc._0x0018 = _0x0017._0x0012(0, 180, 0, (455 - 80))
-_0x00dc._0x0022 = _0x002e == string.char(114, 117) and string.char(1055, 1088, 1080, 1084, 1077, 1085, 1080, 1090, 1100) or string.char(65, 112, 112, 108, 121)
-_0x00dc._0x0023 = _0x001a._0x001b(255, (127 + 128), 255)
-_0x00dc._0x0019 = _0x001a._0x001b(0, (110 - 10), 180)
-_0x00dc._0x001c = 0.3
-_0x00dc._0x001d = 0
-_0x00dc._0x0024 = _0x0025._0x0024._0x0026
-_0x00dc._0x0027 = (56 / 4)
-_0x00dc._0x0014 = _0x003a
-_0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))._0x001f = _0x0020._0x0012(0, (61 - 53))
-_0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))._0x0014 = _0x00dc
-_0x00dc._0x00ba:_0x0069(function()
-local _0x00dd = tonumber(_0x00db._0x0022)
-if (1 + 1 == 2) and _0x00dd then
-_0x009e(_0x00dd)
-if (1 + 1 == 2) and _0x0044 then
-_0x009c()
-_0x008a._0x008b(0.1)
-_0x007f()
+local ae=Instance.new("TextLabel")
+ae.Size=UDim2.new(0,200,0,30)
+ae.Position=UDim2.new(0,20,0,340)
+ae.Text=q=="ru"and"Скорость полёта"or"Fly Speed"
+ae.TextColor3=Color3.fromRGB(0,200,255)
+ae.BackgroundTransparency=1
+ae.Font=Enum.Font.GothamBold
+ae.TextSize=18
+ae.TextXAlignment=Enum.TextXAlignment.Left
+ae.Parent=s
+local af=Instance.new("TextBox")
+af.Size=UDim2.new(0,150,0,35)
+af.Position=UDim2.new(0,20,0,375)
+af.PlaceholderText="10-500"
+af.Text=tostring(D)
+af.TextColor3=Color3.fromRGB(255,255,255)
+af.BackgroundColor3=Color3.fromRGB(25,25,35)
+af.BackgroundTransparency=0.3
+af.BorderSizePixel=0
+af.Font=Enum.Font.Gotham
+af.TextSize=14
+af.Parent=s
+local ag=Instance.new("UICorner")
+ag.CornerRadius=UDim.new(0,8)
+ag.Parent=af
+local ah=Instance.new("TextButton")
+ah.Size=UDim2.new(0,100,0,35)
+ah.Position=UDim2.new(0,180,0,375)
+ah.Text=q=="ru"and"Применить"or"Apply"
+ah.TextColor3=Color3.fromRGB(255,255,255)
+ah.BackgroundColor3=Color3.fromRGB(0,100,180)
+ah.BackgroundTransparency=0.3
+ah.BorderSizePixel=0
+ah.Font=Enum.Font.GothamBold
+ah.TextSize=14
+ah.Parent=s
+local ai=Instance.new("UICorner")
+ai.CornerRadius=UDim.new(0,8)
+ai.Parent=ah
+ah.MouseButton1Click:Connect(function()
+local aj=tonumber(af.Text)
+if aj then
+D=math.clamp(aj,10,500)
+J=D*4
+if C then
+ai()
+task.wait(0.1)
+a7()
 end
 end
 end)
-local _0x00de = _0x0011._0x0012(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108))
-_0x00de._0x0016 = _0x0017._0x0012(0, 350, 0, (60 / 3))
-_0x00de._0x0018 = _0x0017._0x0012(0, (80 / 4), 0, 420)
-_0x00de._0x0022 = _0x002e == string.char(114, 117) and string.char(1050, 1083, 1072, 1074, 1080, 1096, 1072, 32, 81, 32, 45, 32, 1074, 1082, 1083, 1102, 1095, 1080, 1090, 1100, 47, 1074, 1099, 1082, 1083, 1102, 1095, 1080, 1090, 1100, 32, 1087, 1086, 1083, 1105, 1090) or string.char(80, 114, 101, 115, 115, 32, 81, 32, 116, 111, 32, 116, 111, 103, 103, 108, 101, 32, 102, 108, 121, 32, 109, 111, 100, 101)
-_0x00de._0x0023 = _0x001a._0x001b(150, (246 - 46), 255)
-_0x00de._0x001c = 1
-_0x00de._0x0024 = _0x0025._0x0024._0x00b2
-_0x00de._0x0027 = (36 / 3)
-_0x00de._0x00b3 = _0x0025._0x00b3._0x00b4
-_0x00de._0x0014 = _0x003a
-local _0x00df = _0x0011._0x0012(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108))
-_0x00df._0x0016 = _0x0017._0x0012(0, 350, 0, 20)
-_0x00df._0x0018 = _0x0017._0x0012(0, (60 / 3), 0, (514 - 69))
-_0x00df._0x0022 = _0x002e == string.char(114, 117) and string.char(1059, 1087, 1088, 1072, 1074, 1083, 1077, 1085, 1080, 1077, 58, 32, 87, 47, 65, 47, 83, 47, 68, 32, 45, 32, 1076, 1074, 1080, 1078, 1077, 1085, 1080, 1077) or string.char(67, 111, 110, 116, 114, 111, 108, 115, 58, 32, 87, 47, 65, 47, 83, 47, 68, 32, 45, 32, 109, 111, 118, 101, 109, 101, 110, 116)
-_0x00df._0x0023 = _0x001a._0x001b((247 - 97), (179 - 29), (85 + 85))
-_0x00df._0x001c = 1
-_0x00df._0x0024 = _0x0025._0x0024._0x00b2
-_0x00df._0x0027 = (5 + 6)
-_0x00df._0x00b3 = _0x0025._0x00b3._0x00b4
-_0x00df._0x0014 = _0x003a
-local _0x00e1, _0x00e2 = _0x00bb(_0x003a, 20, 480, _0x002e == string.char(114, 117) and string.char(1053, 1086, 1082, 1083, 1080, 1087) or string.char(78, 111, 99, 108, 105, 112), _0x002e == string.char(114, 117) and string.char(1055, 1088, 1086, 1093, 1086, 1076, 32, 1089, 1082, 1074, 1086, 1079, 1100, 32, 1089, 1090, 1077, 1085, 1099) or string.char(87, 97, 108, 107, 32, 116, 104, 114, 111, 117, 103, 104, 32, 119, 97, 108, 108, 115), _0x0051, function(_0x00c6)
-if (5 == 5) and _0x00c6 then _0x0078() else _0x007e() end
+local ak=Instance.new("TextLabel")
+ak.Size=UDim2.new(0,350,0,20)
+ak.Position=UDim2.new(0,20,0,420)
+ak.Text=q=="ru"and"Клавиша Q - включить/выключить полёт"or"Press Q to toggle fly mode"
+ak.TextColor3=Color3.fromRGB(150,200,255)
+ak.BackgroundTransparency=1
+ak.Font=Enum.Font.Gotham
+ak.TextSize=12
+ak.TextXAlignment=Enum.TextXAlignment.Left
+ak.Parent=s
+local al=Instance.new("TextLabel")
+al.Size=UDim2.new(0,350,0,20)
+al.Position=UDim2.new(0,20,0,445)
+al.Text=q=="ru"and"Управление: W/A/S/D - движение"or"Controls: W/A/S/D - movement"
+al.TextColor3=Color3.fromRGB(150,150,170)
+al.BackgroundTransparency=1
+al.Font=Enum.Font.Gotham
+al.TextSize=11
+al.TextXAlignment=Enum.TextXAlignment.Left
+al.Parent=s
+aW(s,20,480,q=="ru"and"Ноклип"or"Noclip",q=="ru"and"Проход сквозь стены"or"Walk through walls",L,function(aJ)
+if aJ then a3()else a6()end
 end)
-elseif _0x003c == string.char(80, 108, 97, 121, 101, 114, 115) then
-local _0x00e3 = _0x0011._0x0012(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108))
-_0x00e3._0x0016 = _0x0017._0x0012(1, -(80 / 2), 0, (15 + 15))
-_0x00e3._0x0018 = _0x0017._0x0012(0, 20, 0, (80 / 4))
-_0x00e3._0x0022 = _0x002e == string.char(114, 117) and string.char(1048, 1075, 1088, 1086, 1082, 1080, 32, 1085, 1072, 32, 1089, 1077, 1088, 1074, 1077, 1088, 1077, 58) or string.char(80, 108, 97, 121, 101, 114, 115, 32, 111, 110, 32, 115, 101, 114, 118, 101, 114, 58)
-_0x00e3._0x0023 = _0x001a._0x001b(0, (275 - 75), 255)
-_0x00e3._0x001c = 1
-_0x00e3._0x0024 = _0x0025._0x0024._0x0026
-_0x00e3._0x0027 = (113 - 97)
-_0x00e3._0x00b3 = _0x0025._0x00b3._0x00b4
-_0x00e3._0x0014 = _0x003a
-local _0x00e4 = (145 - 85)
-for _0x0057, _0x00e5 in pairs(_0x0004:_0x00e6()) do
-local _0x00e7 = _0x0011._0x0012(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108))
-_0x00e7._0x0016 = _0x0017._0x0012(1, -(66 - 26), 0, (58 - 33))
-_0x00e7._0x0018 = _0x0017._0x0012(0, 20, 0, _0x00e4)
-_0x00e7._0x0022 = string.char(8226, 32) .. _0x00e5._0x0013
-_0x00e7._0x0023 = _0x001a._0x001b((100 + 100), (234 - 24), (115 + 115))
-_0x00e7._0x001c = 1
-_0x00e7._0x0024 = _0x0025._0x0024._0x00b2
-_0x00e7._0x0027 = 14
-_0x00e7._0x00b3 = _0x0025._0x00b3._0x00b4
-_0x00e7._0x0014 = _0x003a
-_0x00e4 = _0x00e4 + 30
-end
-elseif _0x003c == string.char(86, 105, 115, 117, 97, 108) then
-local _0x00e8 = _0x0011._0x0012(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108))
-_0x00e8._0x0016 = _0x0017._0x0012(1, -40, 0, (40 - 10))
-_0x00e8._0x0018 = _0x0017._0x0012(0, 20, 0, (80 / 4))
-_0x00e8._0x0022 = _0x002e == string.char(114, 117) and string.char(1042, 1080, 1079, 1091, 1072, 1083, 32, 40, 1074, 32, 1088, 1072, 1079, 1088, 1072, 1073, 1086, 1090, 1082, 1077, 41) or string.char(86, 105, 115, 117, 97, 108, 32, 40, 105, 110, 32, 100, 101, 118, 101, 108, 111, 112, 109, 101, 110, 116, 41)
-_0x00e8._0x0023 = _0x001a._0x001b(0, (400 / 2), 255)
-_0x00e8._0x001c = 1
-_0x00e8._0x0024 = _0x0025._0x0024._0x0026
-_0x00e8._0x0027 = (8 + 8)
-_0x00e8._0x00b3 = _0x0025._0x00b3._0x00b4
-_0x00e8._0x0014 = _0x003a
-elseif _0x003c == string.char(84, 101, 108, 101, 112, 111, 114, 116) then
-local _0x00e9 = _0x0011._0x0012(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108))
-_0x00e9._0x0016 = _0x0017._0x0012(1, -(59 - 19), 0, (15 + 15))
-_0x00e9._0x0018 = _0x0017._0x0012(0, (10 + 10), 0, 20)
-_0x00e9._0x0022 = _0x002e == string.char(114, 117) and string.char(1058, 1077, 1083, 1077, 1087, 1086, 1088, 1090, 32, 40, 1074, 32, 1088, 1072, 1079, 1088, 1072, 1073, 1086, 1090, 1082, 1077, 41) or string.char(84, 101, 108, 101, 112, 111, 114, 116, 32, 40, 105, 110, 32, 100, 101, 118, 101, 108, 111, 112, 109, 101, 110, 116, 41)
-_0x00e9._0x0023 = _0x001a._0x001b(0, (600 / 3), 255)
-_0x00e9._0x001c = 1
-_0x00e9._0x0024 = _0x0025._0x0024._0x0026
-_0x00e9._0x0027 = (66 - 50)
-_0x00e9._0x00b3 = _0x0025._0x00b3._0x00b4
-_0x00e9._0x0014 = _0x003a
-elseif _0x003c == string.char(69, 83, 80) then
-local _0x00ea = _0x0011._0x0012(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108))
-_0x00ea._0x0016 = _0x0017._0x0012(1, -(98 - 58), 0, 30)
-_0x00ea._0x0018 = _0x0017._0x0012(0, (87 - 67), 0, 20)
-_0x00ea._0x0022 = _0x002e == string.char(114, 117) and string.char(69, 83, 80, 32, 40, 1074, 32, 1088, 1072, 1079, 1088, 1072, 1073, 1086, 1090, 1082, 1077, 41) or string.char(69, 83, 80, 32, 40, 105, 110, 32, 100, 101, 118, 101, 108, 111, 112, 109, 101, 110, 116, 41)
-_0x00ea._0x0023 = _0x001a._0x001b(0, (600 / 3), 255)
-_0x00ea._0x001c = 1
-_0x00ea._0x0024 = _0x0025._0x0024._0x0026
-_0x00ea._0x0027 = 16
-_0x00ea._0x00b3 = _0x0025._0x00b3._0x00b4
-_0x00ea._0x0014 = _0x003a
-elseif _0x003c == string.char(83, 101, 116, 116, 105, 110, 103, 115) then
-local _0x00eb = _0x0011._0x0012(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108))
-_0x00eb._0x0016 = _0x0017._0x0012(1, -(160 / 4), 0, 30)
-_0x00eb._0x0018 = _0x0017._0x0012(0, (10 + 10), 0, 20)
-_0x00eb._0x0022 = _0x002e == string.char(114, 117) and string.char(1053, 1072, 1089, 1090, 1088, 1086, 1081, 1082, 1080, 32, 40, 1074, 32, 1088, 1072, 1079, 1088, 1072, 1073, 1086, 1090, 1082, 1077, 41) or string.char(83, 101, 116, 116, 105, 110, 103, 115, 32, 40, 105, 110, 32, 100, 101, 118, 101, 108, 111, 112, 109, 101, 110, 116, 41)
-_0x00eb._0x0023 = _0x001a._0x001b(0, 200, 255)
-_0x00eb._0x001c = 1
-_0x00eb._0x0024 = _0x0025._0x0024._0x0026
-_0x00eb._0x0027 = (103 - 87)
-_0x00eb._0x00b3 = _0x0025._0x00b3._0x00b4
-_0x00eb._0x0014 = _0x003a
-end
-_0x00be()
-end
-local function _0x00ec()
-_0x0035 = _0x0011._0x0012(string.char(70, 114, 97, 109, 101))
-_0x0035._0x0016 = _0x0017._0x0012(0, _0x0033, 0, _0x0034)
-_0x0035._0x0018 = _0x0017._0x0012(0.5, -_0x0033/2, 0.5, -_0x0034/2)
-_0x0035._0x0019 = _0x001a._0x001b(0, 0, 0)
-_0x0035._0x001c = 0.4
-_0x0035._0x001d = 0
-_0x0035._0x00ed = true
-_0x0035._0x0014 = _0x0010
-local _0x00ee = _0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))
-_0x00ee._0x001f = _0x0020._0x0012(0, 20)
-_0x00ee._0x0014 = _0x0035
-local _0x00ef = _0x0011._0x0012(string.char(70, 114, 97, 109, 101))
-_0x00ef._0x0016 = _0x0017._0x0012(1, (3 + 3), 1, (42 - 36))
-_0x00ef._0x0018 = _0x0017._0x0012(0, -3, 0, -3)
-_0x00ef._0x0019 = _0x001a._0x001b(0, (450 / 3), 255)
-_0x00ef._0x001c = 0.5
-_0x00ef._0x001d = 0
-_0x00ef._0x0014 = _0x0035
-local _0x00f0 = _0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))
-_0x00f0._0x001f = _0x0020._0x0012(0, (92 / 4))
-_0x00f0._0x0014 = _0x00ef
-_0x0036 = _0x0011._0x0012(string.char(70, 114, 97, 109, 101))
-_0x0036._0x0016 = _0x0017._0x0012(1, 0, 0, 85)
-_0x0036._0x0019 = _0x001a._0x001b(0, 70, 140)
-_0x0036._0x001c = 0.3
-_0x0036._0x001d = 0
-_0x0036._0x0014 = _0x0035
-local _0x00f1 = _0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))
-_0x00f1._0x001f = _0x0020._0x0012(0, (32 - 12))
-_0x00f1._0x0014 = _0x0036
-local _0x00f2 = _0x0011._0x0012(string.char(70, 114, 97, 109, 101))
-_0x00f2._0x0016 = _0x0017._0x0012(1, 0, 0, (71 - 51))
-_0x00f2._0x0018 = _0x0017._0x0012(0, 0, 1, -(80 / 4))
-_0x00f2._0x0019 = _0x001a._0x001b(0, 0, 0)
-_0x00f2._0x001c = 0.4
-_0x00f2._0x001d = 0
-_0x00f2._0x0014 = _0x0036
-local _0x00f3 = _0x0011._0x0012(string.char(85, 73, 71, 114, 97, 100, 105, 101, 110, 116))
-_0x00f3._0x00f4 = _0x00f5._0x0012{
-_0x00f6._0x0012(0, _0x001a._0x001b(0, (137 - 37), 200)),
-_0x00f6._0x0012(0.5, _0x001a._0x001b(0, 150, 255)),
-_0x00f6._0x0012(1, _0x001a._0x001b(0, 100, (800 / 4)))
-}
-_0x00f3._0x00f7 = (125 - 35)
-_0x00f3._0x0014 = _0x0036
-local _0x00f8 = _0x0011._0x0012(string.char(70, 114, 97, 109, 101))
-_0x00f8._0x0016 = _0x0017._0x0012(0, (1400 / 4), 1, 0)
-_0x00f8._0x0018 = _0x0017._0x0012(0, 25, 0, 0)
-_0x00f8._0x001c = 1
-_0x00f8._0x0014 = _0x0036
-local _0x00f9 = _0x0011._0x0012(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108))
-_0x00f9._0x0016 = _0x0017._0x0012(0, (800 / 4), 0, (120 / 3))
-_0x00f9._0x0018 = _0x0017._0x0012(0, 0, 0, (28 - 20))
-_0x00f9._0x0022 = string.char(76, 85, 71, 69, 82, 71, 85, 65, 82, 68)
-_0x00f9._0x0023 = _0x001a._0x001b((765 / 3), 255, 255)
-_0x00f9._0x001c = 1
-_0x00f9._0x0024 = _0x0025._0x0024._0x00fa
-_0x00f9._0x0027 = 32
-_0x00f9._0x00b3 = _0x0025._0x00b3._0x00b4
-_0x00f9._0x0028 = _0x0025._0x0028._0x0029
-_0x00f9._0x0014 = _0x00f8
-local _0x00fb = _0x0011._0x0012(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108))
-_0x00fb._0x0016 = _0x0017._0x0012(0, (25 + 25), 0, (80 / 2))
-_0x00fb._0x0018 = _0x0017._0x0012(0, 200, 0, (4 + 4))
-_0x00fb._0x0022 = string.char(88)
-_0x00fb._0x0023 = _0x001a._0x001b(0, (800 / 4), 255)
-_0x00fb._0x001c = 1
-_0x00fb._0x0024 = _0x0025._0x0024._0x00fa
-_0x00fb._0x0027 = 42
-_0x00fb._0x00b3 = _0x0025._0x00b3._0x0029
-_0x00fb._0x0028 = _0x0025._0x0028._0x0029
-_0x00fb._0x0014 = _0x00f8
-local _0x00fc = _0x0011._0x0012(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108))
-_0x00fc._0x0016 = _0x0017._0x0012(0, (40 + 40), 0, (12 + 13))
-_0x00fc._0x0018 = _0x0017._0x0012(0, 250, 0, 15)
-_0x00fc._0x0022 = string.char(118, 49, 46, 48, 46, 48)
-_0x00fc._0x0023 = _0x001a._0x001b((300 / 2), (100 + 100), (342 - 87))
-_0x00fc._0x001c = 1
-_0x00fc._0x0024 = _0x0025._0x0024._0x00b2
-_0x00fc._0x0027 = (28 / 2)
-_0x00fc._0x00b3 = _0x0025._0x00b3._0x00b4
-_0x00fc._0x0028 = _0x0025._0x0028._0x0029
-_0x00fc._0x0014 = _0x00f8
-local _0x00fd = _0x0011._0x0012(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108))
-_0x00fd._0x0013 = string.char(83, 117, 98, 116, 105, 116, 108, 101, 76, 97, 98, 101, 108)
-_0x00fd._0x0016 = _0x0017._0x0012(1, -80, 0, (74 - 49))
-_0x00fd._0x0018 = _0x0017._0x0012(0, 30, 0, (117 - 72))
-_0x00fd._0x0022 = string.char(80, 114, 101, 109, 105, 117, 109, 32, 77, 117, 114, 100, 101, 114, 32, 77, 121, 115, 116, 101, 114, 121, 32, 50, 32, 83, 99, 114, 105, 112, 116)
-_0x00fd._0x0023 = _0x001a._0x001b(150, 200, (510 / 2))
-_0x00fd._0x001c = 1
-_0x00fd._0x0024 = _0x0025._0x0024._0x00b2
-_0x00fd._0x0027 = 13
-_0x00fd._0x00b3 = _0x0025._0x00b3._0x00b4
-_0x00fd._0x0028 = _0x0025._0x0028._0x0029
-_0x00fd._0x0014 = _0x0036
-local _0x00fe = _0x0011._0x0012(string.char(84, 101, 120, 116, 66, 117, 116, 116, 111, 110))
-_0x00fe._0x0016 = _0x0017._0x0012(0, 28, 0, (14 + 14))
-_0x00fe._0x0018 = _0x0017._0x0012(1, -135, 0, 28)
-_0x00fe._0x0022 = string.char(43)
-_0x00fe._0x0023 = _0x001a._0x001b((127 + 128), (1020 / 4), (281 - 26))
-_0x00fe._0x001c = 1
-_0x00fe._0x001d = 0
-_0x00fe._0x0024 = _0x0025._0x0024._0x0026
-_0x00fe._0x0027 = 22
-_0x00fe._0x0014 = _0x0036
-local _0x00ff = _0x0011._0x0012(string.char(84, 101, 120, 116, 66, 117, 116, 116, 111, 110))
-_0x00ff._0x0016 = _0x0017._0x0012(0, (42 - 14), 0, 28)
-_0x00ff._0x0018 = _0x0017._0x0012(1, -(300 / 3), 0, 28)
-_0x00ff._0x0022 = string.char(8212)
-_0x00ff._0x0023 = _0x001a._0x001b((277 - 22), 255, (302 - 47))
-_0x00ff._0x001c = 1
-_0x00ff._0x001d = 0
-_0x00ff._0x0024 = _0x0025._0x0024._0x0026
-_0x00ff._0x0027 = (48 / 2)
-_0x00ff._0x0014 = _0x0036
-local _0x0100 = _0x0011._0x0012(string.char(84, 101, 120, 116, 66, 117, 116, 116, 111, 110))
-_0x0100._0x0016 = _0x0017._0x0012(0, (112 / 4), 0, 28)
-_0x0100._0x0018 = _0x0017._0x0012(1, -60, 0, (56 / 2))
-_0x0100._0x0022 = string.char(88)
-_0x0100._0x0023 = _0x001a._0x001b((510 / 2), (1020 / 4), 255)
-_0x0100._0x001c = 1
-_0x0100._0x001d = 0
-_0x0100._0x0024 = _0x0025._0x0024._0x0026
-_0x0100._0x0027 = (10 + 10)
-_0x0100._0x0014 = _0x0036
-_0x0037 = _0x0011._0x0012(string.char(70, 114, 97, 109, 101))
-_0x0037._0x0016 = _0x0017._0x0012(1, -(88 - 58), 1, -(176 - 71))
-_0x0037._0x0018 = _0x0017._0x0012(0, (7 + 8), 0, (190 / 2))
-_0x0037._0x0019 = _0x001a._0x001b(0, 0, 0)
-_0x0037._0x001c = 0.4
-_0x0037._0x001d = 0
-_0x0037._0x00ed = true
-_0x0037._0x0014 = _0x0035
-local _0x0101 = _0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))
-_0x0101._0x001f = _0x0020._0x0012(0, (8 + 8))
-_0x0101._0x0014 = _0x0037
-_0x0038 = _0x0011._0x0012(string.char(83, 99, 114, 111, 108, 108, 105, 110, 103, 70, 114, 97, 109, 101))
-_0x0038._0x0016 = _0x0017._0x0012(0, (75 + 75), 1, -70)
-_0x0038._0x0018 = _0x0017._0x0012(0, 0, 0, 0)
-_0x0038._0x0019 = _0x001a._0x001b(0, 0, 0)
-_0x0038._0x001c = 0.5
-_0x0038._0x001d = 0
-_0x0038._0x0102 = (101 - 97)
-_0x0038._0x0103 = _0x001a._0x001b(0, (175 - 25), (127 + 128))
-_0x0038._0x00c2 = _0x0017._0x0012(0, 0, 0, 0)
-_0x0038._0x0014 = _0x0037
-local _0x0104 = _0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))
-_0x0104._0x001f = _0x0020._0x0012(0, 12)
-_0x0104._0x0014 = _0x0038
-local _0x0105 = _0x0011._0x0012(string.char(70, 114, 97, 109, 101))
-_0x0105._0x0016 = _0x0017._0x0012(0, 2, 1, -(10 + 10))
-_0x0105._0x0018 = _0x0017._0x0012(1, -2, 0, (5 + 5))
-_0x0105._0x0019 = _0x001a._0x001b(0, (75 + 75), 255)
-_0x0105._0x001c = 0.5
-_0x0105._0x001d = 0
-_0x0105._0x0014 = _0x0038
-local _0x0106 = _0x0011._0x0012(string.char(70, 114, 97, 109, 101))
-_0x0106._0x0016 = _0x0017._0x0012(1, 0, 0, 0)
-_0x0106._0x001c = 1
-_0x0106._0x0014 = _0x0038
-_0x0039 = _0x0011._0x0012(string.char(83, 99, 114, 111, 108, 108, 105, 110, 103, 70, 114, 97, 109, 101))
-_0x0039._0x0016 = _0x0017._0x0012(1, -(660 / 4), 1, -(5 + 5))
-_0x0039._0x0018 = _0x0017._0x0012(0, 160, 0, 5)
-_0x0039._0x0019 = _0x001a._0x001b(0, 0, 0)
-_0x0039._0x001c = 0.45
-_0x0039._0x001d = 0
-_0x0039._0x0102 = (8 / 2)
-_0x0039._0x0103 = _0x001a._0x001b(0, 150, 255)
-_0x0039._0x00c2 = _0x0017._0x0012(0, 0, 0, 0)
-_0x0039._0x0014 = _0x0037
-local _0x0107 = _0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))
-_0x0107._0x001f = _0x0020._0x0012(0, 12)
-_0x0107._0x0014 = _0x0039
-local _0x0108 = _0x0011._0x0012(string.char(85, 73, 83, 116, 114, 111, 107, 101))
-_0x0108._0x00f4 = _0x001a._0x001b(0, (75 + 75), 255)
-_0x0108._0x0109 = 1
-_0x0108._0x010a = 0.6
-_0x0108._0x0014 = _0x0039
-_0x003a = _0x0011._0x0012(string.char(70, 114, 97, 109, 101))
-_0x003a._0x0016 = _0x0017._0x0012(1, 0, 0, 0)
-_0x003a._0x001c = 1
-_0x003a._0x0014 = _0x0039
-local _0x010b = {string.char(77, 97, 105, 110), string.char(86, 105, 115, 117, 97, 108), string.char(80, 108, 97, 121, 101, 114, 115), string.char(84, 101, 108, 101, 112, 111, 114, 116), string.char(69, 83, 80), string.char(83, 101, 116, 116, 105, 110, 103, 115)}
-local _0x010c = 40
-local _0x010d = 5
-local _0x010e = (30 / 3)
-for _0x010f, _0x0064 in pairs(_0x010b) do
-local _0x0065 = _0x0011._0x0012(string.char(84, 101, 120, 116, 66, 117, 116, 116, 111, 110))
-_0x0065._0x0016 = _0x0017._0x0012(1, -10, 0, _0x010c)
-_0x0065._0x0018 = _0x0017._0x0012(0, (15 / 3), 0, _0x010e)
-if (1 + 1 == 2) and _0x002e == string.char(114, 117) then
-if (true or false) and _0x0064 == string.char(77, 97, 105, 110) then _0x0065._0x0022 = string.char(1043, 1083, 1072, 1074, 1085, 1072, 1103)
-elseif _0x0064 == string.char(86, 105, 115, 117, 97, 108) then _0x0065._0x0022 = string.char(1042, 1080, 1079, 1091, 1072, 1083)
-elseif _0x0064 == string.char(80, 108, 97, 121, 101, 114, 115) then _0x0065._0x0022 = string.char(1048, 1075, 1088, 1086, 1082, 1080)
-elseif _0x0064 == string.char(84, 101, 108, 101, 112, 111, 114, 116) then _0x0065._0x0022 = string.char(1058, 1077, 1083, 1077, 1087, 1086, 1088, 1090)
-elseif _0x0064 == string.char(69, 83, 80) then _0x0065._0x0022 = string.char(69, 83, 80)
-elseif _0x0064 == string.char(83, 101, 116, 116, 105, 110, 103, 115) then _0x0065._0x0022 = string.char(1053, 1072, 1089, 1090, 1088, 1086, 1081, 1082, 1080)
+elseif u=="Players"then
+local am=Instance.new("TextLabel")
+am.Size=UDim2.new(1,-40,0,30)
+am.Position=UDim2.new(0,20,0,20)
+am.Text=q=="ru"and"Игроки на сервере:"or"Players on server:"
+am.TextColor3=Color3.fromRGB(0,200,255)
+am.BackgroundTransparency=1
+am.Font=Enum.Font.GothamBold
+am.TextSize=16
+am.TextXAlignment=Enum.TextXAlignment.Left
+am.Parent=s
+local an=60
+for _,ao in pairs(a:GetPlayers())do
+local ap=Instance.new("TextLabel")
+ap.Size=UDim2.new(1,-40,0,25)
+ap.Position=UDim2.new(0,20,0,an)
+ap.Text="• "..ao.Name
+ap.TextColor3=Color3.fromRGB(200,210,230)
+ap.BackgroundTransparency=1
+ap.Font=Enum.Font.Gotham
+ap.TextSize=14
+ap.TextXAlignment=Enum.TextXAlignment.Left
+ap.Parent=s
+an=an+30
 end
 else
-_0x0065._0x0022 = _0x0064
+local aq=Instance.new("TextLabel")
+aq.Size=UDim2.new(1,-40,0,30)
+aq.Position=UDim2.new(0,20,0,20)
+aq.Text=q=="ru"and(u=="Visual"and"Визуал (в разработке)"or u=="Teleport"and"Телепорт (в разработке)"or u=="ESP"and"ESP (в разработке)"or"Настройки (в разработке)")or(u=="Visual"and"Visual (in development)"or u=="Teleport"and"Teleport (in development)"or u=="ESP"and"ESP (in development)"or"Settings (in development)")
+aq.TextColor3=Color3.fromRGB(0,200,255)
+aq.BackgroundTransparency=1
+aq.Font=Enum.Font.GothamBold
+aq.TextSize=16
+aq.TextXAlignment=Enum.TextXAlignment.Left
+aq.Parent=s
 end
-_0x0065._0x0023 = _0x001a._0x001b((80 + 80), (265 - 95), 190)
-_0x0065._0x0019 = _0x001a._0x001b((93 - 68), (41 - 16), 35)
-_0x0065._0x001c = 0.6
-_0x0065._0x001d = 0
-_0x0065._0x0024 = _0x0025._0x0024._0x0026
-_0x0065._0x0027 = 14
-_0x0065._0x0014 = _0x0106
-local _0x0110 = _0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))
-_0x0110._0x001f = _0x0020._0x0012(0, 8)
-_0x0110._0x0014 = _0x0065
-_0x0065._0x00ba:_0x0069(function()
-if (2 * 3 > 5) and _0x003c == _0x0064 then return end
-for _0x0057, _0x004a in pairs(_0x003b) do
-_0x004a._0x0019 = _0x001a._0x001b(25, (12 + 13), (106 - 71))
-_0x004a._0x001c = 0.6
-_0x004a._0x0023 = _0x001a._0x001b((172 - 12), (212 - 42), 190)
+at()
 end
-_0x0065._0x0019 = _0x001a._0x001b(0, (178 - 98), (175 - 35))
-_0x0065._0x001c = 0.3
-_0x0065._0x0023 = _0x001a._0x001b(0, (100 + 100), (307 - 52))
-_0x003c = _0x0064
-_0x0066()
+local function at()
+local au=Instance.new("Frame")
+au.Size=UDim2.new(0,750,0,520)
+au.Position=UDim2.new(0.5,-375,0.5,-260)
+au.BackgroundColor3=Color3.fromRGB(0,0,0)
+au.BackgroundTransparency=0.4
+au.BorderSizePixel=0
+au.ClipsDescendants=true
+au.Parent=i
+local av=Instance.new("UICorner")
+av.CornerRadius=UDim.new(0,20)
+av.Parent=au
+local aw=Instance.new("Frame")
+aw.Size=UDim2.new(1,6,1,6)
+aw.Position=UDim2.new(0,-3,0,-3)
+aw.BackgroundColor3=Color3.fromRGB(0,150,255)
+aw.BackgroundTransparency=0.5
+aw.BorderSizePixel=0
+aw.Parent=au
+local ax=Instance.new("UICorner")
+ax.CornerRadius=UDim.new(0,23)
+ax.Parent=aw
+local ay=Instance.new("Frame")
+ay.Size=UDim2.new(1,0,0,85)
+ay.BackgroundColor3=Color3.fromRGB(0,70,140)
+ay.BackgroundTransparency=0.3
+ay.BorderSizePixel=0
+ay.Parent=au
+local az=Instance.new("UICorner")
+az.CornerRadius=UDim.new(0,20)
+az.Parent=ay
+local aA=Instance.new("Frame")
+aA.Size=UDim2.new(1,0,0,20)
+aA.Position=UDim2.new(0,0,1,-20)
+aA.BackgroundColor3=Color3.fromRGB(0,0,0)
+aA.BackgroundTransparency=0.4
+aA.BorderSizePixel=0
+aA.Parent=ay
+local aB=Instance.new("UIGradient")
+aB.Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(0,100,200)),ColorSequenceKeypoint.new(0.5,Color3.fromRGB(0,150,255)),ColorSequenceKeypoint.new(1,Color3.fromRGB(0,100,200))}
+aB.Rotation=90
+aB.Parent=ay
+local aC=Instance.new("Frame")
+aC.Size=UDim2.new(0,350,1,0)
+aC.Position=UDim2.new(0,25,0,0)
+aC.BackgroundTransparency=1
+aC.Parent=ay
+local aD=Instance.new("TextLabel")
+aD.Size=UDim2.new(0,200,0,40)
+aD.Position=UDim2.new(0,0,0,8)
+aD.Text="LUGERGUARD"
+aD.TextColor3=Color3.fromRGB(255,255,255)
+aD.BackgroundTransparency=1
+aD.Font=Enum.Font.GothamBlack
+aD.TextSize=32
+aD.TextXAlignment=Enum.TextXAlignment.Left
+aD.TextYAlignment=Enum.TextYAlignment.Center
+aD.Parent=aC
+local aE=Instance.new("TextLabel")
+aE.Size=UDim2.new(0,50,0,40)
+aE.Position=UDim2.new(0,200,0,8)
+aE.Text="X"
+aE.TextColor3=Color3.fromRGB(0,200,255)
+aE.BackgroundTransparency=1
+aE.Font=Enum.Font.GothamBlack
+aE.TextSize=42
+aE.TextXAlignment=Enum.TextXAlignment.Center
+aE.TextYAlignment=Enum.TextYAlignment.Center
+aE.Parent=aC
+local aF=Instance.new("TextLabel")
+aF.Size=UDim2.new(0,80,0,25)
+aF.Position=UDim2.new(0,250,0,15)
+aF.Text="v1.0.0"
+aF.TextColor3=Color3.fromRGB(150,200,255)
+aF.BackgroundTransparency=1
+aF.Font=Enum.Font.Gotham
+aF.TextSize=14
+aF.TextXAlignment=Enum.TextXAlignment.Left
+aF.TextYAlignment=Enum.TextYAlignment.Center
+aF.Parent=aC
+local aG=Instance.new("TextLabel")
+aG.Name="SubtitleLabel"
+aG.Size=UDim2.new(1,-80,0,25)
+aG.Position=UDim2.new(0,30,0,45)
+aG.Text="Premium Murder Mystery 2 Script"
+aG.TextColor3=Color3.fromRGB(150,200,255)
+aG.BackgroundTransparency=1
+aG.Font=Enum.Font.Gotham
+aG.TextSize=13
+aG.TextXAlignment=Enum.TextXAlignment.Left
+aG.TextYAlignment=Enum.TextYAlignment.Center
+aG.Parent=ay
+local aH=Instance.new("TextButton")
+aH.Size=UDim2.new(0,28,0,28)
+aH.Position=UDim2.new(1,-135,0,28)
+aH.Text="+"
+aH.TextColor3=Color3.fromRGB(255,255,255)
+aH.BackgroundTransparency=1
+aH.BorderSizePixel=0
+aH.Font=Enum.Font.GothamBold
+aH.TextSize=22
+aH.Parent=ay
+local aI=Instance.new("TextButton")
+aI.Size=UDim2.new(0,28,0,28)
+aI.Position=UDim2.new(1,-100,0,28)
+aI.Text="—"
+aI.TextColor3=Color3.fromRGB(255,255,255)
+aI.BackgroundTransparency=1
+aI.BorderSizePixel=0
+aI.Font=Enum.Font.GothamBold
+aI.TextSize=24
+aI.Parent=ay
+local aJ=Instance.new("TextButton")
+aJ.Size=UDim2.new(0,28,0,28)
+aJ.Position=UDim2.new(1,-60,0,28)
+aJ.Text="X"
+aJ.TextColor3=Color3.fromRGB(255,255,255)
+aJ.BackgroundTransparency=1
+aJ.BorderSizePixel=0
+aJ.Font=Enum.Font.GothamBold
+aJ.TextSize=20
+aJ.Parent=ay
+local aK=Instance.new("Frame")
+aK.Size=UDim2.new(1,-30,1,-105)
+aK.Position=UDim2.new(0,15,0,95)
+aK.BackgroundColor3=Color3.fromRGB(0,0,0)
+aK.BackgroundTransparency=0.4
+aK.BorderSizePixel=0
+aK.ClipsDescendants=true
+aK.Parent=au
+local aL=Instance.new("UICorner")
+aL.CornerRadius=UDim.new(0,16)
+aL.Parent=aK
+local aM=Instance.new("ScrollingFrame")
+aM.Size=UDim2.new(0,150,1,-70)
+aM.Position=UDim2.new(0,0,0,0)
+aM.BackgroundColor3=Color3.fromRGB(0,0,0)
+aM.BackgroundTransparency=0.5
+aM.BorderSizePixel=0
+aM.ScrollBarThickness=4
+aM.ScrollBarImageColor3=Color3.fromRGB(0,150,255)
+aM.CanvasSize=UDim2.new(0,0,0,0)
+aM.Parent=aK
+local aN=Instance.new("UICorner")
+aN.CornerRadius=UDim.new(0,12)
+aN.Parent=aM
+local aO=Instance.new("Frame")
+aO.Size=UDim2.new(0,2,1,-20)
+aO.Position=UDim2.new(1,-2,0,10)
+aO.BackgroundColor3=Color3.fromRGB(0,150,255)
+aO.BackgroundTransparency=0.5
+aO.BorderSizePixel=0
+aO.Parent=aM
+local aP=Instance.new("Frame")
+aP.Size=UDim2.new(1,0,0,0)
+aP.BackgroundTransparency=1
+aP.Parent=aM
+local aQ=Instance.new("ScrollingFrame")
+aQ.Size=UDim2.new(1,-165,1,-10)
+aQ.Position=UDim2.new(0,160,0,5)
+aQ.BackgroundColor3=Color3.fromRGB(0,0,0)
+aQ.BackgroundTransparency=0.45
+aQ.BorderSizePixel=0
+aQ.ScrollBarThickness=4
+aQ.ScrollBarImageColor3=Color3.fromRGB(0,150,255)
+aQ.CanvasSize=UDim2.new(0,0,0,0)
+aQ.Parent=aK
+local aR=Instance.new("UICorner")
+aR.CornerRadius=UDim.new(0,12)
+aR.Parent=aQ
+local aS=Instance.new("UIStroke")
+aS.Color=Color3.fromRGB(0,150,255)
+aS.Thickness=1
+aS.Transparency=0.6
+aS.Parent=aQ
+local aT=Instance.new("Frame")
+aT.Size=UDim2.new(1,0,0,0)
+aT.BackgroundTransparency=1
+aT.Parent=aQ
+local aU={"Main","Visual","Players","Teleport","ESP","Settings"}
+local aV=40
+local aW=5
+local aX=10
+for _,aY in pairs(aU)do
+local aZ=Instance.new("TextButton")
+aZ.Size=UDim2.new(1,-10,0,aV)
+aZ.Position=UDim2.new(0,5,0,aX)
+aZ.Text=q=="ru"and(aY=="Main"and"Главная"or aY=="Visual"and"Визуал"or aY=="Players"and"Игроки"or aY=="Teleport"and"Телепорт"or aY=="ESP"and"ESP"or"Настройки")or aY
+aZ.TextColor3=Color3.fromRGB(160,170,190)
+aZ.BackgroundColor3=Color3.fromRGB(25,25,35)
+aZ.BackgroundTransparency=0.6
+aZ.BorderSizePixel=0
+aZ.Font=Enum.Font.GothamBold
+aZ.TextSize=14
+aZ.Parent=aP
+local a0=Instance.new("UICorner")
+a0.CornerRadius=UDim.new(0,8)
+a0.Parent=aZ
+aZ.MouseButton1Click:Connect(function()
+if u==aY then return end
+for _,a1 in pairs(t)do
+a1.BackgroundColor3=Color3.fromRGB(25,25,35)
+a1.BackgroundTransparency=0.6
+a1.TextColor3=Color3.fromRGB(160,170,190)
+end
+aZ.BackgroundColor3=Color3.fromRGB(0,80,140)
+aZ.BackgroundTransparency=0.3
+aZ.TextColor3=Color3.fromRGB(0,200,255)
+u=aY
+Y()
 end)
-_0x003b[_0x0064] = _0x0065
-_0x010e = _0x010e + _0x010c + _0x010d
+t[aY]=aZ
+aX=aX+aV+aW
 end
-_0x0106._0x0016 = _0x0017._0x0012(1, 0, 0, _0x010e + (97 - 77))
-_0x0038._0x00c2 = _0x0017._0x0012(0, 0, 0, _0x010e + (77 - 47))
-_0x003c = string.char(77, 97, 105, 110)
-_0x003b[string.char(77, 97, 105, 110)]._0x0019 = _0x001a._0x001b(0, (90 - 10), (185 - 45))
-_0x003b[string.char(77, 97, 105, 110)]._0x001c = 0.3
-_0x003b[string.char(77, 97, 105, 110)]._0x0023 = _0x001a._0x001b(0, 200, (127 + 128))
-_0x0066()
-local _0x0111 = false
-_0x00ff._0x00ba:_0x0069(function()
-_0x0111 = not _0x0111
-if (1 + 1 == 2) and _0x0111 then
-_0x0009:_0x0072(_0x0035, _0x0073._0x0012(0.3), {_0x0016 = _0x0017._0x0012(0, _0x0033, 0, 85)}):_0x0075()
-_0x0009:_0x0072(_0x0037, _0x0073._0x0012(0.2), {_0x001c = 1}):_0x0075()
-_0x008a._0x008b(0.15)
-_0x0037._0x0112 = false
+aP.Size=UDim2.new(1,0,0,aX+20)
+aM.CanvasSize=UDim2.new(0,0,0,aX+30)
+u="Main"
+t["Main"].BackgroundColor3=Color3.fromRGB(0,80,140)
+t["Main"].BackgroundTransparency=0.3
+t["Main"].TextColor3=Color3.fromRGB(0,200,255)
+Y()
+local a2=false
+aI.MouseButton1Click:Connect(function()
+a2=not a2
+if a2 then
+d:Create(au,TweenInfo.new(0.3),{Size=UDim2.new(0,750,0,85)}):Play()
+d:Create(aK,TweenInfo.new(0.2),{BackgroundTransparency=1}):Play()
+task.wait(0.15)
+aK.Visible=false
 else
-_0x0037._0x0112 = true
-_0x0009:_0x0072(_0x0037, _0x0073._0x0012(0.2), {_0x001c = 0.4}):_0x0075()
-_0x0009:_0x0072(_0x0035, _0x0073._0x0012(0.3), {_0x0016 = _0x0017._0x0012(0, _0x0033, 0, _0x0034)}):_0x0075()
+aK.Visible=true
+d:Create(aK,TweenInfo.new(0.2),{BackgroundTransparency=0.4}):Play()
+d:Create(au,TweenInfo.new(0.3),{Size=UDim2.new(0,750,0,520)}):Play()
 end
 end)
-_0x0100._0x00ba:_0x0069(function()
-_0x0009:_0x0072(_0x0035, _0x0073._0x0012(0.2), {_0x001c = 1}):_0x0075()
-_0x008a._0x008b(0.2)
-_0x0010:_0x0062()
+aJ.MouseButton1Click:Connect(function()
+d:Create(au,TweenInfo.new(0.2),{BackgroundTransparency=1}):Play()
+task.wait(0.2)
+i:Destroy()
 end)
-local _0x0113 = false
-local _0x0114 = nil
-local _0x0115 = nil
-_0x0036._0x0091:_0x0069(function(_0x0092)
-if _0x0092._0x0116 == _0x0025._0x0116._0x0117 then
-_0x0113 = true
-_0x0114 = _0x006c._0x0012(_0x0092._0x0018._0x0001, _0x0092._0x0018._0x00c0)
-_0x0115 = _0x0035._0x0018
+local a3=false
+local a4=nil
+local a5=nil
+ay.InputBegan:Connect(function(a6)
+if a6.UserInputType==Enum.UserInputType.MouseButton1 then
+a3=true
+a4=Vector2.new(a6.Position.X,a6.Position.Y)
+a5=au.Position
 end
 end)
-_0x0036._0x009a:_0x0069(function()
-_0x0113 = false
+ay.InputEnded:Connect(function()
+a3=false
 end)
-_0x0008._0x0118:_0x0069(function(_0x0092)
-if _0x0113 and _0x0092._0x0116 == _0x0025._0x0116._0x0119 then
-local _0x011a = _0x006c._0x0012(_0x0092._0x0018._0x0001, _0x0092._0x0018._0x00c0) - _0x0114
-_0x0035._0x0018 = _0x0017._0x0012(_0x0115._0x0001._0x011b, _0x0115._0x0001._0x00c1 + _0x011a._0x0001, _0x0115._0x00c0._0x011b, _0x0115._0x00c0._0x00c1 + _0x011a._0x00c0)
+c.InputChanged:Connect(function(a6)
+if a3 and a6.UserInputType==Enum.UserInputType.MouseMovement then
+local a7=Vector2.new(a6.Position.X,a6.Position.Y)-a4
+au.Position=UDim2.new(a5.X.Scale,a5.X.Offset+a7.X,a5.Y.Scale,a5.Y.Offset+a7.Y)
 end
 end)
-local function _0x011c(_0x011d, _0x011e)
-_0x011d = math._0x00a0(_0x011d, _0x002f, _0x0031)
-_0x011e = math._0x00a0(_0x011e, _0x0030, _0x0032)
-_0x0033 = _0x011d
-_0x0034 = _0x011e
-local _0x011f = -_0x011d/2
-local _0x0120 = -_0x011e/2
-_0x0009:_0x0072(_0x0035, _0x0073._0x0012(0.2), {
-_0x0016 = _0x0017._0x0012(0, _0x011d, 0, _0x011e),
-_0x0018 = _0x0017._0x0012(0.5, _0x011f, 0.5, _0x0120)
-}):_0x0075()
-if (2 * 3 > 5) and not _0x0111 then
-_0x0037._0x0112 = true
-_0x0037._0x001c = 0.4
+local function a8(a9,aa)
+a9=math.clamp(a9,500,1000)
+aa=math.clamp(aa,400,700)
+local ab=-a9/2
+local ac=-aa/2
+d:Create(au,TweenInfo.new(0.2),{Size=UDim2.new(0,a9,0,aa),Position=UDim2.new(0.5,ab,0.5,ac)}):Play()
+if not a2 then aK.Visible=true aK.BackgroundTransparency=0.4 end
+at()
 end
-_0x00be()
-end
-local _0x0121 = {{(588 - 88), (200 + 200)}, {(668 - 18), 450}, {(375 + 375), (2080 / 4)}, {(932 - 32), (637 - 37)}, {(500 + 500), (2800 / 4)}}
-local _0x0122 = 3
-_0x00fe._0x00ba:_0x0069(function()
-if (1 + 1 == 2) and _0x0111 then
-_0x0111 = false
-_0x0037._0x0112 = true
-_0x0037._0x001c = 0.4
-_0x0009:_0x0072(_0x0035, _0x0073._0x0012(0.3), {_0x0016 = _0x0017._0x0012(0, _0x0033, 0, _0x0034)}):_0x0075()
+local ad={{500,400},{650,450},{750,520},{900,600},{1000,700}}
+local ae=3
+aH.MouseButton1Click:Connect(function()
+if a2 then
+a2=false
+aK.Visible=true
+aK.BackgroundTransparency=0.4
+d:Create(au,TweenInfo.new(0.3),{Size=UDim2.new(0,750,0,520)}):Play()
 else
-_0x0122 = _0x0122 % #_0x0121 + 1
-local _0x0123 = _0x0121[_0x0122]
-_0x011c(_0x0123[1], _0x0123[2])
+ae=ae%#ad+1
+local af=ad[ae]
+a8(af[1],af[2])
 end
 end)
-local _0x0124 = _0x0011._0x0012(string.char(70, 114, 97, 109, 101))
-_0x0124._0x0016 = _0x0017._0x0012(0, 45, 0, (180 / 4))
-_0x0124._0x0018 = _0x0017._0x0012(0, 10, 1, -(27 + 28))
-_0x0124._0x0019 = _0x001a._0x001b(0, 100, (259 - 79))
-_0x0124._0x001c = 0.4
-_0x0124._0x001d = 0
-_0x0124._0x0014 = _0x0037
-local _0x0125 = _0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))
-_0x0125._0x001f = _0x0020._0x0012(1, 0)
-_0x0125._0x0014 = _0x0124
-local _0x0126 = _0x0011._0x0012(string.char(73, 109, 97, 103, 101, 76, 97, 98, 101, 108))
-_0x0126._0x0016 = _0x0017._0x0012(1, -(8 / 2), 1, -(16 / 4))
-_0x0126._0x0018 = _0x0017._0x0012(0, 2, 0, 2)
-_0x0126._0x001c = 1
-_0x0126._0x0014 = _0x0124
-local _0x0127 = _0x0011._0x0012(string.char(85, 73, 67, 111, 114, 110, 101, 114))
-_0x0127._0x001f = _0x0020._0x0012(1, 0)
-_0x0127._0x0014 = _0x0126
-_0x0126._0x0128 = string.char(104, 116, 116, 112, 115, 58, 47, 47, 119, 119, 119, 46, 114, 111, 98, 108, 111, 120, 46, 99, 111, 109, 47, 104, 101, 97, 100, 115, 104, 111, 116, 45, 116, 104, 117, 109, 98, 110, 97, 105, 108, 47, 105, 109, 97, 103, 101, 63, 117, 115, 101, 114, 73, 100, 61) .. _0x0007._0x0129 .. string.char(38, 119, 105, 100, 116, 104, 61, 49, 48, 48, 38, 104, 101, 105, 103, 104, 116, 61, 40, 49, 54, 54, 32, 45, 32, 54, 54, 41, 38, 102, 111, 114, 109, 97, 116, 61, 112, 110, 103)
-local _0x012a = _0x0011._0x0012(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108))
-_0x012a._0x0016 = _0x0017._0x0012(0, 100, 0, (62 - 42))
-_0x012a._0x0018 = _0x0017._0x0012(0, (30 + 30), 1, -50)
-_0x012a._0x0022 = string.char(64) .. _0x0007._0x0013
-_0x012a._0x0023 = _0x001a._0x001b((187 - 87), 180, (115 + 115))
-_0x012a._0x001c = 1
-_0x012a._0x0024 = _0x0025._0x0024._0x0026
-_0x012a._0x0027 = 11
-_0x012a._0x00b3 = _0x0025._0x00b3._0x00b4
-_0x012a._0x0014 = _0x0037
-local _0x012b = _0x0011._0x0012(string.char(70, 114, 97, 109, 101))
-_0x012b._0x0016 = _0x0017._0x0012(0, 100, 0, 1)
-_0x012b._0x0018 = _0x0017._0x0012(0, 60, 1, -(69 - 37))
-_0x012b._0x0019 = _0x001a._0x001b(0, (300 / 2), 255)
-_0x012b._0x001c = 0.5
-_0x012b._0x001d = 0
-_0x012b._0x0014 = _0x0037
+local ag=Instance.new("Frame")
+ag.Size=UDim2.new(0,45,0,45)
+ag.Position=UDim2.new(0,10,1,-55)
+ag.BackgroundColor3=Color3.fromRGB(0,100,180)
+ag.BackgroundTransparency=0.4
+ag.BorderSizePixel=0
+ag.Parent=aK
+local ah=Instance.new("UICorner")
+ah.CornerRadius=UDim.new(1,0)
+ah.Parent=ag
+local ai=Instance.new("ImageLabel")
+ai.Size=UDim2.new(1,-4,1,-4)
+ai.Position=UDim2.new(0,2,0,2)
+ai.BackgroundTransparency=1
+ai.Parent=ag
+local aj=Instance.new("UICorner")
+aj.CornerRadius=UDim.new(1,0)
+aj.Parent=ai
+ai.Image="https://www.roblox.com/headshot-thumbnail/image?userId="..b.UserId.."&width=100&height=100&format=png"
+local ak=Instance.new("TextLabel")
+ak.Size=UDim2.new(0,100,0,20)
+ak.Position=UDim2.new(0,60,1,-50)
+ak.Text="@"..b.Name
+ak.TextColor3=Color3.fromRGB(100,180,230)
+ak.BackgroundTransparency=1
+ak.Font=Enum.Font.GothamBold
+ak.TextSize=11
+ak.TextXAlignment=Enum.TextXAlignment.Left
+ak.Parent=aK
+local al=Instance.new("Frame")
+al.Size=UDim2.new(0,100,0,1)
+al.Position=UDim2.new(0,60,1,-32)
+al.BackgroundColor3=Color3.fromRGB(0,150,255)
+al.BackgroundTransparency=0.5
+al.BorderSizePixel=0
+al.Parent=aK
 end
-_0x002a._0x00ba:_0x0069(function()
-_0x002e = string.char(114, 117)
-_0x0015:_0x0062()
-_0x00ec()
+m.MouseButton1Click:Connect(function()
+q="ru"
+j:Destroy()
+at()
 end)
-_0x002c._0x00ba:_0x0069(function()
-_0x002e = string.char(101, 110)
-_0x0015:_0x0062()
-_0x00ec()
+o.MouseButton1Click:Connect(function()
+q="en"
+j:Destroy()
+at()
 end)
