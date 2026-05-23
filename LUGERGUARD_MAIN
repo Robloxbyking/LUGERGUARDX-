@@ -148,8 +148,17 @@ local function disableFullBright()
     if not fullBrightEnabled then return end
     
     -- Восстанавливаем оригинальные настройки
-    for setting, value in pairs(originalLightingSettings) do
-        Lighting[setting] = value
+    if originalLightingSettings.Ambient then
+        Lighting.Ambient = originalLightingSettings.Ambient
+        Lighting.Brightness = originalLightingSettings.Brightness
+        Lighting.ColorShift_Top = originalLightingSettings.ColorShift_Top
+        Lighting.ColorShift_Bottom = originalLightingSettings.ColorShift_Bottom
+        Lighting.OutdoorAmbient = originalLightingSettings.OutdoorAmbient
+        Lighting.ClockTime = originalLightingSettings.ClockTime
+        Lighting.TimeOfDay = originalLightingSettings.TimeOfDay
+        Lighting.GlobalShadows = originalLightingSettings.GlobalShadows
+        Lighting.FogEnd = originalLightingSettings.FogEnd
+        Lighting.FogStart = originalLightingSettings.FogStart
     end
     
     fullBrightEnabled = false
@@ -164,11 +173,21 @@ local function toggleFullBright()
     end
 end
 
--- Сброс FullBright при смене карты/раунда
+-- Авто-восстановление FullBright при смене карты/раунда (если включён)
 Lighting:GetPropertyChangedSignal("ClockTime"):Connect(function()
     if fullBrightEnabled then
         task.wait(0.05)
-        enableFullBright()
+        -- Восстанавливаем только если всё ещё включён
+        if fullBrightEnabled then
+            Lighting.Ambient = Color3.fromRGB(255, 255, 255)
+            Lighting.Brightness = 2
+            Lighting.ColorShift_Top = Color3.fromRGB(255, 255, 255)
+            Lighting.ColorShift_Bottom = Color3.fromRGB(255, 255, 255)
+            Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
+            Lighting.GlobalShadows = false
+            Lighting.FogEnd = 100000
+            Lighting.FogStart = 0
+        end
     end
 end)
 
@@ -189,36 +208,6 @@ local function updateFlySwitchUI()
                 if switchBg then
                     local knob = switchBg:FindFirstChildOfClass("Frame")
                     if flying then
-                        switchBg.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
-                        if knob then knob.Position = UDim2.new(1, -18, 0, 2) end
-                    else
-                        switchBg.BackgroundColor3 = Color3.fromRGB(80, 80, 90)
-                        if knob then knob.Position = UDim2.new(0, 2, 0, 2) end
-                    end
-                end
-                break
-            end
-        end
-    end
-end
-
--- Функция для обновления UI свитча FullBright
-local function updateFullBrightSwitchUI()
-    if not contentContainer then return end
-    for _, child in pairs(contentContainer:GetChildren()) do
-        if child:IsA("Frame") then
-            local label = child:FindFirstChildOfClass("TextLabel")
-            if label and (label.Text == "FullBright") then
-                local switchBg = nil
-                for _, obj in pairs(child:GetChildren()) do
-                    if obj:IsA("Frame") and obj ~= label and obj.Size == UDim2.new(0, 40, 0, 20) then
-                        switchBg = obj
-                        break
-                    end
-                end
-                if switchBg then
-                    local knob = switchBg:FindFirstChildOfClass("Frame")
-                    if fullBrightEnabled then
                         switchBg.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
                         if knob then knob.Position = UDim2.new(1, -18, 0, 2) end
                     else
@@ -443,15 +432,6 @@ flyKeybindConnection = UserInputService.InputBegan:Connect(function(input, gameP
         else
             startFly()
         end
-    end
-end)
-
--- Хоткей для FullBright (клавиша V)
-local fullBrightKeybindConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
-    if input.KeyCode == Enum.KeyCode.V then
-        toggleFullBright()
-        updateFullBrightSwitchUI()
     end
 end)
 
@@ -932,20 +912,10 @@ local function updateContent()
                 else 
                     disableFullBright() 
                 end
+                -- Обновляем состояние свитча в UI
+                setFullBrightState(state)
             end
         )
-        
-        -- Информация о хоткее FullBright
-        local fullBrightInfo = Instance.new("TextLabel")
-        fullBrightInfo.Size = UDim2.new(0, 350, 0, 20)
-        fullBrightInfo.Position = UDim2.new(0, 20, 0, 120)
-        fullBrightInfo.Text = currentLang == "ru" and "Клавиша V - включить/выключить FullBright" or "Press V to toggle FullBright"
-        fullBrightInfo.TextColor3 = Color3.fromRGB(150, 200, 255)
-        fullBrightInfo.BackgroundTransparency = 1
-        fullBrightInfo.Font = Enum.Font.Gotham
-        fullBrightInfo.TextSize = 12
-        fullBrightInfo.TextXAlignment = Enum.TextXAlignment.Left
-        fullBrightInfo.Parent = contentContainer
         
     elseif activeTab == "Teleport" then
         local teleportLabel = Instance.new("TextLabel")
