@@ -5,9 +5,15 @@ local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local VirtualUser = game:GetService("VirtualUser")
+local Lighting = game:GetService("Lighting")
 
 local isStudio = RunService:IsStudio()
 local parentGui = isStudio and LocalPlayer:WaitForChild("PlayerGui") or game:GetService("CoreGui")
+
+-- Удаляем старый GUI при повторном запуске
+if parentGui:FindFirstChild("LugerGuardX") then
+    parentGui:FindFirstChild("LugerGuardX"):Destroy()
+end
 
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "LugerGuardX"
@@ -101,6 +107,71 @@ local flyKeybindConnection = nil
 local noclipEnabled = false
 local noclipConnection = nil
 
+-- ========== FULLBRIGHT ПЕРЕМЕННЫЕ ==========
+local fullBrightEnabled = false
+local originalLightingSettings = {}
+
+-- ========== FULLBRIGHT ФУНКЦИИ ==========
+local function enableFullBright()
+    if fullBrightEnabled then return end
+    
+    -- Сохраняем оригинальные настройки
+    originalLightingSettings = {
+        Ambient = Lighting.Ambient,
+        Brightness = Lighting.Brightness,
+        ColorShift_Top = Lighting.ColorShift_Top,
+        ColorShift_Bottom = Lighting.ColorShift_Bottom,
+        OutdoorAmbient = Lighting.OutdoorAmbient,
+        ClockTime = Lighting.ClockTime,
+        TimeOfDay = Lighting.TimeOfDay,
+        GlobalShadows = Lighting.GlobalShadows,
+        FogEnd = Lighting.FogEnd,
+        FogStart = Lighting.FogStart
+    }
+    
+    -- Устанавливаем яркие настройки
+    Lighting.Ambient = Color3.fromRGB(255, 255, 255)
+    Lighting.Brightness = 2
+    Lighting.ColorShift_Top = Color3.fromRGB(255, 255, 255)
+    Lighting.ColorShift_Bottom = Color3.fromRGB(255, 255, 255)
+    Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
+    Lighting.ClockTime = 12
+    Lighting.TimeOfDay = "12:00:00"
+    Lighting.GlobalShadows = false
+    Lighting.FogEnd = 100000
+    Lighting.FogStart = 0
+    
+    fullBrightEnabled = true
+end
+
+local function disableFullBright()
+    if not fullBrightEnabled then return end
+    
+    -- Восстанавливаем оригинальные настройки
+    for setting, value in pairs(originalLightingSettings) do
+        Lighting[setting] = value
+    end
+    
+    fullBrightEnabled = false
+    originalLightingSettings = {}
+end
+
+local function toggleFullBright()
+    if fullBrightEnabled then
+        disableFullBright()
+    else
+        enableFullBright()
+    end
+end
+
+-- Сброс FullBright при смене карты/раунда
+Lighting:GetPropertyChangedSignal("ClockTime"):Connect(function()
+    if fullBrightEnabled then
+        task.wait(0.05)
+        enableFullBright()
+    end
+end)
+
 -- Функция для обновления свитча Fly Mode в UI
 local function updateFlySwitchUI()
     if not contentContainer then return end
@@ -118,6 +189,36 @@ local function updateFlySwitchUI()
                 if switchBg then
                     local knob = switchBg:FindFirstChildOfClass("Frame")
                     if flying then
+                        switchBg.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+                        if knob then knob.Position = UDim2.new(1, -18, 0, 2) end
+                    else
+                        switchBg.BackgroundColor3 = Color3.fromRGB(80, 80, 90)
+                        if knob then knob.Position = UDim2.new(0, 2, 0, 2) end
+                    end
+                end
+                break
+            end
+        end
+    end
+end
+
+-- Функция для обновления UI свитча FullBright
+local function updateFullBrightSwitchUI()
+    if not contentContainer then return end
+    for _, child in pairs(contentContainer:GetChildren()) do
+        if child:IsA("Frame") then
+            local label = child:FindFirstChildOfClass("TextLabel")
+            if label and (label.Text == "FullBright") then
+                local switchBg = nil
+                for _, obj in pairs(child:GetChildren()) do
+                    if obj:IsA("Frame") and obj ~= label and obj.Size == UDim2.new(0, 40, 0, 20) then
+                        switchBg = obj
+                        break
+                    end
+                end
+                if switchBg then
+                    local knob = switchBg:FindFirstChildOfClass("Frame")
+                    if fullBrightEnabled then
                         switchBg.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
                         if knob then knob.Position = UDim2.new(1, -18, 0, 2) end
                     else
@@ -237,6 +338,8 @@ local function stopNoclip()
     end
 end
 
+local flyInputsConnected = false
+
 local function startFly()
     if flying then return end
     flying = true
@@ -287,21 +390,26 @@ local function startFly()
         end
     end
     
-    UserInputService.InputBegan:Connect(function(input, gameProcessed)
-        if gameProcessed then return end
-        local key = input.KeyCode
-        if key == Enum.KeyCode.W then flyCtrl.f = 1
-        elseif key == Enum.KeyCode.S then flyCtrl.b = 1
-        elseif key == Enum.KeyCode.A then flyCtrl.l = 1
-        elseif key == Enum.KeyCode.D then flyCtrl.r = 1 end
-    end)
-    UserInputService.InputEnded:Connect(function(input)
-        local key = input.KeyCode
-        if key == Enum.KeyCode.W then flyCtrl.f = 0
-        elseif key == Enum.KeyCode.S then flyCtrl.b = 0
-        elseif key == Enum.KeyCode.A then flyCtrl.l = 0
-        elseif key == Enum.KeyCode.D then flyCtrl.r = 0 end
-    end)
+    if not flyInputsConnected then
+        flyInputsConnected = true
+        UserInputService.InputBegan:Connect(function(input, gameProcessed)
+            if gameProcessed or not flying then return end
+            local key = input.KeyCode
+            if key == Enum.KeyCode.W then flyCtrl.f = 1
+            elseif key == Enum.KeyCode.S then flyCtrl.b = 1
+            elseif key == Enum.KeyCode.A then flyCtrl.l = 1
+            elseif key == Enum.KeyCode.D then flyCtrl.r = 1 end
+        end)
+        UserInputService.InputEnded:Connect(function(input)
+            if not flying then return end
+            local key = input.KeyCode
+            if key == Enum.KeyCode.W then flyCtrl.f = 0
+            elseif key == Enum.KeyCode.S then flyCtrl.b = 0
+            elseif key == Enum.KeyCode.A then flyCtrl.l = 0
+            elseif key == Enum.KeyCode.D then flyCtrl.r = 0 end
+        end)
+    end
+    
     coroutine.wrap(updateFly)()
     
     -- Обновляем UI свитча
@@ -335,6 +443,15 @@ flyKeybindConnection = UserInputService.InputBegan:Connect(function(input, gameP
         else
             startFly()
         end
+    end
+end)
+
+-- Хоткей для FullBright (клавиша V)
+local fullBrightKeybindConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.V then
+        toggleFullBright()
+        updateFullBrightSwitchUI()
     end
 end)
 
@@ -378,6 +495,10 @@ LocalPlayer.CharacterAdded:Connect(function(character)
     end
     if flying then stopFly() end
     if noclipEnabled then stopNoclip() end
+    if fullBrightEnabled then
+        disableFullBright()
+        enableFullBright()
+    end
 end)
 
 -- Функция создания свитча
@@ -784,17 +905,48 @@ local function updateContent()
             playerLabel.Parent = contentContainer
             yOffset = yOffset + 30
         end
+        
     elseif activeTab == "Visual" then
         local visualLabel = Instance.new("TextLabel")
         visualLabel.Size = UDim2.new(1, -40, 0, 30)
         visualLabel.Position = UDim2.new(0, 20, 0, 20)
-        visualLabel.Text = currentLang == "ru" and "Визуал (в разработке)" or "Visual (in development)"
+        visualLabel.Text = currentLang == "ru" and "Визуальные настройки" or "Visual Settings"
         visualLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
         visualLabel.BackgroundTransparency = 1
         visualLabel.Font = Enum.Font.GothamBold
         visualLabel.TextSize = 16
         visualLabel.TextXAlignment = Enum.TextXAlignment.Left
         visualLabel.Parent = contentContainer
+        
+        -- FullBright свитч
+        local fullBrightContainer, setFullBrightState = createSwitchWithDesc(
+            contentContainer, 
+            20, 
+            55, 
+            "FullBright", 
+            currentLang == "ru" and "Полная яркость на карте (видно всё)" or "Maximum brightness on map (see everything)", 
+            fullBrightEnabled, 
+            function(state)
+                if state then 
+                    enableFullBright() 
+                else 
+                    disableFullBright() 
+                end
+            end
+        )
+        
+        -- Информация о хоткее FullBright
+        local fullBrightInfo = Instance.new("TextLabel")
+        fullBrightInfo.Size = UDim2.new(0, 350, 0, 20)
+        fullBrightInfo.Position = UDim2.new(0, 20, 0, 120)
+        fullBrightInfo.Text = currentLang == "ru" and "Клавиша V - включить/выключить FullBright" or "Press V to toggle FullBright"
+        fullBrightInfo.TextColor3 = Color3.fromRGB(150, 200, 255)
+        fullBrightInfo.BackgroundTransparency = 1
+        fullBrightInfo.Font = Enum.Font.Gotham
+        fullBrightInfo.TextSize = 12
+        fullBrightInfo.TextXAlignment = Enum.TextXAlignment.Left
+        fullBrightInfo.Parent = contentContainer
+        
     elseif activeTab == "Teleport" then
         local teleportLabel = Instance.new("TextLabel")
         teleportLabel.Size = UDim2.new(1, -40, 0, 30)
@@ -806,6 +958,7 @@ local function updateContent()
         teleportLabel.TextSize = 16
         teleportLabel.TextXAlignment = Enum.TextXAlignment.Left
         teleportLabel.Parent = contentContainer
+        
     elseif activeTab == "ESP" then
         local espLabel = Instance.new("TextLabel")
         espLabel.Size = UDim2.new(1, -40, 0, 30)
@@ -817,6 +970,7 @@ local function updateContent()
         espLabel.TextSize = 16
         espLabel.TextXAlignment = Enum.TextXAlignment.Left
         espLabel.Parent = contentContainer
+        
     elseif activeTab == "Settings" then
         local settingsLabel = Instance.new("TextLabel")
         settingsLabel.Size = UDim2.new(1, -40, 0, 30)
