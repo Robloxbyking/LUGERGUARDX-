@@ -111,15 +111,11 @@ local noclipConnection = nil
 local fullBrightEnabled = false
 local originalLightingSettings = {}
 
--- ========== SKYBOX ПЕРЕМЕННЫЕ ==========
-local customSkyboxEnabled = false
-local originalSky = nil
-local nightSkyboxId = "rbxassetid://15803128405"
-
 -- ========== FULLBRIGHT ФУНКЦИИ ==========
 local function enableFullBright()
     if fullBrightEnabled then return end
     
+    -- Сохраняем оригинальные настройки
     originalLightingSettings = {
         Ambient = Lighting.Ambient,
         Brightness = Lighting.Brightness,
@@ -133,6 +129,7 @@ local function enableFullBright()
         FogStart = Lighting.FogStart
     }
     
+    -- Устанавливаем яркие настройки
     Lighting.Ambient = Color3.fromRGB(255, 255, 255)
     Lighting.Brightness = 2
     Lighting.ColorShift_Top = Color3.fromRGB(255, 255, 255)
@@ -150,6 +147,7 @@ end
 local function disableFullBright()
     if not fullBrightEnabled then return end
     
+    -- Восстанавливаем оригинальные настройки
     if originalLightingSettings.Ambient then
         Lighting.Ambient = originalLightingSettings.Ambient
         Lighting.Brightness = originalLightingSettings.Brightness
@@ -167,47 +165,19 @@ local function disableFullBright()
     originalLightingSettings = {}
 end
 
--- ========== SKYBOX ФУНКЦИИ ==========
-local function setCustomSkybox()
-    if not customSkyboxEnabled then return end
-    
-    if Lighting:FindFirstChild("LugerGuardSky") then
-        Lighting:FindFirstChild("LugerGuardSky"):Destroy()
+local function toggleFullBright()
+    if fullBrightEnabled then
+        disableFullBright()
+    else
+        enableFullBright()
     end
-    
-    local sky = Instance.new("Sky")
-    sky.Name = "LugerGuardSky"
-    sky.SkyboxBk = nightSkyboxId
-    sky.SkyboxDn = nightSkyboxId
-    sky.SkyboxFt = nightSkyboxId
-    sky.SkyboxLf = nightSkyboxId
-    sky.SkyboxRt = nightSkyboxId
-    sky.SkyboxUp = nightSkyboxId
-    sky.Parent = Lighting
-end
-
-local function restoreOriginalSky()
-    if Lighting:FindFirstChild("LugerGuardSky") then
-        Lighting:FindFirstChild("LugerGuardSky"):Destroy()
-    end
-end
-
-local function enableCustomSkybox()
-    if customSkyboxEnabled then return end
-    customSkyboxEnabled = true
-    setCustomSkybox()
-end
-
-local function disableCustomSkybox()
-    if not customSkyboxEnabled then return end
-    customSkyboxEnabled = false
-    restoreOriginalSky()
 end
 
 -- Авто-восстановление FullBright при смене карты/раунда (если включён)
 Lighting:GetPropertyChangedSignal("ClockTime"):Connect(function()
     if fullBrightEnabled then
         task.wait(0.05)
+        -- Восстанавливаем только если всё ещё включён
         if fullBrightEnabled then
             Lighting.Ambient = Color3.fromRGB(255, 255, 255)
             Lighting.Brightness = 2
@@ -217,16 +187,6 @@ Lighting:GetPropertyChangedSignal("ClockTime"):Connect(function()
             Lighting.GlobalShadows = false
             Lighting.FogEnd = 100000
             Lighting.FogStart = 0
-        end
-    end
-end)
-
--- Авто-восстановление Skybox
-Lighting:GetPropertyChangedSignal("Sky"):Connect(function()
-    if customSkyboxEnabled then
-        task.wait(0.05)
-        if customSkyboxEnabled then
-            setCustomSkybox()
         end
     end
 end)
@@ -518,10 +478,6 @@ LocalPlayer.CharacterAdded:Connect(function(character)
     if fullBrightEnabled then
         disableFullBright()
         enableFullBright()
-    end
-    if customSkyboxEnabled then
-        disableCustomSkybox()
-        enableCustomSkybox()
     end
 end)
 
@@ -956,25 +912,8 @@ local function updateContent()
                 else 
                     disableFullBright() 
                 end
+                -- Обновляем состояние свитча в UI
                 setFullBrightState(state)
-            end
-        )
-        
-        -- Night Skybox свитч
-        local skyboxContainer, setSkyboxState = createSwitchWithDesc(
-            contentContainer, 
-            20, 
-            125, 
-            "Night Skybox", 
-            currentLang == "ru" and "Красивое ночное небо с звёздами" or "Beautiful night sky with stars", 
-            customSkyboxEnabled, 
-            function(state)
-                if state then 
-                    enableCustomSkybox() 
-                else 
-                    disableCustomSkybox() 
-                end
-                setSkyboxState(state)
             end
         )
         
