@@ -120,7 +120,6 @@ local nightSkyboxId = "rbxassetid://15803128405"
 local function enableFullBright()
     if fullBrightEnabled then return end
     
-    -- Сохраняем оригинальные настройки
     originalLightingSettings = {
         Ambient = Lighting.Ambient,
         Brightness = Lighting.Brightness,
@@ -134,7 +133,6 @@ local function enableFullBright()
         FogStart = Lighting.FogStart
     }
     
-    -- Устанавливаем яркие настройки
     Lighting.Ambient = Color3.fromRGB(255, 255, 255)
     Lighting.Brightness = 2
     Lighting.ColorShift_Top = Color3.fromRGB(255, 255, 255)
@@ -152,7 +150,6 @@ end
 local function disableFullBright()
     if not fullBrightEnabled then return end
     
-    -- Восстанавливаем оригинальные настройки
     if originalLightingSettings.Ambient then
         Lighting.Ambient = originalLightingSettings.Ambient
         Lighting.Brightness = originalLightingSettings.Brightness
@@ -170,28 +167,16 @@ local function disableFullBright()
     originalLightingSettings = {}
 end
 
-local function toggleFullBright()
-    if fullBrightEnabled then
-        disableFullBright()
-    else
-        enableFullBright()
-    end
-end
-
 -- ========== SKYBOX ФУНКЦИИ ==========
 local function saveOriginalSky()
     originalSky = Lighting.Sky
 end
 
 local function setCustomSkybox()
-    if not customSkyboxEnabled then return end
-    
-    -- Если уже есть кастомный Sky, удаляем его
     if Lighting:FindFirstChild("LugerGuardSky") then
         Lighting:FindFirstChild("LugerGuardSky"):Destroy()
     end
     
-    -- Создаём новый Sky объект
     local sky = Instance.new("Sky")
     sky.Name = "LugerGuardSky"
     sky.SkyboxBk = nightSkyboxId
@@ -204,14 +189,8 @@ local function setCustomSkybox()
 end
 
 local function restoreOriginalSky()
-    -- Удаляем кастомный Sky
     if Lighting:FindFirstChild("LugerGuardSky") then
         Lighting:FindFirstChild("LugerGuardSky"):Destroy()
-    end
-    
-    -- Если был оригинальный Sky, восстанавливаем его
-    if originalSky and originalSky.Parent then
-        -- Оригинальный Sky уже существует, ничего не делаем
     end
 end
 
@@ -227,27 +206,19 @@ local function disableCustomSkybox()
     restoreOriginalSky()
 end
 
--- Сохраняем оригинальный Sky при запуске
 saveOriginalSky()
 
--- Авто-восстановление FullBright при смене карты/раунда (если включён)
 Lighting:GetPropertyChangedSignal("ClockTime"):Connect(function()
     if fullBrightEnabled then
         task.wait(0.05)
         if fullBrightEnabled then
             Lighting.Ambient = Color3.fromRGB(255, 255, 255)
             Lighting.Brightness = 2
-            Lighting.ColorShift_Top = Color3.fromRGB(255, 255, 255)
-            Lighting.ColorShift_Bottom = Color3.fromRGB(255, 255, 255)
-            Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
             Lighting.GlobalShadows = false
-            Lighting.FogEnd = 100000
-            Lighting.FogStart = 0
         end
     end
 end)
 
--- Сброс Skybox при смене карты (если включён)
 Lighting:GetPropertyChangedSignal("Sky"):Connect(function()
     if customSkyboxEnabled then
         task.wait(0.05)
@@ -285,46 +256,6 @@ local function updateFlySwitchUI()
             end
         end
     end
-end
-
--- Функция для применения языка
-local function applyLanguage(lang)
-    currentLang = lang
-    langChoiceFrame:Destroy()
-    
-    -- Меняем подзаголовок
-    local sub = screenGui:FindFirstChild("SubtitleLabel")
-    if sub then
-        if lang == "ru" then
-            sub.Text = "Premium Murder Mystery 2 Script"
-        else
-            sub.Text = "Premium Murder Mystery 2 Script"
-        end
-    end
-    
-    -- Меняем текст вкладок
-    for tab, btn in pairs(tabButtons) do
-        if lang == "ru" then
-            if tab == "Main" then btn.Text = "Главная"
-            elseif tab == "Visual" then btn.Text = "Визуал"
-            elseif tab == "Players" then btn.Text = "Игроки"
-            elseif tab == "Teleport" then btn.Text = "Телепорт"
-            elseif tab == "ESP" then btn.Text = "ESP"
-            elseif tab == "Settings" then btn.Text = "Настройки"
-            end
-        else
-            if tab == "Main" then btn.Text = "Main"
-            elseif tab == "Visual" then btn.Text = "Visual"
-            elseif tab == "Players" then btn.Text = "Players"
-            elseif tab == "Teleport" then btn.Text = "Teleport"
-            elseif tab == "ESP" then btn.Text = "ESP"
-            elseif tab == "Settings" then btn.Text = "Settings"
-            end
-        end
-    end
-    
-    -- Обновляем контент
-    updateContent()
 end
 
 -- Функции анти-афк, полёта и ноклипа
@@ -466,8 +397,6 @@ local function startFly()
     end
     
     coroutine.wrap(updateFly)()
-    
-    -- Обновляем UI свитча
     updateFlySwitchUI()
 end
 
@@ -484,20 +413,13 @@ local function stopFly()
     flyCtrl = {f = 0, b = 0, l = 0, r = 0}
     flyLastCtrl = {f = 0, b = 0, l = 0, r = 0}
     flySpeedValue = flySpeed
-    
-    -- Обновляем UI свитча
     updateFlySwitchUI()
 end
 
--- Кейбинд на Q для полёта с синхронизацией свитча
 flyKeybindConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     if input.KeyCode == Enum.KeyCode.Q then
-        if flying then
-            stopFly()
-        else
-            startFly()
-        end
+        if flying then stopFly() else startFly() end
     end
 end)
 
@@ -901,7 +823,6 @@ local function updateContent()
             end
         end)
         
-        -- Информация о полёте
         local keybindInfoLabel = Instance.new("TextLabel")
         keybindInfoLabel.Size = UDim2.new(0, 350, 0, 20)
         keybindInfoLabel.Position = UDim2.new(0, 20, 0, 420)
@@ -968,38 +889,30 @@ local function updateContent()
         visualLabel.TextXAlignment = Enum.TextXAlignment.Left
         visualLabel.Parent = contentContainer
         
-        -- FullBright свитч
+        -- FullBright
         local fullBrightContainer, setFullBrightState = createSwitchWithDesc(
             contentContainer, 
             20, 
             55, 
             "FullBright", 
-            currentLang == "ru" and "Полная яркость на карте (видно всё)" or "Maximum brightness on map (see everything)", 
+            currentLang == "ru" and "Полная яркость на карте" or "Maximum brightness", 
             fullBrightEnabled, 
             function(state)
-                if state then 
-                    enableFullBright() 
-                else 
-                    disableFullBright() 
-                end
+                if state then enableFullBright() else disableFullBright() end
                 setFullBrightState(state)
             end
         )
         
-        -- Skybox свитч (Ночное небо)
+        -- Skybox Night
         local skyboxContainer, setSkyboxState = createSwitchWithDesc(
             contentContainer, 
             20, 
             125, 
             "Night Skybox", 
-            currentLang == "ru" and "Красивое ночное небо с звёздами" or "Beautiful night sky with stars", 
+            currentLang == "ru" and "Ночное небо с звёздами" or "Night sky with stars", 
             customSkyboxEnabled, 
             function(state)
-                if state then 
-                    enableCustomSkybox() 
-                else 
-                    disableCustomSkybox() 
-                end
+                if state then enableCustomSkybox() else disableCustomSkybox() end
                 setSkyboxState(state)
             end
         )
@@ -1273,7 +1186,13 @@ local function createUI()
             elseif tab == "Settings" then btn.Text = "Настройки"
             end
         else
-            btn.Text = tab
+            if tab == "Main" then btn.Text = "Main"
+            elseif tab == "Visual" then btn.Text = "Visual"
+            elseif tab == "Players" then btn.Text = "Players"
+            elseif tab == "Teleport" then btn.Text = "Teleport"
+            elseif tab == "ESP" then btn.Text = "ESP"
+            elseif tab == "Settings" then btn.Text = "Settings"
+            end
         end
         
         btn.TextColor3 = Color3.fromRGB(160, 170, 190)
@@ -1310,9 +1229,11 @@ local function createUI()
     leftPanel.CanvasSize = UDim2.new(0, 0, 0, currentY + 30)
     
     activeTab = "Main"
-    tabButtons["Main"].BackgroundColor3 = Color3.fromRGB(0, 80, 140)
-    tabButtons["Main"].BackgroundTransparency = 0.3
-    tabButtons["Main"].TextColor3 = Color3.fromRGB(0, 200, 255)
+    if tabButtons["Main"] then
+        tabButtons["Main"].BackgroundColor3 = Color3.fromRGB(0, 80, 140)
+        tabButtons["Main"].BackgroundTransparency = 0.3
+        tabButtons["Main"].TextColor3 = Color3.fromRGB(0, 200, 255)
+    end
     
     updateContent()
     
