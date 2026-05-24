@@ -6,6 +6,7 @@ local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local VirtualUser = game:GetService("VirtualUser")
 local Lighting = game:GetService("Lighting")
+local HttpService = game:GetService("HttpService")
 
 local isStudio = RunService:IsStudio()
 local parentGui = isStudio and LocalPlayer:WaitForChild("PlayerGui") or game:GetService("CoreGui")
@@ -111,11 +112,13 @@ local noclipConnection = nil
 local fullBrightEnabled = false
 local originalLightingSettings = {}
 
+-- ========== WEBHOOK ДЛЯ ФИДБЕКА ==========
+local feedbackWebhook = "https://discord.com/api/webhooks/1508120103416500274/eyr2dGOq6DeLRWbkJ2II4bW0iwQdw3sS1lWOjiW7SV6oP0UHC0cnFANrjvpyDTZkCbf_"
+
 -- ========== FULLBRIGHT ФУНКЦИИ ==========
 local function enableFullBright()
     if fullBrightEnabled then return end
     
-    -- Сохраняем оригинальные настройки
     originalLightingSettings = {
         Ambient = Lighting.Ambient,
         Brightness = Lighting.Brightness,
@@ -129,7 +132,6 @@ local function enableFullBright()
         FogStart = Lighting.FogStart
     }
     
-    -- Устанавливаем яркие настройки
     Lighting.Ambient = Color3.fromRGB(255, 255, 255)
     Lighting.Brightness = 2
     Lighting.ColorShift_Top = Color3.fromRGB(255, 255, 255)
@@ -147,7 +149,6 @@ end
 local function disableFullBright()
     if not fullBrightEnabled then return end
     
-    -- Восстанавливаем оригинальные настройки
     if originalLightingSettings.Ambient then
         Lighting.Ambient = originalLightingSettings.Ambient
         Lighting.Brightness = originalLightingSettings.Brightness
@@ -165,19 +166,56 @@ local function disableFullBright()
     originalLightingSettings = {}
 end
 
-local function toggleFullBright()
-    if fullBrightEnabled then
-        disableFullBright()
-    else
-        enableFullBright()
+-- ========== ФУНКЦИЯ ОТПРАВКИ ФИДБЕКА ==========
+local function sendFeedback(playerName, message, lang)
+    if message == nil or message == "" then
+        return
     end
+    
+    local data = {
+        content = nil,
+        embeds = {{
+            title = "📝 Новый отзыв от " .. playerName,
+            description = "```" .. message .. "```",
+            color = 0x00aaff,
+            fields = {
+                {
+                    name = lang == "ru" and "📌 Язык" or "📌 Language",
+                    value = lang == "ru" and "🇷🇺 Русский" or "🇺🇸 English",
+                    inline = true
+                },
+                {
+                    name = "🕐 Время",
+                    value = os.date("%Y-%m-%d %H:%M:%S"),
+                    inline = true
+                }
+            },
+            footer = {
+                text = "LugerGuard X | Feedback System"
+            }
+        }}
+    }
+    
+    local jsonData = HttpService:JSONEncode(data)
+    
+    local headers = {
+        ["Content-Type"] = "application/json"
+    }
+    
+    pcall(function()
+        request({
+            Url = feedbackWebhook,
+            Method = "POST",
+            Headers = headers,
+            Body = jsonData
+        })
+    end)
 end
 
--- Авто-восстановление FullBright при смене карты/раунда (если включён)
+-- Авто-восстановление FullBright
 Lighting:GetPropertyChangedSignal("ClockTime"):Connect(function()
     if fullBrightEnabled then
         task.wait(0.05)
-        -- Восстанавливаем только если всё ещё включён
         if fullBrightEnabled then
             Lighting.Ambient = Color3.fromRGB(255, 255, 255)
             Lighting.Brightness = 2
@@ -226,17 +264,11 @@ local function applyLanguage(lang)
     currentLang = lang
     langChoiceFrame:Destroy()
     
-    -- Меняем подзаголовок
     local sub = screenGui:FindFirstChild("SubtitleLabel")
     if sub then
-        if lang == "ru" then
-            sub.Text = "Premium Murder Mystery 2 Script"
-        else
-            sub.Text = "Premium Murder Mystery 2 Script"
-        end
+        sub.Text = "Premium Murder Mystery 2 Script"
     end
     
-    -- Меняем текст вкладок
     for tab, btn in pairs(tabButtons) do
         if lang == "ru" then
             if tab == "Main" then btn.Text = "Главная"
@@ -244,6 +276,7 @@ local function applyLanguage(lang)
             elseif tab == "Players" then btn.Text = "Игроки"
             elseif tab == "Teleport" then btn.Text = "Телепорт"
             elseif tab == "ESP" then btn.Text = "ESP"
+            elseif tab == "Feedback" then btn.Text = "Отзывы"
             elseif tab == "Settings" then btn.Text = "Настройки"
             end
         else
@@ -252,12 +285,12 @@ local function applyLanguage(lang)
             elseif tab == "Players" then btn.Text = "Players"
             elseif tab == "Teleport" then btn.Text = "Teleport"
             elseif tab == "ESP" then btn.Text = "ESP"
+            elseif tab == "Feedback" then btn.Text = "Feedback"
             elseif tab == "Settings" then btn.Text = "Settings"
             end
         end
     end
     
-    -- Обновляем контент
     updateContent()
 end
 
@@ -400,8 +433,6 @@ local function startFly()
     end
     
     coroutine.wrap(updateFly)()
-    
-    -- Обновляем UI свитча
     updateFlySwitchUI()
 end
 
@@ -418,20 +449,13 @@ local function stopFly()
     flyCtrl = {f = 0, b = 0, l = 0, r = 0}
     flyLastCtrl = {f = 0, b = 0, l = 0, r = 0}
     flySpeedValue = flySpeed
-    
-    -- Обновляем UI свитча
     updateFlySwitchUI()
 end
 
--- Кейбинд на Q для полёта с синхронизацией свитча
 flyKeybindConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     if input.KeyCode == Enum.KeyCode.Q then
-        if flying then
-            stopFly()
-        else
-            startFly()
-        end
+        if flying then stopFly() else startFly() end
     end
 end)
 
@@ -831,7 +855,6 @@ local function updateContent()
             end
         end)
         
-        -- Информация о полёте
         local keybindInfoLabel = Instance.new("TextLabel")
         keybindInfoLabel.Size = UDim2.new(0, 350, 0, 20)
         keybindInfoLabel.Position = UDim2.new(0, 20, 0, 420)
@@ -912,7 +935,6 @@ local function updateContent()
                 else 
                     disableFullBright() 
                 end
-                -- Обновляем состояние свитча в UI
                 setFullBrightState(state)
             end
         )
@@ -940,6 +962,97 @@ local function updateContent()
         espLabel.TextSize = 16
         espLabel.TextXAlignment = Enum.TextXAlignment.Left
         espLabel.Parent = contentContainer
+        
+    elseif activeTab == "Feedback" then
+        local feedbackLabel = Instance.new("TextLabel")
+        feedbackLabel.Size = UDim2.new(1, -40, 0, 30)
+        feedbackLabel.Position = UDim2.new(0, 20, 0, 20)
+        feedbackLabel.Text = currentLang == "ru" and "📢 Оставить отзыв" or "📢 Leave Feedback"
+        feedbackLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
+        feedbackLabel.BackgroundTransparency = 1
+        feedbackLabel.Font = Enum.Font.GothamBold
+        feedbackLabel.TextSize = 18
+        feedbackLabel.TextXAlignment = Enum.TextXAlignment.Left
+        feedbackLabel.Parent = contentContainer
+        
+        local feedbackDesc = Instance.new("TextLabel")
+        feedbackDesc.Size = UDim2.new(1, -40, 0, 40)
+        feedbackDesc.Position = UDim2.new(0, 20, 0, 55)
+        feedbackDesc.Text = currentLang == "ru" and "Напиши свои впечатления о скрипте, предложения или сообщи об ошибке. Всё отправится разработчику!" or "Write your impressions of the script, suggestions, or report a bug. Everything will be sent to the developer!"
+        feedbackDesc.TextColor3 = Color3.fromRGB(180, 180, 200)
+        feedbackDesc.BackgroundTransparency = 1
+        feedbackDesc.Font = Enum.Font.Gotham
+        feedbackDesc.TextSize = 12
+        feedbackDesc.TextWrapped = true
+        feedbackDesc.TextXAlignment = Enum.TextXAlignment.Left
+        feedbackDesc.TextYAlignment = Enum.TextYAlignment.Top
+        feedbackDesc.Parent = contentContainer
+        
+        local feedbackBox = Instance.new("TextBox")
+        feedbackBox.Size = UDim2.new(1, -40, 0, 120)
+        feedbackBox.Position = UDim2.new(0, 20, 0, 110)
+        feedbackBox.PlaceholderText = currentLang == "ru" and "Введите ваш отзыв здесь..." or "Enter your feedback here..."
+        feedbackBox.Text = ""
+        feedbackBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+        feedbackBox.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        feedbackBox.BackgroundTransparency = 0.3
+        feedbackBox.BorderSizePixel = 0
+        feedbackBox.Font = Enum.Font.Gotham
+        feedbackBox.TextSize = 14
+        feedbackBox.TextWrapped = true
+        feedbackBox.TextXAlignment = Enum.TextXAlignment.Left
+        feedbackBox.TextYAlignment = Enum.TextYAlignment.Top
+        feedbackBox.Parent = contentContainer
+        Instance.new("UICorner").CornerRadius = UDim.new(0, 8)
+        Instance.new("UICorner").Parent = feedbackBox
+        
+        local sendBtn = Instance.new("TextButton")
+        sendBtn.Size = UDim2.new(0, 200, 0, 40)
+        sendBtn.Position = UDim2.new(0, 20, 0, 245)
+        sendBtn.Text = currentLang == "ru" and "📨 Отправить отзыв" or "📨 Send Feedback"
+        sendBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        sendBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
+        sendBtn.BackgroundTransparency = 0.3
+        sendBtn.BorderSizePixel = 0
+        sendBtn.Font = Enum.Font.GothamBold
+        sendBtn.TextSize = 14
+        sendBtn.Parent = contentContainer
+        Instance.new("UICorner").CornerRadius = UDim.new(0, 8)
+        Instance.new("UICorner").Parent = sendBtn
+        
+        local statusLabel = Instance.new("TextLabel")
+        statusLabel.Size = UDim2.new(1, -40, 0, 30)
+        statusLabel.Position = UDim2.new(0, 20, 0, 295)
+        statusLabel.Text = ""
+        statusLabel.TextColor3 = Color3.fromRGB(150, 200, 150)
+        statusLabel.BackgroundTransparency = 1
+        statusLabel.Font = Enum.Font.Gotham
+        statusLabel.TextSize = 12
+        statusLabel.TextXAlignment = Enum.TextXAlignment.Left
+        statusLabel.Parent = contentContainer
+        
+        sendBtn.MouseButton1Click:Connect(function()
+            local feedbackText = feedbackBox.Text
+            if feedbackText == nil or feedbackText == "" then
+                statusLabel.Text = currentLang == "ru" and "❌ Введите текст отзыва!" or "❌ Enter feedback text!"
+                statusLabel.TextColor3 = Color3.fromRGB(255, 150, 150)
+                task.wait(2)
+                statusLabel.Text = ""
+                return
+            end
+            
+            statusLabel.Text = currentLang == "ru" and "⏳ Отправка..." or "⏳ Sending..."
+            statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+            
+            sendFeedback(LocalPlayer.Name, feedbackText, currentLang)
+            
+            statusLabel.Text = currentLang == "ru" and "✅ Спасибо за отзыв!" or "✅ Thanks for your feedback!"
+            statusLabel.TextColor3 = Color3.fromRGB(150, 255, 150)
+            feedbackBox.Text = ""
+            
+            task.wait(3)
+            statusLabel.Text = ""
+        end)
         
     elseif activeTab == "Settings" then
         local settingsLabel = Instance.new("TextLabel")
@@ -1167,7 +1280,7 @@ local function createUI()
     contentContainer.BackgroundTransparency = 1
     contentContainer.Parent = rightContent
     
-    local tabsList = {"Main", "Visual", "Players", "Teleport", "ESP", "Settings"}
+    local tabsList = {"Main", "Visual", "Players", "Teleport", "ESP", "Feedback", "Settings"}
     local buttonHeight = 40
     local buttonSpacing = 5
     local currentY = 10
@@ -1183,6 +1296,7 @@ local function createUI()
             elseif tab == "Players" then btn.Text = "Игроки"
             elseif tab == "Teleport" then btn.Text = "Телепорт"
             elseif tab == "ESP" then btn.Text = "ESP"
+            elseif tab == "Feedback" then btn.Text = "Отзывы"
             elseif tab == "Settings" then btn.Text = "Настройки"
             end
         else
@@ -1223,9 +1337,11 @@ local function createUI()
     leftPanel.CanvasSize = UDim2.new(0, 0, 0, currentY + 30)
     
     activeTab = "Main"
-    tabButtons["Main"].BackgroundColor3 = Color3.fromRGB(0, 80, 140)
-    tabButtons["Main"].BackgroundTransparency = 0.3
-    tabButtons["Main"].TextColor3 = Color3.fromRGB(0, 200, 255)
+    if tabButtons["Main"] then
+        tabButtons["Main"].BackgroundColor3 = Color3.fromRGB(0, 80, 140)
+        tabButtons["Main"].BackgroundTransparency = 0.3
+        tabButtons["Main"].TextColor3 = Color3.fromRGB(0, 200, 255)
+    end
     
     updateContent()
     
