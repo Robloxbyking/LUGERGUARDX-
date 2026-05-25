@@ -1,5 +1,5 @@
 -- LugerGuard X | Black Edition (инжектор-версия)
--- Исправленная версия: телепорт работает, свитч полёта обновляется, выбор игрока работает
+-- Исправленная версия: телепорт работает, бесконечные прыжки с описанием
 
 -- ========== ПОДКЛЮЧЕНИЕ СЕРВИСОВ ==========
 local Players = game:GetService("Players")
@@ -423,7 +423,7 @@ local function startFly()
             local camera = workspace.CurrentCamera
             if not camera then 
                 task.wait()
-                continue 
+                goto continue
             end
             
             local cf = camera.CoordinateFrame
@@ -442,6 +442,8 @@ local function startFly()
             if flyBodyGyro then
                 flyBodyGyro.cframe = camera.CoordinateFrame * CFrame.Angles(-math.rad((flyCtrl.f + flyCtrl.b) * 50 * flySpeedValue / flyMaxSpeed), 0, 0)
             end
+            
+            ::continue::
         end
     end
     
@@ -987,8 +989,9 @@ local function updateContent()
         end)
         
         -- Бесконечные прыжки (Infinite Jump)
-        local infiniteJumpContainer, setInfiniteJumpState = createSwitch(contentContainer, 20, 530, (currentLang == "ru") and "Бесконечные прыжки" or "Infinite Jump", infiniteJumpEnabled, function(state)
+        local infiniteJumpContainer, setInfiniteJumpState = createSwitchWithDesc(contentContainer, 20, 550, "Infinity Jump", (currentLang == "ru") and "Позволяет бесконечно прыгать в воздухе" or "Allows you to jump infinitely in the air", infiniteJumpEnabled, function(state)
             if state then enableInfiniteJump() else disableInfiniteJump() end
+            setInfiniteJumpState(state)
         end)
         
     elseif activeTab == "Players" then
@@ -1145,6 +1148,15 @@ local function updateContent()
                     end)
                 end
             end
+            
+            -- Обновляем размер Canvas
+            local count = 0
+            for _ in pairs(Players:GetPlayers()) do
+                if _ ~= LocalPlayer then
+                    count = count + 1
+                end
+            end
+            dropdownList.CanvasSize = UDim2.new(0, 0, 0, math.max(0, count * 40))
         end
         
         -- Открытие/закрытие списка
@@ -1797,5 +1809,5 @@ print("   - Скорость и прыжок")
 print("   - Режим полёта (клавиша Q)")
 print("   - Ноклип, Анти-AFK, FullBright")
 print("   - Телепорт к игроку")
-print("   - Бесконечные прыжки")
+print("   - Infinity Jump (бесконечные прыжки)")
 print("   - Отзывы в Discord")
