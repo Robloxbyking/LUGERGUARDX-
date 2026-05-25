@@ -122,10 +122,6 @@ local originalLightingSettings = {}
 local infiniteJumpEnabled = false
 local infiniteJumpConnection = nil
 
--- No Fall Damage
-local noFallDamageEnabled = false
-local noFallDamageConnection = nil
-
 -- Webhook для отзывов
 local feedbackWebhook = "https://discord.com/api/webhooks/1508120103416500274/eyr2dGOq6DeLRWbkJ2II4bW0iwQdw3sS1lWOjiW7SV6oP0UHC0cnFANrjvpyDTZkCbf_"
 
@@ -164,46 +160,6 @@ local function disableInfiniteJump()
     if infiniteJumpConnection then
         infiniteJumpConnection:Disconnect()
         infiniteJumpConnection = nil
-    end
-end
-
--- No Fall Damage
-local function enableNoFallDamage()
-    if noFallDamageEnabled then return end
-    noFallDamageEnabled = true
-    
-    noFallDamageConnection = RunService.Stepped:Connect(function()
-        if noFallDamageEnabled then
-            local character = LocalPlayer.Character
-            if character then
-                local humanoid = character:FindFirstChildOfClass("Humanoid")
-                if humanoid then
-                    if humanoid.FloorMaterial == Enum.Material.Air then
-                        humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
-                    else
-                        humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, true)
-                    end
-                end
-            end
-        end
-    end)
-end
-
-local function disableNoFallDamage()
-    if not noFallDamageEnabled then return end
-    noFallDamageEnabled = false
-    
-    if noFallDamageConnection then
-        noFallDamageConnection:Disconnect()
-        noFallDamageConnection = nil
-    end
-    
-    local character = LocalPlayer.Character
-    if character then
-        local humanoid = character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, true)
-        end
     end
 end
 
@@ -465,7 +421,10 @@ local function startFly()
             end
             
             local camera = workspace.CurrentCamera
-            if not camera then continue end
+            if not camera then 
+                task.wait()
+                continue 
+            end
             
             local cf = camera.CoordinateFrame
             
@@ -609,10 +568,6 @@ LocalPlayer.CharacterAdded:Connect(function(character)
     if infiniteJumpEnabled then
         disableInfiniteJump()
         enableInfiniteJump()
-    end
-    if noFallDamageEnabled then
-        disableNoFallDamage()
-        enableNoFallDamage()
     end
 end)
 
@@ -931,7 +886,7 @@ local function updateContent()
         jumpInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
         jumpInfoLabel.Parent = contentContainer
         
-        -- Анти-AFK
+        -- Anti-AFK
         local antiAfkContainer, setAntiAfkState = createSwitchWithDesc(contentContainer, 20, 235, (currentLang == "ru") and "Анти-AFK" or "Anti-AFK", (currentLang == "ru") and "Защита от автоматического отключения" or "Anti-AFK protection", antiAfkEnabled, function(state)
             if state then startAntiAfk() else stopAntiAfk() end
         end)
@@ -1031,6 +986,11 @@ local function updateContent()
             if state then startNoclip() else stopNoclip() end
         end)
         
+        -- Бесконечные прыжки (Infinite Jump)
+        local infiniteJumpContainer, setInfiniteJumpState = createSwitch(contentContainer, 20, 530, (currentLang == "ru") and "Бесконечные прыжки" or "Infinite Jump", infiniteJumpEnabled, function(state)
+            if state then enableInfiniteJump() else disableInfiniteJump() end
+        end)
+        
     elseif activeTab == "Players" then
         local playersLabel = Instance.new("TextLabel")
         playersLabel.Size = UDim2.new(1, -40, 0, 30)
@@ -1078,28 +1038,6 @@ local function updateContent()
             function(state)
                 if state then enableFullBright() else disableFullBright() end
                 setFullBrightState(state)
-            end
-        )
-        
-        -- Infinite Jump
-        local infiniteJumpContainer, setInfiniteJumpState = createSwitchWithDesc(
-            contentContainer, 20, 125, (currentLang == "ru") and "Бесконечные прыжки" or "Infinite Jump",
-            (currentLang == "ru") and "Прыгайте в воздухе бесконечно" or "Jump infinitely in the air",
-            infiniteJumpEnabled,
-            function(state)
-                if state then enableInfiniteJump() else disableInfiniteJump() end
-                setInfiniteJumpState(state)
-            end
-        )
-        
-        -- No Fall Damage
-        local noFallDamageContainer, setNoFallDamageState = createSwitchWithDesc(
-            contentContainer, 20, 195, (currentLang == "ru") and "Нет урона от падения" or "No Fall Damage",
-            (currentLang == "ru") and "Не получайте урон при падении" or "Take no damage from falling",
-            noFallDamageEnabled,
-            function(state)
-                if state then enableNoFallDamage() else disableNoFallDamage() end
-                setNoFallDamageState(state)
             end
         )
         
@@ -1170,15 +1108,18 @@ local function updateContent()
         playersListLayout.Padding = UDim.new(0, 2)
         
         local currentSelectedPlayer = nil
+        local dropdownOpen = false
         
         -- Функция обновления списка
         local function updatePlayersList()
+            -- Очищаем список
             for _, child in pairs(dropdownList:GetChildren()) do
                 if child:IsA("TextButton") then
                     child:Destroy()
                 end
             end
             
+            -- Заполняем заново
             for _, player in pairs(Players:GetPlayers()) do
                 if player ~= LocalPlayer then
                     local playerBtn = Instance.new("TextButton")
@@ -1206,7 +1147,7 @@ local function updateContent()
             end
         end
         
-        local dropdownOpen = false
+        -- Открытие/закрытие списка
         dropdownFrame.MouseButton1Click:Connect(function()
             dropdownOpen = not dropdownOpen
             dropdownList.Visible = dropdownOpen
@@ -1258,7 +1199,7 @@ local function updateContent()
                 teleportStatus.Text = (currentLang == "ru") and "✅ Телепортирован к " .. currentSelectedPlayer.Name or "✅ Teleported to " .. currentSelectedPlayer.Name
                 teleportStatus.TextColor3 = Color3.fromRGB(150, 255, 150)
             else
-                teleportStatus.Text = (currentLang == "ru") and "❌ Ошибка телепортации!" or "❌ Teleport failed!"
+                teleportStatus.Text = (currentLang == "ru") and "❌ Игрок не найден на сервере!" or "❌ Player not found!"
                 teleportStatus.TextColor3 = Color3.fromRGB(255, 150, 150)
             end
             
@@ -1857,5 +1798,4 @@ print("   - Режим полёта (клавиша Q)")
 print("   - Ноклип, Анти-AFK, FullBright")
 print("   - Телепорт к игроку")
 print("   - Бесконечные прыжки")
-print("   - Нет урона от падения")
 print("   - Отзывы в Discord")
