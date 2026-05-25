@@ -1,5 +1,5 @@
 -- LugerGuard X | Black Edition (инжектор-версия)
--- Исправленная версия: телепорт работает, бесконечные прыжки с описанием
+-- Исправленная версия: всё работает
 
 -- ========== ПОДКЛЮЧЕНИЕ СЕРВИСОВ ==========
 local Players = game:GetService("Players")
@@ -421,29 +421,24 @@ local function startFly()
             end
             
             local camera = workspace.CurrentCamera
-            if not camera then 
-                task.wait()
-                goto continue
+            if camera then
+                local cf = camera.CoordinateFrame
+                
+                if moveDirection.Magnitude > 0 then
+                    local velocity = (cf.LookVector * (flyCtrl.f - flyCtrl.b)) + (cf.RightVector * (flyCtrl.r - flyCtrl.l))
+                    flyBodyVelocity.velocity = velocity * flySpeedValue
+                    flyLastCtrl = {f = flyCtrl.f, b = flyCtrl.b, l = flyCtrl.l, r = flyCtrl.r}
+                elseif flySpeedValue ~= 0 then
+                    local velocity = (cf.LookVector * (flyLastCtrl.f - flyLastCtrl.b)) + (cf.RightVector * (flyLastCtrl.r - flyLastCtrl.l))
+                    flyBodyVelocity.velocity = velocity * flySpeedValue
+                else
+                    flyBodyVelocity.velocity = Vector3.new(0, 0, 0)
+                end
+                
+                if flyBodyGyro then
+                    flyBodyGyro.cframe = camera.CoordinateFrame * CFrame.Angles(-math.rad((flyCtrl.f + flyCtrl.b) * 50 * flySpeedValue / flyMaxSpeed), 0, 0)
+                end
             end
-            
-            local cf = camera.CoordinateFrame
-            
-            if moveDirection.Magnitude > 0 then
-                local velocity = (cf.LookVector * (flyCtrl.f - flyCtrl.b)) + (cf.RightVector * (flyCtrl.r - flyCtrl.l))
-                flyBodyVelocity.velocity = velocity * flySpeedValue
-                flyLastCtrl = {f = flyCtrl.f, b = flyCtrl.b, l = flyCtrl.l, r = flyCtrl.r}
-            elseif flySpeedValue ~= 0 then
-                local velocity = (cf.LookVector * (flyLastCtrl.f - flyLastCtrl.b)) + (cf.RightVector * (flyLastCtrl.r - flyLastCtrl.l))
-                flyBodyVelocity.velocity = velocity * flySpeedValue
-            else
-                flyBodyVelocity.velocity = Vector3.new(0, 0, 0)
-            end
-            
-            if flyBodyGyro then
-                flyBodyGyro.cframe = camera.CoordinateFrame * CFrame.Angles(-math.rad((flyCtrl.f + flyCtrl.b) * 50 * flySpeedValue / flyMaxSpeed), 0, 0)
-            end
-            
-            ::continue::
         end
     end
     
@@ -988,7 +983,7 @@ local function updateContent()
             if state then startNoclip() else stopNoclip() end
         end)
         
-        -- Бесконечные прыжки (Infinite Jump)
+        -- Бесконечные прыжки
         local infiniteJumpContainer, setInfiniteJumpState = createSwitchWithDesc(contentContainer, 20, 550, "Infinity Jump", (currentLang == "ru") and "Позволяет бесконечно прыгать в воздухе" or "Allows you to jump infinitely in the air", infiniteJumpEnabled, function(state)
             if state then enableInfiniteJump() else disableInfiniteJump() end
             setInfiniteJumpState(state)
@@ -1115,14 +1110,12 @@ local function updateContent()
         
         -- Функция обновления списка
         local function updatePlayersList()
-            -- Очищаем список
             for _, child in pairs(dropdownList:GetChildren()) do
                 if child:IsA("TextButton") then
                     child:Destroy()
                 end
             end
             
-            -- Заполняем заново
             for _, player in pairs(Players:GetPlayers()) do
                 if player ~= LocalPlayer then
                     local playerBtn = Instance.new("TextButton")
@@ -1149,10 +1142,10 @@ local function updateContent()
                 end
             end
             
-            -- Обновляем размер Canvas
+            -- Обновляем CanvasSize
             local count = 0
-            for _ in pairs(Players:GetPlayers()) do
-                if _ ~= LocalPlayer then
+            for _, player in pairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer then
                     count = count + 1
                 end
             end
@@ -1219,7 +1212,7 @@ local function updateContent()
             teleportStatus.Text = ""
         end)
         
-        -- Автообновление списка при изменении игроков
+        -- Автообновление списка
         Players.PlayerAdded:Connect(function()
             if dropdownOpen then
                 updatePlayersList()
@@ -1804,10 +1797,3 @@ enBtn.MouseButton1Click:Connect(function()
 end)
 
 print("✅ LugerGuard X успешно загружен!")
-print("📌 Доступные функции:")
-print("   - Скорость и прыжок")
-print("   - Режим полёта (клавиша Q)")
-print("   - Ноклип, Анти-AFK, FullBright")
-print("   - Телепорт к игроку")
-print("   - Infinity Jump (бесконечные прыжки)")
-print("   - Отзывы в Discord")
