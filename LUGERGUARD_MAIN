@@ -166,6 +166,22 @@ local function disableFullBright()
     originalLightingSettings = {}
 end
 
+-- ========== ФУНКЦИЯ ТЕЛЕПОРТА ==========
+local function teleportToPlayer(targetPlayer)
+    if not targetPlayer then return end
+    local character = targetPlayer.Character
+    if not character then return end
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    if not humanoidRootPart then return end
+    
+    local localChar = LocalPlayer.Character
+    if not localChar then return end
+    local localRoot = localChar:FindFirstChild("HumanoidRootPart")
+    if not localRoot then return end
+    
+    localRoot.CFrame = humanoidRootPart.CFrame + Vector3.new(0, 2, 0)
+end
+
 -- ========== ФУНКЦИЯ ОТПРАВКИ ФИДБЕКА ==========
 local function sendFeedback(playerName, message, lang)
     if message == nil or message == "" then
@@ -940,16 +956,157 @@ local function updateContent()
         )
         
     elseif activeTab == "Teleport" then
+        -- ========== ТЕЛЕПОРТ К ИГРОКУ ==========
         local teleportLabel = Instance.new("TextLabel")
         teleportLabel.Size = UDim2.new(1, -40, 0, 30)
         teleportLabel.Position = UDim2.new(0, 20, 0, 20)
-        teleportLabel.Text = currentLang == "ru" and "Телепорт (в разработке)" or "Teleport (in development)"
+        teleportLabel.Text = currentLang == "ru" and "🌟 Телепорт к игроку" or "🌟 Teleport to Player"
         teleportLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
         teleportLabel.BackgroundTransparency = 1
         teleportLabel.Font = Enum.Font.GothamBold
         teleportLabel.TextSize = 16
         teleportLabel.TextXAlignment = Enum.TextXAlignment.Left
         teleportLabel.Parent = contentContainer
+        
+        local dropdownFrame = Instance.new("Frame")
+        dropdownFrame.Size = UDim2.new(0, 250, 0, 40)
+        dropdownFrame.Position = UDim2.new(0, 20, 0, 60)
+        dropdownFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        dropdownFrame.BackgroundTransparency = 0.3
+        dropdownFrame.BorderSizePixel = 0
+        dropdownFrame.Parent = contentContainer
+        Instance.new("UICorner").CornerRadius = UDim.new(0, 8).Parent = dropdownFrame
+        
+        local selectedPlayerLabel = Instance.new("TextLabel")
+        selectedPlayerLabel.Size = UDim2.new(1, -10, 1, 0)
+        selectedPlayerLabel.Position = UDim2.new(0, 10, 0, 0)
+        selectedPlayerLabel.Text = currentLang == "ru" and "Выберите игрока..." or "Select player..."
+        selectedPlayerLabel.TextColor3 = Color3.fromRGB(200, 210, 230)
+        selectedPlayerLabel.BackgroundTransparency = 1
+        selectedPlayerLabel.Font = Enum.Font.Gotham
+        selectedPlayerLabel.TextSize = 14
+        selectedPlayerLabel.TextXAlignment = Enum.TextXAlignment.Left
+        selectedPlayerLabel.Parent = dropdownFrame
+        
+        local dropdownArrow = Instance.new("TextLabel")
+        dropdownArrow.Size = UDim2.new(0, 20, 1, 0)
+        dropdownArrow.Position = UDim2.new(1, -25, 0, 0)
+        dropdownArrow.Text = "▼"
+        dropdownArrow.TextColor3 = Color3.fromRGB(0, 150, 255)
+        dropdownArrow.BackgroundTransparency = 1
+        dropdownArrow.Font = Enum.Font.GothamBold
+        dropdownArrow.TextSize = 12
+        dropdownArrow.Parent = dropdownFrame
+        
+        local dropdownList = Instance.new("ScrollingFrame")
+        dropdownList.Size = UDim2.new(0, 250, 0, 150)
+        dropdownList.Position = UDim2.new(0, 20, 0, 100)
+        dropdownList.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
+        dropdownList.BackgroundTransparency = 0.3
+        dropdownList.BorderSizePixel = 0
+        dropdownList.Visible = false
+        dropdownList.ScrollBarThickness = 4
+        dropdownList.Parent = contentContainer
+        Instance.new("UICorner").CornerRadius = UDim.new(0, 8).Parent = dropdownList
+        
+        local playersListLayout = Instance.new("UIListLayout")
+        playersListLayout.Parent = dropdownList
+        playersListLayout.Padding = UDim.new(0, 2)
+        
+        local currentSelectedPlayer = nil
+        
+        local function updatePlayersList()
+            for _, child in pairs(dropdownList:GetChildren()) do
+                if child:IsA("TextButton") then
+                    child:Destroy()
+                end
+            end
+            
+            for _, player in pairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer then
+                    local playerBtn = Instance.new("TextButton")
+                    playerBtn.Size = UDim2.new(1, -10, 0, 35)
+                    playerBtn.Text = player.Name
+                    playerBtn.TextColor3 = Color3.fromRGB(200, 210, 230)
+                    playerBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+                    playerBtn.BackgroundTransparency = 0.5
+                    playerBtn.BorderSizePixel = 0
+                    playerBtn.Font = Enum.Font.Gotham
+                    playerBtn.TextSize = 14
+                    playerBtn.Parent = dropdownList
+                    Instance.new("UICorner").CornerRadius = UDim.new(0, 6).Parent = playerBtn
+                    
+                    playerBtn.MouseButton1Click:Connect(function()
+                        currentSelectedPlayer = player
+                        selectedPlayerLabel.Text = player.Name
+                        dropdownList.Visible = false
+                    end)
+                end
+            end
+        end
+        
+        local dropdownOpen = false
+        dropdownFrame.MouseButton1Click:Connect(function()
+            dropdownOpen = not dropdownOpen
+            dropdownList.Visible = dropdownOpen
+            if dropdownOpen then
+                updatePlayersList()
+            end
+        end)
+        
+        local teleportBtn = Instance.new("TextButton")
+        teleportBtn.Size = UDim2.new(0, 200, 0, 40)
+        teleportBtn.Position = UDim2.new(0, 20, 0, 270)
+        teleportBtn.Text = currentLang == "ru" and "🚀 Телепортироваться" or "🚀 Teleport"
+        teleportBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        teleportBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
+        teleportBtn.BackgroundTransparency = 0.3
+        teleportBtn.BorderSizePixel = 0
+        teleportBtn.Font = Enum.Font.GothamBold
+        teleportBtn.TextSize = 14
+        teleportBtn.Parent = contentContainer
+        Instance.new("UICorner").CornerRadius = UDim.new(0, 8).Parent = teleportBtn
+        
+        local teleportStatus = Instance.new("TextLabel")
+        teleportStatus.Size = UDim2.new(1, -40, 0, 30)
+        teleportStatus.Position = UDim2.new(0, 20, 0, 325)
+        teleportStatus.Text = ""
+        teleportStatus.TextColor3 = Color3.fromRGB(150, 200, 150)
+        teleportStatus.BackgroundTransparency = 1
+        teleportStatus.Font = Enum.Font.Gotham
+        teleportStatus.TextSize = 12
+        teleportStatus.TextXAlignment = Enum.TextXAlignment.Left
+        teleportStatus.Parent = contentContainer
+        
+        teleportBtn.MouseButton1Click:Connect(function()
+            if not currentSelectedPlayer then
+                teleportStatus.Text = currentLang == "ru" and "❌ Выберите игрока!" or "❌ Select a player!"
+                teleportStatus.TextColor3 = Color3.fromRGB(255, 150, 150)
+                task.wait(2)
+                teleportStatus.Text = ""
+                return
+            end
+            
+            local character = currentSelectedPlayer.Character
+            if not character or not character:FindFirstChild("HumanoidRootPart") then
+                teleportStatus.Text = currentLang == "ru" and "❌ Игрок не найден на сервере!" or "❌ Player not found!"
+                teleportStatus.TextColor3 = Color3.fromRGB(255, 150, 150)
+                task.wait(2)
+                teleportStatus.Text = ""
+                return
+            end
+            
+            teleportStatus.Text = currentLang == "ru" and "⏳ Телепортация к " .. currentSelectedPlayer.Name .. "..." or "⏳ Teleporting to " .. currentSelectedPlayer.Name .. "..."
+            teleportStatus.TextColor3 = Color3.fromRGB(255, 200, 100)
+            
+            teleportToPlayer(currentSelectedPlayer)
+            
+            teleportStatus.Text = currentLang == "ru" and "✅ Телепортирован к " .. currentSelectedPlayer.Name or "✅ Teleported to " .. currentSelectedPlayer.Name
+            teleportStatus.TextColor3 = Color3.fromRGB(150, 255, 150)
+            
+            task.wait(2)
+            teleportStatus.Text = ""
+        end)
         
     elseif activeTab == "ESP" then
         local espLabel = Instance.new("TextLabel")
@@ -1475,241 +1632,3 @@ enBtn.MouseButton1Click:Connect(function()
     langChoiceFrame:Destroy()
     createUI()
 end)
-
--- ________________________________
-
--- ============================================
--- БЛОК ТЕЛЕПОРТА К ИГРОКАМ
--- ============================================
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
-
--- Функция телепортации
-local function teleportToPlayer(targetPlayer)
-    if not targetPlayer then return end
-    local character = targetPlayer.Character
-    if not character then return end
-    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-    if not humanoidRootPart then return end
-    
-    local localChar = LocalPlayer.Character
-    if not localChar then return end
-    local localRoot = localChar:FindFirstChild("HumanoidRootPart")
-    if not localRoot then return end
-    
-    localRoot.CFrame = humanoidRootPart.CFrame + Vector3.new(0, 2, 0)
-end
-
--- Создание GUI для телепорта
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "TeleportGUI"
-screenGui.ResetOnSpawn = false
-screenGui.Parent = game:GetService("CoreGui")
-
-local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 300, 0, 400)
-mainFrame.Position = UDim2.new(0.5, -150, 0.5, -200)
-mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
-mainFrame.BackgroundTransparency = 0.15
-mainFrame.BorderSizePixel = 0
-mainFrame.ClipsDescendants = true
-mainFrame.Parent = screenGui
-
-local mainCorner = Instance.new("UICorner")
-mainCorner.CornerRadius = UDim.new(0, 12)
-mainCorner.Parent = mainFrame
-
--- Заголовок
-local titleBar = Instance.new("Frame")
-titleBar.Size = UDim2.new(1, 0, 0, 40)
-titleBar.BackgroundColor3 = Color3.fromRGB(0, 70, 140)
-titleBar.BackgroundTransparency = 0.4
-titleBar.BorderSizePixel = 0
-titleBar.Parent = mainFrame
-
-local titleCorner = Instance.new("UICorner")
-titleCorner.CornerRadius = UDim.new(0, 12)
-titleCorner.Parent = titleBar
-
-local titleText = Instance.new("TextLabel")
-titleText.Size = UDim2.new(1, -50, 1, 0)
-titleText.Position = UDim2.new(0, 15, 0, 0)
-titleText.Text = "🌟 Телепорт к игроку"
-titleText.TextColor3 = Color3.fromRGB(0, 200, 255)
-titleText.BackgroundTransparency = 1
-titleText.Font = Enum.Font.GothamBold
-titleText.TextSize = 14
-titleText.TextXAlignment = Enum.TextXAlignment.Left
-titleText.Parent = titleBar
-
-local closeBtn = Instance.new("TextButton")
-closeBtn.Size = UDim2.new(0, 30, 0, 30)
-closeBtn.Position = UDim2.new(1, -35, 0, 5)
-closeBtn.Text = "✕"
-closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeBtn.BackgroundTransparency = 1
-closeBtn.Font = Enum.Font.GothamBold
-closeBtn.TextSize = 14
-closeBtn.Parent = titleBar
-
-closeBtn.MouseButton1Click:Connect(function()
-    screenGui:Destroy()
-end)
-
--- Список игроков
-local listContainer = Instance.new("ScrollingFrame")
-listContainer.Size = UDim2.new(1, -20, 1, -60)
-listContainer.Position = UDim2.new(0, 10, 0, 50)
-listContainer.BackgroundColor3 = Color3.fromRGB(10, 10, 18)
-listContainer.BackgroundTransparency = 0.3
-listContainer.BorderSizePixel = 0
-listContainer.ScrollBarThickness = 6
-listContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
-listContainer.Parent = mainFrame
-
-local listCorner = Instance.new("UICorner")
-listCorner.CornerRadius = UDim.new(0, 8)
-listCorner.Parent = listContainer
-
-local contentContainer = Instance.new("Frame")
-contentContainer.Size = UDim2.new(1, 0, 0, 0)
-contentContainer.BackgroundTransparency = 1
-contentContainer.Parent = listContainer
-
-local listLayout = Instance.new("UIListLayout")
-listLayout.Padding = UDim.new(0, 4)
-listLayout.Parent = contentContainer
-
--- Статус
-local statusLabel = Instance.new("TextLabel")
-statusLabel.Size = UDim2.new(1, -20, 0, 30)
-statusLabel.Position = UDim2.new(0, 10, 1, -40)
-statusLabel.Text = "Выберите игрока"
-statusLabel.TextColor3 = Color3.fromRGB(150, 200, 255)
-statusLabel.BackgroundTransparency = 1
-statusLabel.Font = Enum.Font.Gotham
-statusLabel.TextSize = 11
-statusLabel.Parent = mainFrame
-
--- Обновление CanvasSize
-local function updateCanvasSize()
-    local totalHeight = 0
-    for _, child in pairs(contentContainer:GetChildren()) do
-        if child:IsA("Frame") then
-            totalHeight = totalHeight + child.Size.Y.Offset + 4
-        end
-    end
-    contentContainer.Size = UDim2.new(1, 0, 0, totalHeight + 10)
-    listContainer.CanvasSize = UDim2.new(0, 0, 0, totalHeight + 20)
-end
-
-listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvasSize)
-
--- Функция обновления списка игроков
-local function updatePlayersList()
-    for _, child in pairs(contentContainer:GetChildren()) do
-        child:Destroy()
-    end
-    
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer then
-            local playerFrame = Instance.new("Frame")
-            playerFrame.Size = UDim2.new(1, -10, 0, 45)
-            playerFrame.BackgroundColor3 = Color3.fromRGB(25, 35, 45)
-            playerFrame.BackgroundTransparency = 0.4
-            playerFrame.BorderSizePixel = 0
-            playerFrame.Parent = contentContainer
-            
-            local playerCorner = Instance.new("UICorner")
-            playerCorner.CornerRadius = UDim.new(0, 8)
-            playerCorner.Parent = playerFrame
-            
-            local playerName = Instance.new("TextLabel")
-            playerName.Size = UDim2.new(1, -60, 1, 0)
-            playerName.Position = UDim2.new(0, 10, 0, 0)
-            playerName.Text = player.Name
-            playerName.TextColor3 = Color3.fromRGB(220, 220, 240)
-            playerName.BackgroundTransparency = 1
-            playerName.Font = Enum.Font.Gotham
-            playerName.TextSize = 13
-            playerName.TextXAlignment = Enum.TextXAlignment.Left
-            playerName.Parent = playerFrame
-            
-            local teleportBtn = Instance.new("TextButton")
-            teleportBtn.Size = UDim2.new(0, 50, 0, 30)
-            teleportBtn.Position = UDim2.new(1, -55, 0, 7)
-            teleportBtn.Text = "🚀"
-            teleportBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-            teleportBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
-            teleportBtn.BackgroundTransparency = 0.3
-            teleportBtn.BorderSizePixel = 0
-            teleportBtn.Font = Enum.Font.GothamBold
-            teleportBtn.TextSize = 14
-            teleportBtn.Parent = playerFrame
-            
-            local btnCorner = Instance.new("UICorner")
-            btnCorner.CornerRadius = UDim.new(0, 6)
-            btnCorner.Parent = teleportBtn
-            
-            teleportBtn.MouseButton1Click:Connect(function()
-                local character = player.Character
-                if not character or not character:FindFirstChild("HumanoidRootPart") then
-                    statusLabel.Text = "❌ " .. player.Name .. " не найден на сервере!"
-                    statusLabel.TextColor3 = Color3.fromRGB(255, 150, 150)
-                    task.wait(2)
-                    statusLabel.Text = "Выберите игрока"
-                    statusLabel.TextColor3 = Color3.fromRGB(150, 200, 255)
-                    return
-                end
-                
-                statusLabel.Text = "⏳ Телепортация к " .. player.Name .. "..."
-                statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
-                
-                teleportToPlayer(player)
-                
-                statusLabel.Text = "✅ Телепортирован к " .. player.Name
-                statusLabel.TextColor3 = Color3.fromRGB(150, 255, 150)
-                task.wait(2)
-                statusLabel.Text = "Выберите игрока"
-                statusLabel.TextColor3 = Color3.fromRGB(150, 200, 255)
-            end)
-        end
-    end
-    
-    updateCanvasSize()
-end
-
--- Обновляем список при добавлении/удалении игроков
-Players.PlayerAdded:Connect(updatePlayersList)
-Players.PlayerRemoving:Connect(updatePlayersList)
-
--- Запускаем обновление списка
-updatePlayersList()
-
--- Перетаскивание окна
-local dragging = false
-local dragStart = nil
-local startPos = nil
-
-titleBar.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = Vector2.new(input.Position.X, input.Position.Y)
-        startPos = mainFrame.Position
-    end
-end)
-
-titleBar.InputEnded:Connect(function()
-    dragging = false
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = Vector2.new(input.Position.X, input.Position.Y) - dragStart
-        mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-end)
-
-print("✅ Блок телепорта добавлен! Окно появилось на экране.")
