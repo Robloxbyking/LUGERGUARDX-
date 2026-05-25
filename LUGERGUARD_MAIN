@@ -1,5 +1,5 @@
 -- LugerGuard X | Black Edition (инжектор-версия)
--- Исправленная версия: всё работает
+-- Исправленная версия: выбор игрока в телепорте работает
 
 -- ========== ПОДКЛЮЧЕНИЕ СЕРВИСОВ ==========
 local Players = game:GetService("Players")
@@ -121,6 +121,12 @@ local originalLightingSettings = {}
 -- Infinite Jump
 local infiniteJumpEnabled = false
 local infiniteJumpConnection = nil
+
+-- Переменные для телепорта
+local currentSelectedPlayer = nil
+local teleportDropdownList = nil
+local teleportSelectedLabel = nil
+local teleportDropdownOpen = false
 
 -- Webhook для отзывов
 local feedbackWebhook = "https://discord.com/api/webhooks/1508120103416500274/eyr2dGOq6DeLRWbkJ2II4bW0iwQdw3sS1lWOjiW7SV6oP0UHC0cnFANrjvpyDTZkCbf_"
@@ -468,7 +474,6 @@ local function startFly()
     
     coroutine.wrap(updateFly)()
     
-    -- Обновляем свитч в UI
     if currentFlySwitchState then
         currentFlySwitchState(true)
     end
@@ -498,7 +503,6 @@ local function stopFly()
     flyLastCtrl = {f = 0, b = 0, l = 0, r = 0}
     flySpeedValue = flySpeed
     
-    -- Обновляем свитч в UI
     if currentFlySwitchState then
         currentFlySwitchState(false)
     end
@@ -710,6 +714,57 @@ local function createSwitchWithDesc(parent, x, y, text, desc, isOn, callback)
     return container, setState
 end
 
+-- ========== ФУНКЦИЯ ОБНОВЛЕНИЯ СПИСКА ТЕЛЕПОРТА ==========
+local function updateTeleportPlayerList()
+    if not teleportDropdownList then return end
+    
+    for _, child in pairs(teleportDropdownList:GetChildren()) do
+        if child:IsA("TextButton") then
+            child:Destroy()
+        end
+    end
+    
+    local yOffset = 5
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            local playerBtn = Instance.new("TextButton")
+            playerBtn.Size = UDim2.new(1, -10, 0, 35)
+            playerBtn.Position = UDim2.new(0, 5, 0, yOffset)
+            playerBtn.Text = player.Name
+            playerBtn.TextColor3 = Color3.fromRGB(200, 210, 230)
+            playerBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+            playerBtn.BackgroundTransparency = 0.5
+            playerBtn.BorderSizePixel = 0
+            playerBtn.Font = Enum.Font.Gotham
+            playerBtn.TextSize = 14
+            playerBtn.Parent = teleportDropdownList
+            
+            local btnCorner = Instance.new("UICorner")
+            btnCorner.CornerRadius = UDim.new(0, 6)
+            btnCorner.Parent = playerBtn
+            
+            playerBtn.MouseButton1Click:Connect(function()
+                currentSelectedPlayer = player
+                if teleportSelectedLabel then
+                    teleportSelectedLabel.Text = player.Name
+                end
+                teleportDropdownList.Visible = false
+                teleportDropdownOpen = false
+            end)
+            
+            yOffset = yOffset + 40
+        end
+    end
+    
+    local count = 0
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            count = count + 1
+        end
+    end
+    teleportDropdownList.CanvasSize = UDim2.new(0, 0, 0, math.max(0, count * 40 + 10))
+end
+
 -- ========== ОБНОВЛЕНИЕ КОНТЕНТА ВКЛАДОК ==========
 
 local function updateContentHeight()
@@ -890,11 +945,7 @@ local function updateContent()
         
         -- Режим полёта
         local flyContainer, setFlyState = createSwitch(contentContainer, 20, 300, (currentLang == "ru") and "Режим полёта" or "Fly Mode", flying, function(state)
-            if state then 
-                startFly()
-            else 
-                stopFly()
-            end
+            if state then startFly() else stopFly() end
         end)
         currentFlySwitchState = setFlyState
         
@@ -1065,16 +1116,16 @@ local function updateContent()
         dropdownCorner.CornerRadius = UDim.new(0, 8)
         dropdownCorner.Parent = dropdownFrame
         
-        local selectedPlayerLabel = Instance.new("TextLabel")
-        selectedPlayerLabel.Size = UDim2.new(1, -10, 1, 0)
-        selectedPlayerLabel.Position = UDim2.new(0, 10, 0, 0)
-        selectedPlayerLabel.Text = (currentLang == "ru") and "Выберите игрока..." or "Select player..."
-        selectedPlayerLabel.TextColor3 = Color3.fromRGB(200, 210, 230)
-        selectedPlayerLabel.BackgroundTransparency = 1
-        selectedPlayerLabel.Font = Enum.Font.Gotham
-        selectedPlayerLabel.TextSize = 14
-        selectedPlayerLabel.TextXAlignment = Enum.TextXAlignment.Left
-        selectedPlayerLabel.Parent = dropdownFrame
+        teleportSelectedLabel = Instance.new("TextLabel")
+        teleportSelectedLabel.Size = UDim2.new(1, -10, 1, 0)
+        teleportSelectedLabel.Position = UDim2.new(0, 10, 0, 0)
+        teleportSelectedLabel.Text = (currentLang == "ru") and "Выберите игрока..." or "Select player..."
+        teleportSelectedLabel.TextColor3 = Color3.fromRGB(200, 210, 230)
+        teleportSelectedLabel.BackgroundTransparency = 1
+        teleportSelectedLabel.Font = Enum.Font.Gotham
+        teleportSelectedLabel.TextSize = 14
+        teleportSelectedLabel.TextXAlignment = Enum.TextXAlignment.Left
+        teleportSelectedLabel.Parent = dropdownFrame
         
         local dropdownArrow = Instance.new("TextLabel")
         dropdownArrow.Size = UDim2.new(0, 20, 1, 0)
@@ -1087,77 +1138,30 @@ local function updateContent()
         dropdownArrow.Parent = dropdownFrame
         
         -- Список игроков
-        local dropdownList = Instance.new("ScrollingFrame")
-        dropdownList.Size = UDim2.new(0, 250, 0, 150)
-        dropdownList.Position = UDim2.new(0, 20, 0, 100)
-        dropdownList.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
-        dropdownList.BackgroundTransparency = 0.3
-        dropdownList.BorderSizePixel = 0
-        dropdownList.Visible = false
-        dropdownList.ScrollBarThickness = 4
-        dropdownList.Parent = contentContainer
+        teleportDropdownList = Instance.new("ScrollingFrame")
+        teleportDropdownList.Size = UDim2.new(0, 250, 0, 150)
+        teleportDropdownList.Position = UDim2.new(0, 20, 0, 100)
+        teleportDropdownList.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
+        teleportDropdownList.BackgroundTransparency = 0.3
+        teleportDropdownList.BorderSizePixel = 0
+        teleportDropdownList.Visible = false
+        teleportDropdownList.ScrollBarThickness = 4
+        teleportDropdownList.Parent = contentContainer
         
         local dropdownListCorner = Instance.new("UICorner")
         dropdownListCorner.CornerRadius = UDim.new(0, 8)
-        dropdownListCorner.Parent = dropdownList
+        dropdownListCorner.Parent = teleportDropdownList
         
         local playersListLayout = Instance.new("UIListLayout")
-        playersListLayout.Parent = dropdownList
+        playersListLayout.Parent = teleportDropdownList
         playersListLayout.Padding = UDim.new(0, 2)
-        
-        local currentSelectedPlayer = nil
-        local dropdownOpen = false
-        
-        -- Функция обновления списка
-        local function updatePlayersList()
-            for _, child in pairs(dropdownList:GetChildren()) do
-                if child:IsA("TextButton") then
-                    child:Destroy()
-                end
-            end
-            
-            for _, player in pairs(Players:GetPlayers()) do
-                if player ~= LocalPlayer then
-                    local playerBtn = Instance.new("TextButton")
-                    playerBtn.Size = UDim2.new(1, -10, 0, 35)
-                    playerBtn.Text = player.Name
-                    playerBtn.TextColor3 = Color3.fromRGB(200, 210, 230)
-                    playerBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-                    playerBtn.BackgroundTransparency = 0.5
-                    playerBtn.BorderSizePixel = 0
-                    playerBtn.Font = Enum.Font.Gotham
-                    playerBtn.TextSize = 14
-                    playerBtn.Parent = dropdownList
-                    
-                    local playerCorner = Instance.new("UICorner")
-                    playerCorner.CornerRadius = UDim.new(0, 6)
-                    playerCorner.Parent = playerBtn
-                    
-                    playerBtn.MouseButton1Click:Connect(function()
-                        currentSelectedPlayer = player
-                        selectedPlayerLabel.Text = player.Name
-                        dropdownList.Visible = false
-                        dropdownOpen = false
-                    end)
-                end
-            end
-            
-            -- Обновляем CanvasSize
-            local count = 0
-            for _, player in pairs(Players:GetPlayers()) do
-                if player ~= LocalPlayer then
-                    count = count + 1
-                end
-            end
-            dropdownList.CanvasSize = UDim2.new(0, 0, 0, math.max(0, count * 40))
-        end
         
         -- Открытие/закрытие списка
         dropdownFrame.MouseButton1Click:Connect(function()
-            dropdownOpen = not dropdownOpen
-            dropdownList.Visible = dropdownOpen
-            if dropdownOpen then
-                updatePlayersList()
+            teleportDropdownOpen = not teleportDropdownOpen
+            teleportDropdownList.Visible = teleportDropdownOpen
+            if teleportDropdownOpen then
+                updateTeleportPlayerList()
             end
         end)
         
@@ -1214,13 +1218,19 @@ local function updateContent()
         
         -- Автообновление списка
         Players.PlayerAdded:Connect(function()
-            if dropdownOpen then
-                updatePlayersList()
+            if teleportDropdownOpen then
+                updateTeleportPlayerList()
             end
         end)
         Players.PlayerRemoving:Connect(function()
-            if dropdownOpen then
-                updatePlayersList()
+            if teleportDropdownOpen then
+                updateTeleportPlayerList()
+            end
+            if currentSelectedPlayer and not Players:FindFirstChild(currentSelectedPlayer.Name) then
+                currentSelectedPlayer = nil
+                if teleportSelectedLabel then
+                    teleportSelectedLabel.Text = (currentLang == "ru") and "Выберите игрока..." or "Select player..."
+                end
             end
         end)
         
