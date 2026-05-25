@@ -1,4 +1,7 @@
 -- LugerGuard X | Black Edition (инжектор-версия)
+-- Оптимизированная версия с чистой структурой
+
+-- ========== ПОДКЛЮЧЕНИЕ СЕРВИСОВ ==========
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
@@ -7,15 +10,19 @@ local RunService = game:GetService("RunService")
 local VirtualUser = game:GetService("VirtualUser")
 local Lighting = game:GetService("Lighting")
 local HttpService = game:GetService("HttpService")
+local CoreGui = game:GetService("CoreGui")
 
+-- ========== ПРОВЕРКА НА СТУДИЮ ==========
 local isStudio = RunService:IsStudio()
-local parentGui = isStudio and LocalPlayer:WaitForChild("PlayerGui") or game:GetService("CoreGui")
+local parentGui = isStudio and LocalPlayer:WaitForChild("PlayerGui") or CoreGui
 
--- Удаляем старый GUI при повторном запуске
-if parentGui:FindFirstChild("LugerGuardX") then
-    parentGui:FindFirstChild("LugerGuardX"):Destroy()
+-- ========== УДАЛЕНИЕ СТАРОГО GUI ==========
+local existingGui = parentGui:FindFirstChild("LugerGuardX")
+if existingGui then
+    existingGui:Destroy()
 end
 
+-- ========== СОЗДАНИЕ ОСНОВНОГО GUI ==========
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "LugerGuardX"
 screenGui.Parent = parentGui
@@ -28,6 +35,7 @@ langChoiceFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 langChoiceFrame.BackgroundTransparency = 0.1
 langChoiceFrame.BorderSizePixel = 0
 langChoiceFrame.Parent = screenGui
+
 local langCorner = Instance.new("UICorner")
 langCorner.CornerRadius = UDim.new(0, 16)
 langCorner.Parent = langChoiceFrame
@@ -42,6 +50,7 @@ langTitle.TextSize = 14
 langTitle.TextYAlignment = Enum.TextYAlignment.Center
 langTitle.Parent = langChoiceFrame
 
+-- Кнопка русского языка
 local ruBtn = Instance.new("TextButton")
 ruBtn.Size = UDim2.new(0, 120, 0, 45)
 ruBtn.Position = UDim2.new(0.5, -130, 0, 55)
@@ -53,10 +62,12 @@ ruBtn.BorderSizePixel = 0
 ruBtn.Font = Enum.Font.GothamBold
 ruBtn.TextSize = 14
 ruBtn.Parent = langChoiceFrame
+
 local ruCorner = Instance.new("UICorner")
 ruCorner.CornerRadius = UDim.new(0, 8)
 ruCorner.Parent = ruBtn
 
+-- Кнопка английского языка
 local enBtn = Instance.new("TextButton")
 enBtn.Size = UDim2.new(0, 120, 0, 45)
 enBtn.Position = UDim2.new(0.5, 10, 0, 55)
@@ -68,25 +79,18 @@ enBtn.BorderSizePixel = 0
 enBtn.Font = Enum.Font.GothamBold
 enBtn.TextSize = 14
 enBtn.Parent = langChoiceFrame
+
 local enCorner = Instance.new("UICorner")
 enCorner.CornerRadius = UDim.new(0, 8)
 enCorner.Parent = enBtn
 
--- Переменная для языка
+-- ========== ПЕРЕМЕННЫЕ ==========
 local currentLang = nil
-
--- Остальные переменные
-local minWidth = 500
-local minHeight = 400
-local maxWidth = 1000
-local maxHeight = 700
-local currentWidth = 750
-local currentHeight = 520
-
 local mainFrame, topBar, contentFrame, leftPanel, rightContent, contentContainer
 local tabButtons = {}
 local activeTab = "Main"
 
+-- Настройки
 local currentSpeed = 16
 local currentJumpPower = 50
 local speedEnabled = false
@@ -95,6 +99,7 @@ local antiAfkEnabled = false
 local antiAfkConnection = nil
 local afkTicks = 0
 
+-- Полёт
 local flying = false
 local flySpeed = 50
 local flyBodyVelocity = nil
@@ -104,16 +109,26 @@ local flyLastCtrl = {f = 0, b = 0, l = 0, r = 0}
 local flySpeedValue = 50
 local flyMaxSpeed = 200
 local flyKeybindConnection = nil
+local flyInputsConnected = false
 
+-- Ноклип
 local noclipEnabled = false
 local noclipConnection = nil
 
--- ========== FULLBRIGHT ПЕРЕМЕННЫЕ ==========
+-- FullBright
 local fullBrightEnabled = false
 local originalLightingSettings = {}
 
--- ========== WEBHOOK ДЛЯ ФИДБЕКА ==========
+-- Webhook для отзывов
 local feedbackWebhook = "https://discord.com/api/webhooks/1508120103416500274/eyr2dGOq6DeLRWbkJ2II4bW0iwQdw3sS1lWOjiW7SV6oP0UHC0cnFANrjvpyDTZkCbf_"
+
+-- Размеры окна
+local minWidth = 500
+local minHeight = 400
+local maxWidth = 1000
+local maxHeight = 700
+local currentWidth = 750
+local currentHeight = 520
 
 -- ========== FULLBRIGHT ФУНКЦИИ ==========
 local function enableFullBright()
@@ -166,68 +181,6 @@ local function disableFullBright()
     originalLightingSettings = {}
 end
 
--- ========== ФУНКЦИЯ ТЕЛЕПОРТА ==========
-local function teleportToPlayer(targetPlayer)
-    if not targetPlayer then return end
-    local character = targetPlayer.Character
-    if not character then return end
-    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-    if not humanoidRootPart then return end
-    
-    local localChar = LocalPlayer.Character
-    if not localChar then return end
-    local localRoot = localChar:FindFirstChild("HumanoidRootPart")
-    if not localRoot then return end
-    
-    localRoot.CFrame = humanoidRootPart.CFrame + Vector3.new(0, 2, 0)
-end
-
--- ========== ФУНКЦИЯ ОТПРАВКИ ФИДБЕКА ==========
-local function sendFeedback(playerName, message, lang)
-    if message == nil or message == "" then
-        return
-    end
-    
-    local data = {
-        content = nil,
-        embeds = {{
-            title = "📝 Новый отзыв от " .. playerName,
-            description = "```" .. message .. "```",
-            color = 0x00aaff,
-            fields = {
-                {
-                    name = lang == "ru" and "📌 Язык" or "📌 Language",
-                    value = lang == "ru" and "🇷🇺 Русский" or "🇺🇸 English",
-                    inline = true
-                },
-                {
-                    name = "🕐 Время",
-                    value = os.date("%Y-%m-%d %H:%M:%S"),
-                    inline = true
-                }
-            },
-            footer = {
-                text = "LugerGuard X | Feedback System"
-            }
-        }}
-    }
-    
-    local jsonData = HttpService:JSONEncode(data)
-    
-    local headers = {
-        ["Content-Type"] = "application/json"
-    }
-    
-    pcall(function()
-        request({
-            Url = feedbackWebhook,
-            Method = "POST",
-            Headers = headers,
-            Body = jsonData
-        })
-    end)
-end
-
 -- Авто-восстановление FullBright
 Lighting:GetPropertyChangedSignal("ClockTime"):Connect(function()
     if fullBrightEnabled then
@@ -245,77 +198,76 @@ Lighting:GetPropertyChangedSignal("ClockTime"):Connect(function()
     end
 end)
 
--- Функция для обновления свитча Fly Mode в UI
-local function updateFlySwitchUI()
-    if not contentContainer then return end
-    for _, child in pairs(contentContainer:GetChildren()) do
-        if child:IsA("Frame") then
-            local label = child:FindFirstChildOfClass("TextLabel")
-            if label and (label.Text == "Fly Mode" or label.Text == "Режим полёта") then
-                local switchBg = nil
-                for _, obj in pairs(child:GetChildren()) do
-                    if obj:IsA("Frame") and obj ~= label and obj.Size == UDim2.new(0, 40, 0, 20) then
-                        switchBg = obj
-                        break
-                    end
-                end
-                if switchBg then
-                    local knob = switchBg:FindFirstChildOfClass("Frame")
-                    if flying then
-                        switchBg.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
-                        if knob then knob.Position = UDim2.new(1, -18, 0, 2) end
-                    else
-                        switchBg.BackgroundColor3 = Color3.fromRGB(80, 80, 90)
-                        if knob then knob.Position = UDim2.new(0, 2, 0, 2) end
-                    end
-                end
-                break
-            end
-        end
+-- ========== ФУНКЦИЯ ОТПРАВКИ ФИДБЕКА ==========
+local function sendFeedback(playerName, message, lang)
+    if not message or message == "" then
+        return
     end
+    
+    local data = {
+        content = nil,
+        embeds = {{
+            title = "📝 Новый отзыв от " .. playerName,
+            description = "```" .. message .. "```",
+            color = 0x00aaff,
+            fields = {
+                {
+                    name = (lang == "ru") and "📌 Язык" or "📌 Language",
+                    value = (lang == "ru") and "🇷🇺 Русский" or "🇺🇸 English",
+                    inline = true
+                },
+                {
+                    name = "🕐 Время",
+                    value = os.date("%Y-%m-%d %H:%M:%S"),
+                    inline = true
+                }
+            },
+            footer = {text = "LugerGuard X | Feedback System"}
+        }}
+    }
+    
+    local jsonData = HttpService:JSONEncode(data)
+    local headers = {["Content-Type"] = "application/json"}
+    
+    pcall(function()
+        request({
+            Url = feedbackWebhook,
+            Method = "POST",
+            Headers = headers,
+            Body = jsonData
+        })
+    end)
 end
 
--- Функция для применения языка
-local function applyLanguage(lang)
-    currentLang = lang
-    langChoiceFrame:Destroy()
+-- ========== ФУНКЦИЯ ТЕЛЕПОРТА ==========
+local function teleportToPlayer(targetPlayer)
+    if not targetPlayer then return end
     
-    local sub = screenGui:FindFirstChild("SubtitleLabel")
-    if sub then
-        sub.Text = "Premium Murder Mystery 2 Script"
-    end
+    local character = targetPlayer.Character
+    if not character then return end
     
-    for tab, btn in pairs(tabButtons) do
-        if lang == "ru" then
-            if tab == "Main" then btn.Text = "Главная"
-            elseif tab == "Visual" then btn.Text = "Визуал"
-            elseif tab == "Players" then btn.Text = "Игроки"
-            elseif tab == "Teleport" then btn.Text = "Телепорт"
-            elseif tab == "ESP" then btn.Text = "ESP"
-            elseif tab == "Feedback" then btn.Text = "Отзывы"
-            elseif tab == "Settings" then btn.Text = "Настройки"
-            end
-        else
-            if tab == "Main" then btn.Text = "Main"
-            elseif tab == "Visual" then btn.Text = "Visual"
-            elseif tab == "Players" then btn.Text = "Players"
-            elseif tab == "Teleport" then btn.Text = "Teleport"
-            elseif tab == "ESP" then btn.Text = "ESP"
-            elseif tab == "Feedback" then btn.Text = "Feedback"
-            elseif tab == "Settings" then btn.Text = "Settings"
-            end
-        end
-    end
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    if not humanoidRootPart then return end
     
-    updateContent()
+    local localChar = LocalPlayer.Character
+    if not localChar then return end
+    
+    local localRoot = localChar:FindFirstChild("HumanoidRootPart")
+    if not localRoot then return end
+    
+    localRoot.CFrame = humanoidRootPart.CFrame + Vector3.new(0, 2, 0)
 end
 
--- Функции анти-афк, полёта и ноклипа
+-- ========== ОСНОВНЫЕ ФУНКЦИИ ==========
+
+-- Анти-AFK
 local function startAntiAfk()
     if antiAfkEnabled then return end
     antiAfkEnabled = true
+    
     antiAfkConnection = RunService.RenderStepped:Connect(function()
         if not antiAfkEnabled then return end
+        
         afkTicks = afkTicks + 1
         if afkTicks >= 60 then
             afkTicks = 0
@@ -323,6 +275,7 @@ local function startAntiAfk()
                 VirtualUser:CaptureController()
                 VirtualUser:ClickButton2(Vector2.new())
             end)
+            
             local camera = workspace.CurrentCamera
             if camera then
                 local cf = camera.CFrame
@@ -336,6 +289,7 @@ end
 local function stopAntiAfk()
     if not antiAfkEnabled then return end
     antiAfkEnabled = false
+    
     if antiAfkConnection then
         antiAfkConnection:Disconnect()
         antiAfkConnection = nil
@@ -343,17 +297,20 @@ local function stopAntiAfk()
     afkTicks = 0
 end
 
+-- Ноклип
 local function startNoclip()
     if noclipEnabled then return end
     noclipEnabled = true
+    
     noclipConnection = RunService.Stepped:Connect(function()
         if not noclipEnabled then return end
+        
         local char = LocalPlayer.Character
-        if char then
-            for _, part in pairs(char:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    part.CanCollide = false
-                end
+        if not char then return end
+        
+        for _, part in pairs(char:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
             end
         end
     end)
@@ -362,37 +319,43 @@ end
 local function stopNoclip()
     if not noclipEnabled then return end
     noclipEnabled = false
+    
     if noclipConnection then
         noclipConnection:Disconnect()
         noclipConnection = nil
     end
+    
     local char = LocalPlayer.Character
-    if char then
-        for _, part in pairs(char:GetDescendants()) do
-            if part:IsA("BasePart") then
-                part.CanCollide = true
-            end
+    if not char then return end
+    
+    for _, part in pairs(char:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.CanCollide = true
         end
     end
 end
 
-local flyInputsConnected = false
-
+-- Полёт
 local function startFly()
     if flying then return end
     flying = true
+    
     local char = LocalPlayer.Character
     if not char then return end
+    
     local humanoid = char:FindFirstChildOfClass("Humanoid")
-    if not humanoid then return end
     local torso = char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso")
-    if not torso then return end
+    
+    if not humanoid or not torso then return end
+    
     humanoid.PlatformStand = true
+    
     flyBodyGyro = Instance.new("BodyGyro")
     flyBodyGyro.P = 9e4
     flyBodyGyro.maxTorque = Vector3.new(9e9, 9e9, 9e9)
     flyBodyGyro.cframe = torso.CFrame
     flyBodyGyro.Parent = torso
+    
     flyBodyVelocity = Instance.new("BodyVelocity")
     flyBodyVelocity.velocity = Vector3.new(0, 0.1, 0)
     flyBodyVelocity.maxForce = Vector3.new(9e9, 9e9, 9e9)
@@ -402,7 +365,9 @@ local function startFly()
         while flying and char and char.Parent do
             task.wait()
             if not flying then break end
+            
             local moveDirection = Vector3.new(flyCtrl.r - flyCtrl.l, 0, flyCtrl.f - flyCtrl.b)
+            
             if moveDirection.Magnitude > 0 then
                 flySpeedValue = flySpeedValue + 0.5 + (flySpeedValue / flyMaxSpeed)
                 if flySpeedValue > flyMaxSpeed then flySpeedValue = flyMaxSpeed end
@@ -410,8 +375,12 @@ local function startFly()
                 flySpeedValue = flySpeedValue - 1
                 if flySpeedValue < 0 then flySpeedValue = 0 end
             end
+            
             local camera = workspace.CurrentCamera
+            if not camera then continue end
+            
             local cf = camera.CoordinateFrame
+            
             if moveDirection.Magnitude > 0 then
                 local velocity = (cf.LookVector * (flyCtrl.f - flyCtrl.b)) + (cf.RightVector * (flyCtrl.r - flyCtrl.l))
                 flyBodyVelocity.velocity = velocity * flySpeedValue
@@ -422,6 +391,7 @@ local function startFly()
             else
                 flyBodyVelocity.velocity = Vector3.new(0, 0, 0)
             end
+            
             if flyBodyGyro then
                 flyBodyGyro.cframe = camera.CoordinateFrame * CFrame.Angles(-math.rad((flyCtrl.f + flyCtrl.b) * 50 * flySpeedValue / flyMaxSpeed), 0, 0)
             end
@@ -430,16 +400,20 @@ local function startFly()
     
     if not flyInputsConnected then
         flyInputsConnected = true
+        
         UserInputService.InputBegan:Connect(function(input, gameProcessed)
             if gameProcessed or not flying then return end
+            
             local key = input.KeyCode
             if key == Enum.KeyCode.W then flyCtrl.f = 1
             elseif key == Enum.KeyCode.S then flyCtrl.b = 1
             elseif key == Enum.KeyCode.A then flyCtrl.l = 1
             elseif key == Enum.KeyCode.D then flyCtrl.r = 1 end
         end)
+        
         UserInputService.InputEnded:Connect(function(input)
             if not flying then return end
+            
             local key = input.KeyCode
             if key == Enum.KeyCode.W then flyCtrl.f = 0
             elseif key == Enum.KeyCode.S then flyCtrl.b = 0
@@ -455,19 +429,31 @@ end
 local function stopFly()
     if not flying then return end
     flying = false
+    
     local char = LocalPlayer.Character
     if char then
         local humanoid = char:FindFirstChildOfClass("Humanoid")
         if humanoid then humanoid.PlatformStand = false end
     end
-    if flyBodyVelocity then flyBodyVelocity:Destroy() flyBodyVelocity = nil end
-    if flyBodyGyro then flyBodyGyro:Destroy() flyBodyGyro = nil end
+    
+    if flyBodyVelocity then
+        flyBodyVelocity:Destroy()
+        flyBodyVelocity = nil
+    end
+    
+    if flyBodyGyro then
+        flyBodyGyro:Destroy()
+        flyBodyGyro = nil
+    end
+    
     flyCtrl = {f = 0, b = 0, l = 0, r = 0}
     flyLastCtrl = {f = 0, b = 0, l = 0, r = 0}
     flySpeedValue = flySpeed
+    
     updateFlySwitchUI()
 end
 
+-- Клавиша для полёта
 flyKeybindConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     if input.KeyCode == Enum.KeyCode.Q then
@@ -484,8 +470,9 @@ local function setSpeed(speed)
     currentSpeed = math.clamp(speed, 1, 1000)
     if speedEnabled then
         local character = LocalPlayer.Character
-        if character and character:FindFirstChild("Humanoid") then
-            character.Humanoid.WalkSpeed = currentSpeed
+        if character then
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            if humanoid then humanoid.WalkSpeed = currentSpeed end
         end
     end
 end
@@ -494,25 +481,30 @@ local function setJumpPower(jumpPower)
     currentJumpPower = math.clamp(jumpPower, 1, 500)
     if jumpEnabled then
         local character = LocalPlayer.Character
-        if character and character:FindFirstChild("Humanoid") then
-            character.Humanoid.JumpPower = currentJumpPower
+        if character then
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            if humanoid then humanoid.JumpPower = currentJumpPower end
         end
     end
 end
 
+-- Перезагрузка персонажа
 LocalPlayer.CharacterAdded:Connect(function(character)
-    character:WaitForChild("Humanoid")
+    local humanoid = character:WaitForChild("Humanoid")
     task.wait(0.5)
-    if speedEnabled then
-        character.Humanoid.WalkSpeed = currentSpeed
-    else
-        character.Humanoid.WalkSpeed = 16
+    
+    if speedEnabled and humanoid then
+        humanoid.WalkSpeed = currentSpeed
+    elseif humanoid then
+        humanoid.WalkSpeed = 16
     end
-    if jumpEnabled then
-        character.Humanoid.JumpPower = currentJumpPower
-    else
-        character.Humanoid.JumpPower = 50
+    
+    if jumpEnabled and humanoid then
+        humanoid.JumpPower = currentJumpPower
+    elseif humanoid then
+        humanoid.JumpPower = 50
     end
+    
     if flying then stopFly() end
     if noclipEnabled then stopNoclip() end
     if fullBrightEnabled then
@@ -521,7 +513,40 @@ LocalPlayer.CharacterAdded:Connect(function(character)
     end
 end)
 
--- Функция создания свитча
+-- ========== UI КОМПОНЕНТЫ ==========
+
+local function updateFlySwitchUI()
+    if not contentContainer then return end
+    
+    for _, child in pairs(contentContainer:GetChildren()) do
+        if child:IsA("Frame") then
+            local label = child:FindFirstChildOfClass("TextLabel")
+            if label and (label.Text == "Fly Mode" or label.Text == "Режим полёта") then
+                local switchBg = nil
+                for _, obj in pairs(child:GetChildren()) do
+                    if obj:IsA("Frame") and obj ~= label and obj.Size == UDim2.new(0, 40, 0, 20) then
+                        switchBg = obj
+                        break
+                    end
+                end
+                
+                if switchBg then
+                    local knob = switchBg:FindFirstChildOfClass("Frame")
+                    if flying then
+                        switchBg.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+                        if knob then knob.Position = UDim2.new(1, -18, 0, 2) end
+                    else
+                        switchBg.BackgroundColor3 = Color3.fromRGB(80, 80, 90)
+                        if knob then knob.Position = UDim2.new(0, 2, 0, 2) end
+                    end
+                end
+                break
+            end
+        end
+    end
+end
+
+-- Создание простого свитча
 local function createSwitch(parent, x, y, text, isOn, callback)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(0, 200, 0, 30)
@@ -585,7 +610,7 @@ local function createSwitch(parent, x, y, text, isOn, callback)
     return container, setState
 end
 
--- Функция создания свитча с описанием
+-- Создание свитча с описанием
 local function createSwitchWithDesc(parent, x, y, text, desc, isOn, callback)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(0, 280, 0, 55)
@@ -661,14 +686,17 @@ local function createSwitchWithDesc(parent, x, y, text, desc, isOn, callback)
     return container, setState
 end
 
--- Функции обновления UI
+-- ========== ОБНОВЛЕНИЕ КОНТЕНТА ВКЛАДОК ==========
+
 local function updateContentHeight()
     local totalHeight = 0
+    
     for _, child in pairs(contentContainer:GetChildren()) do
         if child:IsA("TextLabel") or child:IsA("TextBox") or child:IsA("TextButton") or child:IsA("Frame") then
             totalHeight = totalHeight + child.Size.Y.Offset + 10
         end
     end
+    
     contentContainer.Size = UDim2.new(1, 0, 0, math.max(totalHeight + 20, rightContent.Size.Y.Offset))
     rightContent.CanvasSize = UDim2.new(0, 0, 0, totalHeight + 30)
 end
@@ -679,18 +707,20 @@ local function updateContent()
     end
     
     if activeTab == "Main" then
-        -- Speed
-        local speedContainer, setSpeedState = createSwitch(contentContainer, 20, 20, currentLang == "ru" and "Скорость" or "Speed", speedEnabled, function(state)
+        -- Скорость
+        local speedContainer, setSpeedState = createSwitch(contentContainer, 20, 20, (currentLang == "ru") and "Скорость" or "Speed", speedEnabled, function(state)
             speedEnabled = state
             if speedEnabled then
                 local character = LocalPlayer.Character
-                if character and character:FindFirstChild("Humanoid") then
-                    character.Humanoid.WalkSpeed = currentSpeed
+                if character then
+                    local humanoid = character:FindFirstChildOfClass("Humanoid")
+                    if humanoid then humanoid.WalkSpeed = currentSpeed end
                 end
             else
                 local character = LocalPlayer.Character
-                if character and character:FindFirstChild("Humanoid") then
-                    character.Humanoid.WalkSpeed = 16
+                if character then
+                    local humanoid = character:FindFirstChildOfClass("Humanoid")
+                    if humanoid then humanoid.WalkSpeed = 16 end
                 end
             end
         end)
@@ -707,13 +737,15 @@ local function updateContent()
         speedBox.Font = Enum.Font.Gotham
         speedBox.TextSize = 14
         speedBox.Parent = contentContainer
-        Instance.new("UICorner").CornerRadius = UDim.new(0, 8)
-        Instance.new("UICorner").Parent = speedBox
+        
+        local speedBoxCorner = Instance.new("UICorner")
+        speedBoxCorner.CornerRadius = UDim.new(0, 8)
+        speedBoxCorner.Parent = speedBox
         
         local applyBtn = Instance.new("TextButton")
         applyBtn.Size = UDim2.new(0, 100, 0, 35)
         applyBtn.Position = UDim2.new(0, 180, 0, 55)
-        applyBtn.Text = currentLang == "ru" and "Применить" or "Apply"
+        applyBtn.Text = (currentLang == "ru") and "Применить" or "Apply"
         applyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
         applyBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 180)
         applyBtn.BackgroundTransparency = 0.3
@@ -721,14 +753,21 @@ local function updateContent()
         applyBtn.Font = Enum.Font.GothamBold
         applyBtn.TextSize = 14
         applyBtn.Parent = contentContainer
-        Instance.new("UICorner").CornerRadius = UDim.new(0, 8)
-        Instance.new("UICorner").Parent = applyBtn
+        
+        local applyCorner = Instance.new("UICorner")
+        applyCorner.CornerRadius = UDim.new(0, 8)
+        applyCorner.Parent = applyBtn
+        
         applyBtn.MouseButton1Click:Connect(function()
             local ns = tonumber(speedBox.Text)
             if ns then
                 currentSpeed = math.clamp(ns, 1, 1000)
-                if speedEnabled and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-                    LocalPlayer.Character.Humanoid.WalkSpeed = currentSpeed
+                if speedEnabled then
+                    local character = LocalPlayer.Character
+                    if character then
+                        local humanoid = character:FindFirstChildOfClass("Humanoid")
+                        if humanoid then humanoid.WalkSpeed = currentSpeed end
+                    end
                 end
             end
         end)
@@ -736,7 +775,7 @@ local function updateContent()
         local speedInfoLabel = Instance.new("TextLabel")
         speedInfoLabel.Size = UDim2.new(0, 350, 0, 20)
         speedInfoLabel.Position = UDim2.new(0, 20, 0, 95)
-        speedInfoLabel.Text = currentLang == "ru" and "Вы можете установить скорость от 16 до 1000" or "You can set speed from 16 to 1000"
+        speedInfoLabel.Text = (currentLang == "ru") and "Вы можете установить скорость от 16 до 1000" or "You can set speed from 16 to 1000"
         speedInfoLabel.TextColor3 = Color3.fromRGB(150, 150, 170)
         speedInfoLabel.BackgroundTransparency = 1
         speedInfoLabel.Font = Enum.Font.Gotham
@@ -744,18 +783,20 @@ local function updateContent()
         speedInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
         speedInfoLabel.Parent = contentContainer
         
-        -- Jump Power
-        local jumpContainer, setJumpState = createSwitch(contentContainer, 20, 125, currentLang == "ru" and "Сила прыжка" or "Jump Power", jumpEnabled, function(state)
+        -- Сила прыжка
+        local jumpContainer, setJumpState = createSwitch(contentContainer, 20, 125, (currentLang == "ru") and "Сила прыжка" or "Jump Power", jumpEnabled, function(state)
             jumpEnabled = state
             if jumpEnabled then
                 local character = LocalPlayer.Character
-                if character and character:FindFirstChild("Humanoid") then
-                    character.Humanoid.JumpPower = currentJumpPower
+                if character then
+                    local humanoid = character:FindFirstChildOfClass("Humanoid")
+                    if humanoid then humanoid.JumpPower = currentJumpPower end
                 end
             else
                 local character = LocalPlayer.Character
-                if character and character:FindFirstChild("Humanoid") then
-                    character.Humanoid.JumpPower = 50
+                if character then
+                    local humanoid = character:FindFirstChildOfClass("Humanoid")
+                    if humanoid then humanoid.JumpPower = 50 end
                 end
             end
         end)
@@ -772,13 +813,15 @@ local function updateContent()
         jumpBox.Font = Enum.Font.Gotham
         jumpBox.TextSize = 14
         jumpBox.Parent = contentContainer
-        Instance.new("UICorner").CornerRadius = UDim.new(0, 8)
-        Instance.new("UICorner").Parent = jumpBox
+        
+        local jumpBoxCorner = Instance.new("UICorner")
+        jumpBoxCorner.CornerRadius = UDim.new(0, 8)
+        jumpBoxCorner.Parent = jumpBox
         
         local applyJumpBtn = Instance.new("TextButton")
         applyJumpBtn.Size = UDim2.new(0, 100, 0, 35)
         applyJumpBtn.Position = UDim2.new(0, 180, 0, 160)
-        applyJumpBtn.Text = currentLang == "ru" and "Применить" or "Apply"
+        applyJumpBtn.Text = (currentLang == "ru") and "Применить" or "Apply"
         applyJumpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
         applyJumpBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 180)
         applyJumpBtn.BackgroundTransparency = 0.3
@@ -786,14 +829,21 @@ local function updateContent()
         applyJumpBtn.Font = Enum.Font.GothamBold
         applyJumpBtn.TextSize = 14
         applyJumpBtn.Parent = contentContainer
-        Instance.new("UICorner").CornerRadius = UDim.new(0, 8)
-        Instance.new("UICorner").Parent = applyJumpBtn
+        
+        local applyJumpCorner = Instance.new("UICorner")
+        applyJumpCorner.CornerRadius = UDim.new(0, 8)
+        applyJumpCorner.Parent = applyJumpBtn
+        
         applyJumpBtn.MouseButton1Click:Connect(function()
             local nj = tonumber(jumpBox.Text)
             if nj then
                 currentJumpPower = math.clamp(nj, 1, 500)
-                if jumpEnabled and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-                    LocalPlayer.Character.Humanoid.JumpPower = currentJumpPower
+                if jumpEnabled then
+                    local character = LocalPlayer.Character
+                    if character then
+                        local humanoid = character:FindFirstChildOfClass("Humanoid")
+                        if humanoid then humanoid.JumpPower = currentJumpPower end
+                    end
                 end
             end
         end)
@@ -801,7 +851,7 @@ local function updateContent()
         local jumpInfoLabel = Instance.new("TextLabel")
         jumpInfoLabel.Size = UDim2.new(0, 350, 0, 20)
         jumpInfoLabel.Position = UDim2.new(0, 20, 0, 200)
-        jumpInfoLabel.Text = currentLang == "ru" and "Вы можете установить силу прыжка от 50 до 500" or "You can set jump power from 50 to 500"
+        jumpInfoLabel.Text = (currentLang == "ru") and "Вы можете установить силу прыжка от 50 до 500" or "You can set jump power from 50 to 500"
         jumpInfoLabel.TextColor3 = Color3.fromRGB(150, 150, 170)
         jumpInfoLabel.BackgroundTransparency = 1
         jumpInfoLabel.Font = Enum.Font.Gotham
@@ -809,21 +859,21 @@ local function updateContent()
         jumpInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
         jumpInfoLabel.Parent = contentContainer
         
-        -- Anti-AFK
-        local antiAfkContainer, setAntiAfkState = createSwitchWithDesc(contentContainer, 20, 235, currentLang == "ru" and "Анти-AFK" or "Anti-AFK", currentLang == "ru" and "Защита от автоматического отключения" or "Anti-AFK protection", antiAfkEnabled, function(state)
+        -- Анти-AFK
+        local antiAfkContainer, setAntiAfkState = createSwitchWithDesc(contentContainer, 20, 235, (currentLang == "ru") and "Анти-AFK" or "Anti-AFK", (currentLang == "ru") and "Защита от автоматического отключения" or "Anti-AFK protection", antiAfkEnabled, function(state)
             if state then startAntiAfk() else stopAntiAfk() end
         end)
         
-        -- Fly Mode
-        local flyContainer, setFlyState = createSwitch(contentContainer, 20, 300, currentLang == "ru" and "Режим полёта" or "Fly Mode", flying, function(state)
+        -- Режим полёта
+        local flyContainer, setFlyState = createSwitch(contentContainer, 20, 300, (currentLang == "ru") and "Режим полёта" or "Fly Mode", flying, function(state)
             if state then startFly() else stopFly() end
         end)
         
-        -- Fly Speed
+        -- Скорость полёта
         local flySpeedLabel = Instance.new("TextLabel")
         flySpeedLabel.Size = UDim2.new(0, 200, 0, 30)
         flySpeedLabel.Position = UDim2.new(0, 20, 0, 340)
-        flySpeedLabel.Text = currentLang == "ru" and "Скорость полёта" or "Fly Speed"
+        flySpeedLabel.Text = (currentLang == "ru") and "Скорость полёта" or "Fly Speed"
         flySpeedLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
         flySpeedLabel.BackgroundTransparency = 1
         flySpeedLabel.Font = Enum.Font.GothamBold
@@ -843,13 +893,15 @@ local function updateContent()
         flySpeedBox.Font = Enum.Font.Gotham
         flySpeedBox.TextSize = 14
         flySpeedBox.Parent = contentContainer
-        Instance.new("UICorner").CornerRadius = UDim.new(0, 8)
-        Instance.new("UICorner").Parent = flySpeedBox
+        
+        local flySpeedBoxCorner = Instance.new("UICorner")
+        flySpeedBoxCorner.CornerRadius = UDim.new(0, 8)
+        flySpeedBoxCorner.Parent = flySpeedBox
         
         local flyApplyBtn = Instance.new("TextButton")
         flyApplyBtn.Size = UDim2.new(0, 100, 0, 35)
         flyApplyBtn.Position = UDim2.new(0, 180, 0, 375)
-        flyApplyBtn.Text = currentLang == "ru" and "Применить" or "Apply"
+        flyApplyBtn.Text = (currentLang == "ru") and "Применить" or "Apply"
         flyApplyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
         flyApplyBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 180)
         flyApplyBtn.BackgroundTransparency = 0.3
@@ -857,8 +909,11 @@ local function updateContent()
         flyApplyBtn.Font = Enum.Font.GothamBold
         flyApplyBtn.TextSize = 14
         flyApplyBtn.Parent = contentContainer
-        Instance.new("UICorner").CornerRadius = UDim.new(0, 8)
-        Instance.new("UICorner").Parent = flyApplyBtn
+        
+        local flyApplyCorner = Instance.new("UICorner")
+        flyApplyCorner.CornerRadius = UDim.new(0, 8)
+        flyApplyCorner.Parent = flyApplyBtn
+        
         flyApplyBtn.MouseButton1Click:Connect(function()
             local nf = tonumber(flySpeedBox.Text)
             if nf then
@@ -871,10 +926,11 @@ local function updateContent()
             end
         end)
         
+        -- Информация о полёте
         local keybindInfoLabel = Instance.new("TextLabel")
         keybindInfoLabel.Size = UDim2.new(0, 350, 0, 20)
         keybindInfoLabel.Position = UDim2.new(0, 20, 0, 420)
-        keybindInfoLabel.Text = currentLang == "ru" and "Клавиша Q - включить/выключить полёт" or "Press Q to toggle fly mode"
+        keybindInfoLabel.Text = (currentLang == "ru") and "Клавиша Q - включить/выключить полёт" or "Press Q to toggle fly mode"
         keybindInfoLabel.TextColor3 = Color3.fromRGB(150, 200, 255)
         keybindInfoLabel.BackgroundTransparency = 1
         keybindInfoLabel.Font = Enum.Font.Gotham
@@ -885,7 +941,7 @@ local function updateContent()
         local flyInfoLabel = Instance.new("TextLabel")
         flyInfoLabel.Size = UDim2.new(0, 350, 0, 20)
         flyInfoLabel.Position = UDim2.new(0, 20, 0, 445)
-        flyInfoLabel.Text = currentLang == "ru" and "Управление: W/A/S/D - движение" or "Controls: W/A/S/D - movement"
+        flyInfoLabel.Text = (currentLang == "ru") and "Управление: W/A/S/D - движение" or "Controls: W/A/S/D - movement"
         flyInfoLabel.TextColor3 = Color3.fromRGB(150, 150, 170)
         flyInfoLabel.BackgroundTransparency = 1
         flyInfoLabel.Font = Enum.Font.Gotham
@@ -893,8 +949,8 @@ local function updateContent()
         flyInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
         flyInfoLabel.Parent = contentContainer
         
-        -- Noclip
-        local noclipContainer, setNoclipState = createSwitchWithDesc(contentContainer, 20, 480, currentLang == "ru" and "Ноклип" or "Noclip", currentLang == "ru" and "Проход сквозь стены" or "Walk through walls", noclipEnabled, function(state)
+        -- Ноклип
+        local noclipContainer, setNoclipState = createSwitchWithDesc(contentContainer, 20, 480, (currentLang == "ru") and "Ноклип" or "Noclip", (currentLang == "ru") and "Проход сквозь стены" or "Walk through walls", noclipEnabled, function(state)
             if state then startNoclip() else stopNoclip() end
         end)
         
@@ -902,7 +958,7 @@ local function updateContent()
         local playersLabel = Instance.new("TextLabel")
         playersLabel.Size = UDim2.new(1, -40, 0, 30)
         playersLabel.Position = UDim2.new(0, 20, 0, 20)
-        playersLabel.Text = currentLang == "ru" and "Игроки на сервере:" or "Players on server:"
+        playersLabel.Text = (currentLang == "ru") and "Игроки на сервере:" or "Players on server:"
         playersLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
         playersLabel.BackgroundTransparency = 1
         playersLabel.Font = Enum.Font.GothamBold
@@ -929,7 +985,7 @@ local function updateContent()
         local visualLabel = Instance.new("TextLabel")
         visualLabel.Size = UDim2.new(1, -40, 0, 30)
         visualLabel.Position = UDim2.new(0, 20, 0, 20)
-        visualLabel.Text = currentLang == "ru" and "Визуальные настройки" or "Visual Settings"
+        visualLabel.Text = (currentLang == "ru") and "Визуальные настройки" or "Visual Settings"
         visualLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
         visualLabel.BackgroundTransparency = 1
         visualLabel.Font = Enum.Font.GothamBold
@@ -939,28 +995,21 @@ local function updateContent()
         
         -- FullBright свитч
         local fullBrightContainer, setFullBrightState = createSwitchWithDesc(
-            contentContainer, 
-            20, 
-            55, 
-            "FullBright", 
-            currentLang == "ru" and "Полная яркость на карте (видно всё)" or "Maximum brightness on map (see everything)", 
-            fullBrightEnabled, 
+            contentContainer, 20, 55, "FullBright",
+            (currentLang == "ru") and "Полная яркость на карте (видно всё)" or "Maximum brightness on map (see everything)",
+            fullBrightEnabled,
             function(state)
-                if state then 
-                    enableFullBright() 
-                else 
-                    disableFullBright() 
-                end
+                if state then enableFullBright() else disableFullBright() end
                 setFullBrightState(state)
             end
         )
         
     elseif activeTab == "Teleport" then
-        -- ========== ТЕЛЕПОРТ К ИГРОКУ ==========
+        -- Телепорт к игроку
         local teleportLabel = Instance.new("TextLabel")
         teleportLabel.Size = UDim2.new(1, -40, 0, 30)
         teleportLabel.Position = UDim2.new(0, 20, 0, 20)
-        teleportLabel.Text = currentLang == "ru" and "🌟 Телепорт к игроку" or "🌟 Teleport to Player"
+        teleportLabel.Text = (currentLang == "ru") and "🌟 Телепорт к игроку" or "🌟 Teleport to Player"
         teleportLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
         teleportLabel.BackgroundTransparency = 1
         teleportLabel.Font = Enum.Font.GothamBold
@@ -975,12 +1024,15 @@ local function updateContent()
         dropdownFrame.BackgroundTransparency = 0.3
         dropdownFrame.BorderSizePixel = 0
         dropdownFrame.Parent = contentContainer
-        Instance.new("UICorner").CornerRadius = UDim.new(0, 8).Parent = dropdownFrame
+        
+        local dropdownCorner = Instance.new("UICorner")
+        dropdownCorner.CornerRadius = UDim.new(0, 8)
+        dropdownCorner.Parent = dropdownFrame
         
         local selectedPlayerLabel = Instance.new("TextLabel")
         selectedPlayerLabel.Size = UDim2.new(1, -10, 1, 0)
         selectedPlayerLabel.Position = UDim2.new(0, 10, 0, 0)
-        selectedPlayerLabel.Text = currentLang == "ru" and "Выберите игрока..." or "Select player..."
+        selectedPlayerLabel.Text = (currentLang == "ru") and "Выберите игрока..." or "Select player..."
         selectedPlayerLabel.TextColor3 = Color3.fromRGB(200, 210, 230)
         selectedPlayerLabel.BackgroundTransparency = 1
         selectedPlayerLabel.Font = Enum.Font.Gotham
@@ -1007,7 +1059,10 @@ local function updateContent()
         dropdownList.Visible = false
         dropdownList.ScrollBarThickness = 4
         dropdownList.Parent = contentContainer
-        Instance.new("UICorner").CornerRadius = UDim.new(0, 8).Parent = dropdownList
+        
+        local dropdownListCorner = Instance.new("UICorner")
+        dropdownListCorner.CornerRadius = UDim.new(0, 8)
+        dropdownListCorner.Parent = dropdownList
         
         local playersListLayout = Instance.new("UIListLayout")
         playersListLayout.Parent = dropdownList
@@ -1034,7 +1089,10 @@ local function updateContent()
                     playerBtn.Font = Enum.Font.Gotham
                     playerBtn.TextSize = 14
                     playerBtn.Parent = dropdownList
-                    Instance.new("UICorner").CornerRadius = UDim.new(0, 6).Parent = playerBtn
+                    
+                    local playerCorner = Instance.new("UICorner")
+                    playerCorner.CornerRadius = UDim.new(0, 6)
+                    playerCorner.Parent = playerBtn
                     
                     playerBtn.MouseButton1Click:Connect(function()
                         currentSelectedPlayer = player
@@ -1057,7 +1115,7 @@ local function updateContent()
         local teleportBtn = Instance.new("TextButton")
         teleportBtn.Size = UDim2.new(0, 200, 0, 40)
         teleportBtn.Position = UDim2.new(0, 20, 0, 270)
-        teleportBtn.Text = currentLang == "ru" and "🚀 Телепортироваться" or "🚀 Teleport"
+        teleportBtn.Text = (currentLang == "ru") and "🚀 Телепортироваться" or "🚀 Teleport"
         teleportBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
         teleportBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
         teleportBtn.BackgroundTransparency = 0.3
@@ -1065,7 +1123,10 @@ local function updateContent()
         teleportBtn.Font = Enum.Font.GothamBold
         teleportBtn.TextSize = 14
         teleportBtn.Parent = contentContainer
-        Instance.new("UICorner").CornerRadius = UDim.new(0, 8).Parent = teleportBtn
+        
+        local teleportCorner = Instance.new("UICorner")
+        teleportCorner.CornerRadius = UDim.new(0, 8)
+        teleportCorner.Parent = teleportBtn
         
         local teleportStatus = Instance.new("TextLabel")
         teleportStatus.Size = UDim2.new(1, -40, 0, 30)
@@ -1080,7 +1141,7 @@ local function updateContent()
         
         teleportBtn.MouseButton1Click:Connect(function()
             if not currentSelectedPlayer then
-                teleportStatus.Text = currentLang == "ru" and "❌ Выберите игрока!" or "❌ Select a player!"
+                teleportStatus.Text = (currentLang == "ru") and "❌ Выберите игрока!" or "❌ Select a player!"
                 teleportStatus.TextColor3 = Color3.fromRGB(255, 150, 150)
                 task.wait(2)
                 teleportStatus.Text = ""
@@ -1089,19 +1150,19 @@ local function updateContent()
             
             local character = currentSelectedPlayer.Character
             if not character or not character:FindFirstChild("HumanoidRootPart") then
-                teleportStatus.Text = currentLang == "ru" and "❌ Игрок не найден на сервере!" or "❌ Player not found!"
+                teleportStatus.Text = (currentLang == "ru") and "❌ Игрок не найден на сервере!" or "❌ Player not found!"
                 teleportStatus.TextColor3 = Color3.fromRGB(255, 150, 150)
                 task.wait(2)
                 teleportStatus.Text = ""
                 return
             end
             
-            teleportStatus.Text = currentLang == "ru" and "⏳ Телепортация к " .. currentSelectedPlayer.Name .. "..." or "⏳ Teleporting to " .. currentSelectedPlayer.Name .. "..."
+            teleportStatus.Text = (currentLang == "ru") and "⏳ Телепортация к " .. currentSelectedPlayer.Name .. "..." or "⏳ Teleporting to " .. currentSelectedPlayer.Name .. "..."
             teleportStatus.TextColor3 = Color3.fromRGB(255, 200, 100)
             
             teleportToPlayer(currentSelectedPlayer)
             
-            teleportStatus.Text = currentLang == "ru" and "✅ Телепортирован к " .. currentSelectedPlayer.Name or "✅ Teleported to " .. currentSelectedPlayer.Name
+            teleportStatus.Text = (currentLang == "ru") and "✅ Телепортирован к " .. currentSelectedPlayer.Name or "✅ Teleported to " .. currentSelectedPlayer.Name
             teleportStatus.TextColor3 = Color3.fromRGB(150, 255, 150)
             
             task.wait(2)
@@ -1112,7 +1173,7 @@ local function updateContent()
         local espLabel = Instance.new("TextLabel")
         espLabel.Size = UDim2.new(1, -40, 0, 30)
         espLabel.Position = UDim2.new(0, 20, 0, 20)
-        espLabel.Text = currentLang == "ru" and "ESP (в разработке)" or "ESP (in development)"
+        espLabel.Text = (currentLang == "ru") and "ESP (в разработке)" or "ESP (in development)"
         espLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
         espLabel.BackgroundTransparency = 1
         espLabel.Font = Enum.Font.GothamBold
@@ -1124,7 +1185,7 @@ local function updateContent()
         local feedbackLabel = Instance.new("TextLabel")
         feedbackLabel.Size = UDim2.new(1, -40, 0, 30)
         feedbackLabel.Position = UDim2.new(0, 20, 0, 20)
-        feedbackLabel.Text = currentLang == "ru" and "📢 Оставить отзыв" or "📢 Leave Feedback"
+        feedbackLabel.Text = (currentLang == "ru") and "📢 Оставить отзыв" or "📢 Leave Feedback"
         feedbackLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
         feedbackLabel.BackgroundTransparency = 1
         feedbackLabel.Font = Enum.Font.GothamBold
@@ -1135,7 +1196,7 @@ local function updateContent()
         local feedbackDesc = Instance.new("TextLabel")
         feedbackDesc.Size = UDim2.new(1, -40, 0, 40)
         feedbackDesc.Position = UDim2.new(0, 20, 0, 55)
-        feedbackDesc.Text = currentLang == "ru" and "Напиши свои впечатления о скрипте, предложения или сообщи об ошибке. Всё отправится разработчику!" or "Write your impressions of the script, suggestions, or report a bug. Everything will be sent to the developer!"
+        feedbackDesc.Text = (currentLang == "ru") and "Напиши свои впечатления о скрипте, предложения или сообщи об ошибке. Всё отправится разработчику!" or "Write your impressions of the script, suggestions, or report a bug. Everything will be sent to the developer!"
         feedbackDesc.TextColor3 = Color3.fromRGB(180, 180, 200)
         feedbackDesc.BackgroundTransparency = 1
         feedbackDesc.Font = Enum.Font.Gotham
@@ -1148,7 +1209,7 @@ local function updateContent()
         local feedbackBox = Instance.new("TextBox")
         feedbackBox.Size = UDim2.new(1, -40, 0, 120)
         feedbackBox.Position = UDim2.new(0, 20, 0, 110)
-        feedbackBox.PlaceholderText = currentLang == "ru" and "Введите ваш отзыв здесь..." or "Enter your feedback here..."
+        feedbackBox.PlaceholderText = (currentLang == "ru") and "Введите ваш отзыв здесь..." or "Enter your feedback here..."
         feedbackBox.Text = ""
         feedbackBox.TextColor3 = Color3.fromRGB(255, 255, 255)
         feedbackBox.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
@@ -1160,13 +1221,15 @@ local function updateContent()
         feedbackBox.TextXAlignment = Enum.TextXAlignment.Left
         feedbackBox.TextYAlignment = Enum.TextYAlignment.Top
         feedbackBox.Parent = contentContainer
-        Instance.new("UICorner").CornerRadius = UDim.new(0, 8)
-        Instance.new("UICorner").Parent = feedbackBox
+        
+        local feedbackBoxCorner = Instance.new("UICorner")
+        feedbackBoxCorner.CornerRadius = UDim.new(0, 8)
+        feedbackBoxCorner.Parent = feedbackBox
         
         local sendBtn = Instance.new("TextButton")
         sendBtn.Size = UDim2.new(0, 200, 0, 40)
         sendBtn.Position = UDim2.new(0, 20, 0, 245)
-        sendBtn.Text = currentLang == "ru" and "📨 Отправить отзыв" or "📨 Send Feedback"
+        sendBtn.Text = (currentLang == "ru") and "📨 Отправить отзыв" or "📨 Send Feedback"
         sendBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
         sendBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
         sendBtn.BackgroundTransparency = 0.3
@@ -1174,8 +1237,10 @@ local function updateContent()
         sendBtn.Font = Enum.Font.GothamBold
         sendBtn.TextSize = 14
         sendBtn.Parent = contentContainer
-        Instance.new("UICorner").CornerRadius = UDim.new(0, 8)
-        Instance.new("UICorner").Parent = sendBtn
+        
+        local sendCorner = Instance.new("UICorner")
+        sendCorner.CornerRadius = UDim.new(0, 8)
+        sendCorner.Parent = sendBtn
         
         local statusLabel = Instance.new("TextLabel")
         statusLabel.Size = UDim2.new(1, -40, 0, 30)
@@ -1190,20 +1255,20 @@ local function updateContent()
         
         sendBtn.MouseButton1Click:Connect(function()
             local feedbackText = feedbackBox.Text
-            if feedbackText == nil or feedbackText == "" then
-                statusLabel.Text = currentLang == "ru" and "❌ Введите текст отзыва!" or "❌ Enter feedback text!"
+            if not feedbackText or feedbackText == "" then
+                statusLabel.Text = (currentLang == "ru") and "❌ Введите текст отзыва!" or "❌ Enter feedback text!"
                 statusLabel.TextColor3 = Color3.fromRGB(255, 150, 150)
                 task.wait(2)
                 statusLabel.Text = ""
                 return
             end
             
-            statusLabel.Text = currentLang == "ru" and "⏳ Отправка..." or "⏳ Sending..."
+            statusLabel.Text = (currentLang == "ru") and "⏳ Отправка..." or "⏳ Sending..."
             statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
             
             sendFeedback(LocalPlayer.Name, feedbackText, currentLang)
             
-            statusLabel.Text = currentLang == "ru" and "✅ Спасибо за отзыв!" or "✅ Thanks for your feedback!"
+            statusLabel.Text = (currentLang == "ru") and "✅ Спасибо за отзыв!" or "✅ Thanks for your feedback!"
             statusLabel.TextColor3 = Color3.fromRGB(150, 255, 150)
             feedbackBox.Text = ""
             
@@ -1215,7 +1280,7 @@ local function updateContent()
         local settingsLabel = Instance.new("TextLabel")
         settingsLabel.Size = UDim2.new(1, -40, 0, 30)
         settingsLabel.Position = UDim2.new(0, 20, 0, 20)
-        settingsLabel.Text = currentLang == "ru" and "Настройки (в разработке)" or "Settings (in development)"
+        settingsLabel.Text = (currentLang == "ru") and "Настройки (в разработке)" or "Settings (in development)"
         settingsLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
         settingsLabel.BackgroundTransparency = 1
         settingsLabel.Font = Enum.Font.GothamBold
@@ -1227,7 +1292,42 @@ local function updateContent()
     updateContentHeight()
 end
 
--- Создание основного UI
+-- ========== ПРИМЕНЕНИЕ ЯЗЫКА ==========
+local function applyLanguage(lang)
+    currentLang = lang
+    langChoiceFrame:Destroy()
+    
+    local sub = screenGui:FindFirstChild("SubtitleLabel")
+    if sub then
+        sub.Text = "Premium Murder Mystery 2 Script"
+    end
+    
+    for tab, btn in pairs(tabButtons) do
+        if lang == "ru" then
+            if tab == "Main" then btn.Text = "Главная"
+            elseif tab == "Visual" then btn.Text = "Визуал"
+            elseif tab == "Players" then btn.Text = "Игроки"
+            elseif tab == "Teleport" then btn.Text = "Телепорт"
+            elseif tab == "ESP" then btn.Text = "ESP"
+            elseif tab == "Feedback" then btn.Text = "Отзывы"
+            elseif tab == "Settings" then btn.Text = "Настройки"
+            end
+        else
+            if tab == "Main" then btn.Text = "Main"
+            elseif tab == "Visual" then btn.Text = "Visual"
+            elseif tab == "Players" then btn.Text = "Players"
+            elseif tab == "Teleport" then btn.Text = "Teleport"
+            elseif tab == "ESP" then btn.Text = "ESP"
+            elseif tab == "Feedback" then btn.Text = "Feedback"
+            elseif tab == "Settings" then btn.Text = "Settings"
+            end
+        end
+    end
+    
+    updateContent()
+end
+
+-- ========== СОЗДАНИЕ ОСНОВНОГО UI ==========
 local function createUI()
     mainFrame = Instance.new("Frame")
     mainFrame.Size = UDim2.new(0, currentWidth, 0, currentHeight)
@@ -1474,11 +1574,13 @@ local function createUI()
         
         btn.MouseButton1Click:Connect(function()
             if activeTab == tab then return end
+            
             for _, b in pairs(tabButtons) do
                 b.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
                 b.BackgroundTransparency = 0.6
                 b.TextColor3 = Color3.fromRGB(160, 170, 190)
             end
+            
             btn.BackgroundColor3 = Color3.fromRGB(0, 80, 140)
             btn.BackgroundTransparency = 0.3
             btn.TextColor3 = Color3.fromRGB(0, 200, 255)
@@ -1526,6 +1628,7 @@ local function createUI()
     local dragging = false
     local dragStart = nil
     local startPos = nil
+    
     topBar.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
@@ -1533,9 +1636,11 @@ local function createUI()
             startPos = mainFrame.Position
         end
     end)
+    
     topBar.InputEnded:Connect(function()
         dragging = false
     end)
+    
     UserInputService.InputChanged:Connect(function(input)
         if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
             local delta = Vector2.new(input.Position.X, input.Position.Y) - dragStart
@@ -1550,14 +1655,17 @@ local function createUI()
         currentHeight = newHeight
         local newXOffset = -newWidth/2
         local newYOffset = -newHeight/2
+        
         TweenService:Create(mainFrame, TweenInfo.new(0.2), {
             Size = UDim2.new(0, newWidth, 0, newHeight),
             Position = UDim2.new(0.5, newXOffset, 0.5, newYOffset)
         }):Play()
+        
         if not isMinimized then
             contentFrame.Visible = true
             contentFrame.BackgroundTransparency = 0.4
         end
+        
         updateContentHeight()
     end
     
@@ -1620,7 +1728,7 @@ local function createUI()
     line.Parent = contentFrame
 end
 
--- Запуск: ждём выбора языка
+-- ========== ЗАПУСК ==========
 ruBtn.MouseButton1Click:Connect(function()
     currentLang = "ru"
     langChoiceFrame:Destroy()
@@ -1632,3 +1740,5 @@ enBtn.MouseButton1Click:Connect(function()
     langChoiceFrame:Destroy()
     createUI()
 end)
+
+print("✅ LugerGuard X успешно загружен!")
