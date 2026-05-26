@@ -1,5 +1,5 @@
 -- LugerGuard X | Black Edition (инжектор-версия)
--- Исправленная версия: ESP работает с определением ролей в MM2
+-- Исправленная версия: ESP постоянно обновляет цвета
 
 -- ========== ПОДКЛЮЧЕНИЕ СЕРВИСОВ ==========
 local Players = game:GetService("Players")
@@ -126,6 +126,7 @@ local infiniteJumpConnection = nil
 local espEnabled = false
 local espHighlightObjects = {}
 local espLoopConnection = nil
+local espColorUpdateLoop = nil
 
 -- Webhook для отзывов
 local feedbackWebhook = "https://discord.com/api/webhooks/1508120103416500274/eyr2dGOq6DeLRWbkJ2II4bW0iwQdw3sS1lWOjiW7SV6oP0UHC0cnFANrjvpyDTZkCbf_"
@@ -307,7 +308,7 @@ local function teleportToPlayer(targetPlayer)
     return true
 end
 
--- ========== ESP ФУНКЦИИ ДЛЯ MM2 ==========
+-- ========== ESP ФУНКЦИИ ДЛЯ MM2 (исправленные) ==========
 
 -- Настройки ESP
 local ESP_CONFIG = {
@@ -325,62 +326,91 @@ local ROLE_COLORS = {
     Unknown = Color3.fromRGB(200, 200, 100)    -- Жёлтый для неизвестных
 }
 
--- Получение цвета для игрока (по роли в MM2)
-local function getPlayerColorForMM2(player)
-    if player == LocalPlayer then
-        return ROLE_COLORS.Normal
+-- Список оружия маньяка
+local MURDERER_WEAPONS = {
+    "Knife", "MurdererKnife", "Dagger", "Sword", "Axe", 
+    "ButterflyKnife", "Karambit", "Machete", "Katana"
+}
+
+-- Список оружия шерифа
+local SHERIFF_WEAPONS = {
+    "Gun", "Revolver", "Pistol", "Flintlock", "SheriffGun",
+    "Handgun", "Magnum", "Colt"
+}
+
+-- Функция определения роли игрока
+local function getPlayerRole(player)
+    if not player or player == LocalPlayer then
+        return "Normal"
     end
     
     local character = player.Character
     if not character then
-        return ROLE_COLORS.Unknown
+        return "Unknown"
     end
     
-    -- Проверка на маньяка (по оружию)
-    local murderWeapons = {"Knife", "MurdererKnife", "Dagger", "Sword", "Axe", "Gun", "Revolver", "Pistol", "Flintlock"}
-    for _, weaponName in pairs(murderWeapons) do
+    local hasMurdererWeapon = false
+    local hasSheriffWeapon = false
+    
+    -- Проверка оружия в руках (Character)
+    for _, weaponName in pairs(MURDERER_WEAPONS) do
         local weapon = character:FindFirstChild(weaponName)
         if weapon and weapon:IsA("Tool") then
-            return ROLE_COLORS.Murderer
+            hasMurdererWeapon = true
+            break
         end
     end
     
-    -- Проверка на шерифа (по пистолету)
-    local sheriffWeapons = {"Gun", "Revolver", "Pistol", "Flintlock", "SheriffGun"}
-    for _, weaponName in pairs(sheriffWeapons) do
+    for _, weaponName in pairs(SHERIFF_WEAPONS) do
         local weapon = character:FindFirstChild(weaponName)
         if weapon and weapon:IsA("Tool") then
-            return ROLE_COLORS.Sheriff
+            hasSheriffWeapon = true
+            break
         end
     end
     
     -- Проверка через Backpack
-    local backpack = player.Backpack
+    local backpack = player:FindFirstChild("Backpack")
     if backpack then
-        for _, weaponName in pairs(murderWeapons) do
+        for _, weaponName in pairs(MURDERER_WEAPONS) do
             local weapon = backpack:FindFirstChild(weaponName)
             if weapon and weapon:IsA("Tool") then
-                return ROLE_COLORS.Murderer
+                hasMurdererWeapon = true
+                break
             end
         end
-        for _, weaponName in pairs(sheriffWeapons) do
+        for _, weaponName in pairs(SHERIFF_WEAPONS) do
             local weapon = backpack:FindFirstChild(weaponName)
             if weapon and weapon:IsA("Tool") then
-                return ROLE_COLORS.Sheriff
+                hasSheriffWeapon = true
+                break
             end
         end
     end
     
-    -- Дополнительные проверки для MM2
+    -- Определение роли
+    if hasSheriffWeapon then
+        return "Sheriff"
+    elseif hasMurdererWeapon then
+        return "Murderer"
+    end
+    
+    -- Проверка через специальные атрибуты/теги
     if character:FindFirstChild("Murderer") or character:FindFirstChild("IsMurderer") then
-        return ROLE_COLORS.Murderer
+        return "Murderer"
     end
     
     if character:FindFirstChild("Sheriff") or character:FindFirstChild("IsSheriff") then
-        return ROLE_COLORS.Sheriff
+        return "Sheriff"
     end
     
-    return ROLE_COLORS.Normal
+    return "Normal"
+end
+
+-- Получение цвета для игрока
+local function getPlayerColorForMM2(player)
+    local role = getPlayerRole(player)
+    return ROLE_COLORS[role] or ROLE_COLORS.Normal
 end
 
 -- Создание ESP для одного игрока
@@ -423,13 +453,33 @@ local function removeESPFromPlayer(player)
     end
 end
 
--- Обновление цвета ESP (при смене оружия/роли)
-local function updateESPColor(player)
+-- Обновление цвета ESP для игрока
+local function updateESPColorForPlayer(player)
     if not espEnabled then return end
     if not espHighlightObjects[player] then return end
     
     pcall(function()
-        espHighlightObjects[player].FillColor = getPlayerColorForMM2(player)
+        local newColor = getPlayerColorForMM2(player)
+        if espHighlightObjects[player].FillColor ~= newColor then
+            espHighlightObjects[player].FillColor = newColor
+        end
+    end)
+end
+
+-- Функция постоянного обновления цветов
+local function startColorUpdateLoop()
+    if espColorUpdateLoop then return end
+    
+    espColorUpdateLoop = task.spawn(function()
+        while espEnabled do
+            for player, _ in pairs(espHighlightObjects) do
+                if player and player.Character then
+                    updateESPColorForPlayer(player)
+                end
+            end
+            task.wait(0.3)
+        end
+        espColorUpdateLoop = nil
     end)
 end
 
@@ -444,10 +494,13 @@ local function enableESP()
         end
     end
     
+    -- Запускаем цикл обновления цветов
+    startColorUpdateLoop()
+    
     -- Следим за появлением новых игроков
     espLoopConnection = Players.PlayerAdded:Connect(function(player)
         if espEnabled and player ~= LocalPlayer then
-            local function onCharacterAdded(character)
+            local function onCharacterAdded()
                 task.wait(0.5)
                 addESPToPlayer(player)
             end
@@ -459,12 +512,12 @@ local function enableESP()
         end
     end)
     
-    -- Следим за добавлением оружия (смена роли)
-    local function onChildAdded(child)
+    -- Следим за добавлением оружия (мгновенное обновление)
+    local function onWeaponAdded(child)
         if child:IsA("Tool") then
-            for player, highlight in pairs(espHighlightObjects) do
+            for player, _ in pairs(espHighlightObjects) do
                 if player.Character and child.Parent == player.Character then
-                    updateESPColor(player)
+                    updateESPColorForPlayer(player)
                 end
             end
         end
@@ -472,22 +525,7 @@ local function enableESP()
     
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= LocalPlayer and player.Character then
-            player.Character.ChildAdded:Connect(onChildAdded)
-        end
-    end
-    
-    -- Следим за появлением персонажа у существующих игроков
-    local function onCharacterAdded(player, character)
-        character.ChildAdded:Connect(onChildAdded)
-        task.wait(0.5)
-        addESPToPlayer(player)
-    end
-    
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer then
-            player.CharacterAdded:Connect(function(character)
-                onCharacterAdded(player, character)
-            end)
+            player.Character.ChildAdded:Connect(onWeaponAdded)
         end
     end
 end
