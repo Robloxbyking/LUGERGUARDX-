@@ -1,5 +1,5 @@
 -- LugerGuard X | Black Edition (инжектор-версия)
--- Исправленная версия: ESP постоянно обновляет цвета
+-- Исправленная версия: ESP с именами игроков
 
 -- ========== ПОДКЛЮЧЕНИЕ СЕРВИСОВ ==========
 local Players = game:GetService("Players")
@@ -308,14 +308,17 @@ local function teleportToPlayer(targetPlayer)
     return true
 end
 
--- ========== ESP ФУНКЦИИ ДЛЯ MM2 (исправленные) ==========
+-- ========== ESP ФУНКЦИИ ДЛЯ MM2 (с именами игроков) ==========
 
 -- Настройки ESP
 local ESP_CONFIG = {
     FillTransparency = 0.7,
     OutlineTransparency = 0.5,
     OutlineColor = Color3.fromRGB(255, 255, 255),
-    DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    DepthMode = Enum.HighlightDepthMode.AlwaysOnTop,
+    NameTagVisible = true,      -- Показывать имена
+    NameTagSize = 18,           -- Размер текста
+    NameTagOffset = 2.5         -- Смещение над головой
 }
 
 -- Цвета для разных ролей в MM2
@@ -413,7 +416,77 @@ local function getPlayerColorForMM2(player)
     return ROLE_COLORS[role] or ROLE_COLORS.Normal
 end
 
--- Создание ESP для одного игрока
+-- Создание BillboardGui для имени игрока
+local function createNameTag(player)
+    if not player or player == LocalPlayer then return nil end
+    if not player.Character then return nil end
+    
+    local head = player.Character:FindFirstChild("Head")
+    if not head then return nil end
+    
+    -- Создаём BillboardGui
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "LugerGuardNameTag"
+    billboard.Adornee = head
+    billboard.Size = UDim2.new(0, 200, 0, 40)
+    billboard.StudsOffset = Vector3.new(0, ESP_CONFIG.NameTagOffset, 0)
+    billboard.AlwaysOnTop = true
+    billboard.Enabled = true
+    billboard.Parent = head
+    
+    -- Текст с именем
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Name = "NameLabel"
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.Text = player.Name
+    textLabel.TextColor3 = getPlayerColorForMM2(player)
+    textLabel.TextSize = ESP_CONFIG.NameTagSize
+    textLabel.TextStrokeTransparency = 0.3
+    textLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    textLabel.Font = Enum.Font.GothamBold
+    textLabel.TextScaled = false
+    textLabel.Parent = billboard
+    
+    return billboard
+end
+
+-- Обновление цвета имени
+local function updateNameTagColor(player)
+    if not player or not ESP_CONFIG.NameTagVisible then return end
+    
+    local character = player.Character
+    if not character then return end
+    
+    local head = character:FindFirstChild("Head")
+    if not head then return end
+    
+    local billboard = head:FindFirstChild("LugerGuardNameTag")
+    if not billboard then return end
+    
+    local textLabel = billboard:FindFirstChild("NameLabel")
+    if textLabel then
+        textLabel.TextColor3 = getPlayerColorForMM2(player)
+    end
+end
+
+-- Удаление имени игрока
+local function removeNameTag(player)
+    if not player then return end
+    
+    local character = player.Character
+    if not character then return end
+    
+    local head = character:FindFirstChild("Head")
+    if not head then return end
+    
+    local billboard = head:FindFirstChild("LugerGuardNameTag")
+    if billboard then
+        billboard:Destroy()
+    end
+end
+
+-- Создание ESP (Highlight) для одного игрока
 local function addESPToPlayer(player)
     if not player or player == LocalPlayer then return end
     if not player.Character then return end
@@ -441,6 +514,12 @@ local function addESPToPlayer(player)
     highlight.Parent = character
     
     espHighlightObjects[player] = highlight
+    
+    -- Добавляем имя игрока если включено
+    if ESP_CONFIG.NameTagVisible then
+        task.wait(0.1)
+        createNameTag(player)
+    end
 end
 
 -- Удаление ESP для игрока
@@ -451,9 +530,12 @@ local function removeESPFromPlayer(player)
         end)
         espHighlightObjects[player] = nil
     end
+    
+    -- Удаляем имя игрока
+    removeNameTag(player)
 end
 
--- Обновление цвета ESP для игрока
+-- Обновление цвета ESP и имени для игрока
 local function updateESPColorForPlayer(player)
     if not espEnabled then return end
     if not espHighlightObjects[player] then return end
@@ -463,6 +545,8 @@ local function updateESPColorForPlayer(player)
         if espHighlightObjects[player].FillColor ~= newColor then
             espHighlightObjects[player].FillColor = newColor
         end
+        -- Обновляем цвет имени
+        updateNameTagColor(player)
     end)
 end
 
@@ -544,6 +628,8 @@ local function disableESP()
         pcall(function()
             highlight:Destroy()
         end)
+        -- Удаляем имя игрока
+        removeNameTag(player)
     end
     espHighlightObjects = {}
 end
@@ -557,6 +643,11 @@ local function refreshESP()
             pcall(function()
                 highlight.Adornee = player.Character
                 highlight.FillColor = getPlayerColorForMM2(player)
+                -- Обновляем имя
+                removeNameTag(player)
+                if ESP_CONFIG.NameTagVisible then
+                    createNameTag(player)
+                end
             end)
         else
             removeESPFromPlayer(player)
@@ -1519,10 +1610,32 @@ local function updateContent()
             end
         )
         
+        -- Свитч для имён игроков
+        local nameTagContainer, setNameTagState = createSwitchWithDesc(
+            contentContainer, 20, 125, (currentLang == "ru") and "Показывать имена" or "Show names",
+            (currentLang == "ru") and "Отображать никнеймы над игроками" or "Display player names above heads",
+            ESP_CONFIG.NameTagVisible,
+            function(state)
+                ESP_CONFIG.NameTagVisible = state
+                setNameTagState(state)
+                
+                -- Обновляем отображение имён для всех игроков
+                if espEnabled then
+                    for player, _ in pairs(espHighlightObjects) do
+                        if state then
+                            createNameTag(player)
+                        else
+                            removeNameTag(player)
+                        end
+                    end
+                end
+            end
+        )
+        
         -- Информация о цветах для MM2
         local colorInfoLabel = Instance.new("TextLabel")
         colorInfoLabel.Size = UDim2.new(1, -40, 0, 25)
-        colorInfoLabel.Position = UDim2.new(0, 20, 0, 125)
+        colorInfoLabel.Position = UDim2.new(0, 20, 0, 195)
         colorInfoLabel.Text = (currentLang == "ru") and "Цвета подсветки:" or "Highlight colors:"
         colorInfoLabel.TextColor3 = Color3.fromRGB(180, 185, 200)
         colorInfoLabel.BackgroundTransparency = 1
@@ -1534,7 +1647,7 @@ local function updateContent()
         -- Описание цветов для MM2
         local colorDesc = Instance.new("TextLabel")
         colorDesc.Size = UDim2.new(1, -40, 0, 60)
-        colorDesc.Position = UDim2.new(0, 20, 0, 150)
+        colorDesc.Position = UDim2.new(0, 20, 0, 220)
         colorDesc.Text = (currentLang == "ru") and "🔴 Красный: Маньяк\n🔵 Синий: Шериф\n⚪ Серый: Обычный игрок" or "🔴 Red: Murderer\n🔵 Blue: Sheriff\n⚪ Gray: Normal player"
         colorDesc.TextColor3 = Color3.fromRGB(150, 155, 170)
         colorDesc.BackgroundTransparency = 1
@@ -1547,7 +1660,7 @@ local function updateContent()
         -- Дополнительная информация
         local espInfo = Instance.new("TextLabel")
         espInfo.Size = UDim2.new(1, -40, 0, 35)
-        espInfo.Position = UDim2.new(0, 20, 0, 225)
+        espInfo.Position = UDim2.new(0, 20, 0, 295)
         espInfo.Text = (currentLang == "ru") and "ESP автоматически определяет роли по оружию" or "ESP automatically detects roles by weapons"
         espInfo.TextColor3 = Color3.fromRGB(150, 155, 170)
         espInfo.BackgroundTransparency = 1
@@ -2124,5 +2237,5 @@ print("   - Режим полёта (клавиша Q)")
 print("   - Ноклип, Анти-AFK, FullBright")
 print("   - Телепорт к игроку")
 print("   - Infinity Jump (бесконечные прыжки)")
-print("   - ESP (подсветка игроков)")
+print("   - ESP (подсветка игроков + имена)")
 print("   - Отзывы в Discord")
