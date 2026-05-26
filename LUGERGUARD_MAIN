@@ -1,5 +1,5 @@
 -- LugerGuard X | Black Edition (инжектор-версия)
--- Исправленная версия: телепорт работает, ESP добавлен
+-- Исправленная версия: ESP работает с определением ролей в MM2
 
 -- ========== ПОДКЛЮЧЕНИЕ СЕРВИСОВ ==========
 local Players = game:GetService("Players")
@@ -126,11 +126,6 @@ local infiniteJumpConnection = nil
 local espEnabled = false
 local espHighlightObjects = {}
 local espLoopConnection = nil
-
--- Настройки ESP (можно менять)
-_G.FriendColor = Color3.fromRGB(0, 150, 255)   -- Синий для союзников
-_G.EnemyColor = Color3.fromRGB(255, 50, 50)    -- Красный для врагов
-_G.UseTeamColor = true                          -- Использовать цвета команд
 
 -- Webhook для отзывов
 local feedbackWebhook = "https://discord.com/api/webhooks/1508120103416500274/eyr2dGOq6DeLRWbkJ2II4bW0iwQdw3sS1lWOjiW7SV6oP0UHC0cnFANrjvpyDTZkCbf_"
@@ -312,7 +307,7 @@ local function teleportToPlayer(targetPlayer)
     return true
 end
 
--- ========== ESP ФУНКЦИИ ==========
+-- ========== ESP ФУНКЦИИ ДЛЯ MM2 ==========
 
 -- Настройки ESP
 local ESP_CONFIG = {
@@ -322,18 +317,70 @@ local ESP_CONFIG = {
     DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
 }
 
--- Получение цвета для игрока
-local function getPlayerColor(player)
-    if _G.UseTeamColor and player.Team then
-        return player.TeamColor.Color
-    else
-        local localPlayer = Players.LocalPlayer
-        if localPlayer.Team == player.Team then
-            return _G.FriendColor or Color3.fromRGB(0, 150, 255)
-        else
-            return _G.EnemyColor or Color3.fromRGB(255, 50, 50)
+-- Цвета для разных ролей в MM2
+local ROLE_COLORS = {
+    Murderer = Color3.fromRGB(255, 50, 50),    -- Красный для маньяка
+    Sheriff = Color3.fromRGB(50, 150, 255),    -- Синий для шерифа
+    Normal = Color3.fromRGB(150, 150, 150),    -- Серый для обычных
+    Unknown = Color3.fromRGB(200, 200, 100)    -- Жёлтый для неизвестных
+}
+
+-- Получение цвета для игрока (по роли в MM2)
+local function getPlayerColorForMM2(player)
+    if player == LocalPlayer then
+        return ROLE_COLORS.Normal
+    end
+    
+    local character = player.Character
+    if not character then
+        return ROLE_COLORS.Unknown
+    end
+    
+    -- Проверка на маньяка (по оружию)
+    local murderWeapons = {"Knife", "MurdererKnife", "Dagger", "Sword", "Axe", "Gun", "Revolver", "Pistol", "Flintlock"}
+    for _, weaponName in pairs(murderWeapons) do
+        local weapon = character:FindFirstChild(weaponName)
+        if weapon and weapon:IsA("Tool") then
+            return ROLE_COLORS.Murderer
         end
     end
+    
+    -- Проверка на шерифа (по пистолету)
+    local sheriffWeapons = {"Gun", "Revolver", "Pistol", "Flintlock", "SheriffGun"}
+    for _, weaponName in pairs(sheriffWeapons) do
+        local weapon = character:FindFirstChild(weaponName)
+        if weapon and weapon:IsA("Tool") then
+            return ROLE_COLORS.Sheriff
+        end
+    end
+    
+    -- Проверка через Backpack
+    local backpack = player.Backpack
+    if backpack then
+        for _, weaponName in pairs(murderWeapons) do
+            local weapon = backpack:FindFirstChild(weaponName)
+            if weapon and weapon:IsA("Tool") then
+                return ROLE_COLORS.Murderer
+            end
+        end
+        for _, weaponName in pairs(sheriffWeapons) do
+            local weapon = backpack:FindFirstChild(weaponName)
+            if weapon and weapon:IsA("Tool") then
+                return ROLE_COLORS.Sheriff
+            end
+        end
+    end
+    
+    -- Дополнительные проверки для MM2
+    if character:FindFirstChild("Murderer") or character:FindFirstChild("IsMurderer") then
+        return ROLE_COLORS.Murderer
+    end
+    
+    if character:FindFirstChild("Sheriff") or character:FindFirstChild("IsSheriff") then
+        return ROLE_COLORS.Sheriff
+    end
+    
+    return ROLE_COLORS.Normal
 end
 
 -- Создание ESP для одного игрока
@@ -356,7 +403,7 @@ local function addESPToPlayer(player)
     local highlight = Instance.new("Highlight")
     highlight.Name = "LugerGuardESP"
     highlight.Adornee = character
-    highlight.FillColor = getPlayerColor(player)
+    highlight.FillColor = getPlayerColorForMM2(player)
     highlight.FillTransparency = ESP_CONFIG.FillTransparency
     highlight.OutlineColor = ESP_CONFIG.OutlineColor
     highlight.OutlineTransparency = ESP_CONFIG.OutlineTransparency
@@ -376,13 +423,13 @@ local function removeESPFromPlayer(player)
     end
 end
 
--- Обновление цвета ESP (при смене команды и т.д.)
+-- Обновление цвета ESP (при смене оружия/роли)
 local function updateESPColor(player)
     if not espEnabled then return end
     if not espHighlightObjects[player] then return end
     
     pcall(function()
-        espHighlightObjects[player].FillColor = getPlayerColor(player)
+        espHighlightObjects[player].FillColor = getPlayerColorForMM2(player)
     end)
 end
 
@@ -400,7 +447,6 @@ local function enableESP()
     -- Следим за появлением новых игроков
     espLoopConnection = Players.PlayerAdded:Connect(function(player)
         if espEnabled and player ~= LocalPlayer then
-            -- Ждём появления персонажа
             local function onCharacterAdded(character)
                 task.wait(0.5)
                 addESPToPlayer(player)
@@ -413,16 +459,35 @@ local function enableESP()
         end
     end)
     
-    -- Следим за сменой команды
-    local function onTeamChanged()
-        if espEnabled then
-            updateESPColor(player)
+    -- Следим за добавлением оружия (смена роли)
+    local function onChildAdded(child)
+        if child:IsA("Tool") then
+            for player, highlight in pairs(espHighlightObjects) do
+                if player.Character and child.Parent == player.Character then
+                    updateESPColor(player)
+                end
+            end
         end
     end
     
     for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            player.Character.ChildAdded:Connect(onChildAdded)
+        end
+    end
+    
+    -- Следим за появлением персонажа у существующих игроков
+    local function onCharacterAdded(player, character)
+        character.ChildAdded:Connect(onChildAdded)
+        task.wait(0.5)
+        addESPToPlayer(player)
+    end
+    
+    for _, player in pairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
-            player:GetPropertyChangedSignal("Team"):Connect(onTeamChanged)
+            player.CharacterAdded:Connect(function(character)
+                onCharacterAdded(player, character)
+            end)
         end
     end
 end
@@ -453,6 +518,7 @@ local function refreshESP()
         if player and player.Character then
             pcall(function()
                 highlight.Adornee = player.Character
+                highlight.FillColor = getPlayerColorForMM2(player)
             end)
         else
             removeESPFromPlayer(player)
@@ -1415,7 +1481,7 @@ local function updateContent()
             end
         )
         
-        -- Информация о цветах
+        -- Информация о цветах для MM2
         local colorInfoLabel = Instance.new("TextLabel")
         colorInfoLabel.Size = UDim2.new(1, -40, 0, 25)
         colorInfoLabel.Position = UDim2.new(0, 20, 0, 125)
@@ -1427,11 +1493,11 @@ local function updateContent()
         colorInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
         colorInfoLabel.Parent = contentContainer
         
-        -- Описание цветов
+        -- Описание цветов для MM2
         local colorDesc = Instance.new("TextLabel")
-        colorDesc.Size = UDim2.new(1, -40, 0, 45)
+        colorDesc.Size = UDim2.new(1, -40, 0, 60)
         colorDesc.Position = UDim2.new(0, 20, 0, 150)
-        colorDesc.Text = (currentLang == "ru") and "🔴 Враги: Красный\n🔵 Союзники: Синий" or "🔴 Enemies: Red\n🔵 Teammates: Blue"
+        colorDesc.Text = (currentLang == "ru") and "🔴 Красный: Маньяк\n🔵 Синий: Шериф\n⚪ Серый: Обычный игрок" or "🔴 Red: Murderer\n🔵 Blue: Sheriff\n⚪ Gray: Normal player"
         colorDesc.TextColor3 = Color3.fromRGB(150, 155, 170)
         colorDesc.BackgroundTransparency = 1
         colorDesc.Font = Enum.Font.Gotham
@@ -1443,8 +1509,8 @@ local function updateContent()
         -- Дополнительная информация
         local espInfo = Instance.new("TextLabel")
         espInfo.Size = UDim2.new(1, -40, 0, 35)
-        espInfo.Position = UDim2.new(0, 20, 0, 210)
-        espInfo.Text = (currentLang == "ru") and "ESP работает через стены и показывает позицию игроков" or "ESP works through walls and shows player positions"
+        espInfo.Position = UDim2.new(0, 20, 0, 225)
+        espInfo.Text = (currentLang == "ru") and "ESP автоматически определяет роли по оружию" or "ESP automatically detects roles by weapons"
         espInfo.TextColor3 = Color3.fromRGB(150, 155, 170)
         espInfo.BackgroundTransparency = 1
         espInfo.Font = Enum.Font.Gotham
