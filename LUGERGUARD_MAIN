@@ -1,5 +1,5 @@
 -- LugerGuard X | Black Edition (инжектор-версия)
--- Исправленная версия: телепорт через кнопки с именами игроков
+-- Исправленная версия: телепорт работает, ESP добавлен
 
 -- ========== ПОДКЛЮЧЕНИЕ СЕРВИСОВ ==========
 local Players = game:GetService("Players")
@@ -121,6 +121,16 @@ local originalLightingSettings = {}
 -- Infinite Jump
 local infiniteJumpEnabled = false
 local infiniteJumpConnection = nil
+
+-- ESP переменные
+local espEnabled = false
+local espHighlightObjects = {}
+local espLoopConnection = nil
+
+-- Настройки ESP (можно менять)
+_G.FriendColor = Color3.fromRGB(0, 150, 255)   -- Синий для союзников
+_G.EnemyColor = Color3.fromRGB(255, 50, 50)    -- Красный для врагов
+_G.UseTeamColor = true                          -- Использовать цвета команд
 
 -- Webhook для отзывов
 local feedbackWebhook = "https://discord.com/api/webhooks/1508120103416500274/eyr2dGOq6DeLRWbkJ2II4bW0iwQdw3sS1lWOjiW7SV6oP0UHC0cnFANrjvpyDTZkCbf_"
@@ -301,6 +311,170 @@ local function teleportToPlayer(targetPlayer)
     localRoot.CFrame = humanoidRootPart.CFrame + Vector3.new(0, 2, 0)
     return true
 end
+
+-- ========== ESP ФУНКЦИИ ==========
+
+-- Настройки ESP
+local ESP_CONFIG = {
+    FillTransparency = 0.7,
+    OutlineTransparency = 0.5,
+    OutlineColor = Color3.fromRGB(255, 255, 255),
+    DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+}
+
+-- Получение цвета для игрока
+local function getPlayerColor(player)
+    if _G.UseTeamColor and player.Team then
+        return player.TeamColor.Color
+    else
+        local localPlayer = Players.LocalPlayer
+        if localPlayer.Team == player.Team then
+            return _G.FriendColor or Color3.fromRGB(0, 150, 255)
+        else
+            return _G.EnemyColor or Color3.fromRGB(255, 50, 50)
+        end
+    end
+end
+
+-- Создание ESP для одного игрока
+local function addESPToPlayer(player)
+    if not player or player == LocalPlayer then return end
+    if not player.Character then return end
+    
+    local character = player.Character
+    if not character or character:FindFirstChild("HumanoidRootPart") == nil then return end
+    
+    -- Удаляем старый ESP если есть
+    if espHighlightObjects[player] then
+        pcall(function()
+            espHighlightObjects[player]:Destroy()
+        end)
+        espHighlightObjects[player] = nil
+    end
+    
+    -- Создаём новый Highlight
+    local highlight = Instance.new("Highlight")
+    highlight.Name = "LugerGuardESP"
+    highlight.Adornee = character
+    highlight.FillColor = getPlayerColor(player)
+    highlight.FillTransparency = ESP_CONFIG.FillTransparency
+    highlight.OutlineColor = ESP_CONFIG.OutlineColor
+    highlight.OutlineTransparency = ESP_CONFIG.OutlineTransparency
+    highlight.DepthMode = ESP_CONFIG.DepthMode
+    highlight.Parent = character
+    
+    espHighlightObjects[player] = highlight
+end
+
+-- Удаление ESP для игрока
+local function removeESPFromPlayer(player)
+    if espHighlightObjects[player] then
+        pcall(function()
+            espHighlightObjects[player]:Destroy()
+        end)
+        espHighlightObjects[player] = nil
+    end
+end
+
+-- Обновление цвета ESP (при смене команды и т.д.)
+local function updateESPColor(player)
+    if not espEnabled then return end
+    if not espHighlightObjects[player] then return end
+    
+    pcall(function()
+        espHighlightObjects[player].FillColor = getPlayerColor(player)
+    end)
+end
+
+-- Включение ESP для всех игроков
+local function enableESP()
+    if espEnabled then return end
+    espEnabled = true
+    
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            addESPToPlayer(player)
+        end
+    end
+    
+    -- Следим за появлением новых игроков
+    espLoopConnection = Players.PlayerAdded:Connect(function(player)
+        if espEnabled and player ~= LocalPlayer then
+            -- Ждём появления персонажа
+            local function onCharacterAdded(character)
+                task.wait(0.5)
+                addESPToPlayer(player)
+            end
+            if player.Character then
+                addESPToPlayer(player)
+            else
+                player.CharacterAdded:Once(onCharacterAdded)
+            end
+        end
+    end)
+    
+    -- Следим за сменой команды
+    local function onTeamChanged()
+        if espEnabled then
+            updateESPColor(player)
+        end
+    end
+    
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            player:GetPropertyChangedSignal("Team"):Connect(onTeamChanged)
+        end
+    end
+end
+
+-- Выключение ESP
+local function disableESP()
+    if not espEnabled then return end
+    espEnabled = false
+    
+    if espLoopConnection then
+        espLoopConnection:Disconnect()
+        espLoopConnection = nil
+    end
+    
+    for player, highlight in pairs(espHighlightObjects) do
+        pcall(function()
+            highlight:Destroy()
+        end)
+    end
+    espHighlightObjects = {}
+end
+
+-- Обновление ESP после перезагрузки персонажа
+local function refreshESP()
+    if not espEnabled then return end
+    
+    for player, highlight in pairs(espHighlightObjects) do
+        if player and player.Character then
+            pcall(function()
+                highlight.Adornee = player.Character
+            end)
+        else
+            removeESPFromPlayer(player)
+        end
+    end
+    
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and not espHighlightObjects[player] then
+            addESPToPlayer(player)
+        end
+    end
+end
+
+-- Подписываемся на события для обновления ESP
+Players.PlayerRemoving:Connect(function(player)
+    removeESPFromPlayer(player)
+end)
+
+LocalPlayer.CharacterAdded:Connect(function()
+    task.wait(1)
+    refreshESP()
+end)
 
 -- ========== ОСНОВНЫЕ ФУНКЦИИ ==========
 
@@ -724,76 +898,87 @@ local function updateTeleportPlayersList(container, statusLabel)
             
             -- Контейнер для одного игрока
             local playerFrame = Instance.new("Frame")
-            playerFrame.Size = UDim2.new(1, -20, 0, 40)
+            playerFrame.Size = UDim2.new(1, -20, 0, 35)
             playerFrame.Position = UDim2.new(0, 0, 0, yOffset)
-            playerFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-            playerFrame.BackgroundTransparency = 0.3
+            playerFrame.BackgroundColor3 = Color3.fromRGB(25, 30, 35)
+            playerFrame.BackgroundTransparency = 0.4
             playerFrame.BorderSizePixel = 0
             playerFrame.Parent = container
             
             local frameCorner = Instance.new("UICorner")
-            frameCorner.CornerRadius = UDim.new(0, 8)
+            frameCorner.CornerRadius = UDim.new(0, 6)
             frameCorner.Parent = playerFrame
             
             -- Имя игрока
             local nameLabel = Instance.new("TextLabel")
-            nameLabel.Size = UDim2.new(1, -80, 1, 0)
-            nameLabel.Position = UDim2.new(0, 10, 0, 0)
+            nameLabel.Size = UDim2.new(1, -70, 1, 0)
+            nameLabel.Position = UDim2.new(0, 12, 0, 0)
             nameLabel.Text = player.Name
-            nameLabel.TextColor3 = Color3.fromRGB(200, 210, 230)
+            nameLabel.TextColor3 = Color3.fromRGB(210, 215, 225)
             nameLabel.BackgroundTransparency = 1
             nameLabel.Font = Enum.Font.Gotham
-            nameLabel.TextSize = 14
+            nameLabel.TextSize = 13
             nameLabel.TextXAlignment = Enum.TextXAlignment.Left
             nameLabel.Parent = playerFrame
             
             -- Кнопка телепорта
             local teleportPlayerBtn = Instance.new("TextButton")
-            teleportPlayerBtn.Size = UDim2.new(0, 60, 0, 30)
-            teleportPlayerBtn.Position = UDim2.new(1, -70, 0, 5)
-            teleportPlayerBtn.Text = "🚀"
+            teleportPlayerBtn.Size = UDim2.new(0, 55, 0, 26)
+            teleportPlayerBtn.Position = UDim2.new(1, -62, 0, 4.5)
+            teleportPlayerBtn.Text = "TP"
             teleportPlayerBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-            teleportPlayerBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
-            teleportPlayerBtn.BackgroundTransparency = 0.3
+            teleportPlayerBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 180)
+            teleportPlayerBtn.BackgroundTransparency = 0.2
             teleportPlayerBtn.BorderSizePixel = 0
             teleportPlayerBtn.Font = Enum.Font.GothamBold
-            teleportPlayerBtn.TextSize = 16
+            teleportPlayerBtn.TextSize = 12
             teleportPlayerBtn.Parent = playerFrame
             
             local btnCorner = Instance.new("UICorner")
-            btnCorner.CornerRadius = UDim.new(0, 6)
+            btnCorner.CornerRadius = UDim.new(0, 4)
             btnCorner.Parent = teleportPlayerBtn
+            
+            -- Hover эффект
+            teleportPlayerBtn.MouseEnter:Connect(function()
+                teleportPlayerBtn.BackgroundTransparency = 0.4
+                teleportPlayerBtn.TextColor3 = Color3.fromRGB(0, 200, 255)
+            end)
+            
+            teleportPlayerBtn.MouseLeave:Connect(function()
+                teleportPlayerBtn.BackgroundTransparency = 0.2
+                teleportPlayerBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+            end)
             
             teleportPlayerBtn.MouseButton1Click:Connect(function()
                 local success = teleportToPlayer(player)
                 if statusLabel then
                     if success then
-                        statusLabel.Text = (currentLang == "ru") and "✅ Телепортирован к " .. player.Name or "✅ Teleported to " .. player.Name
-                        statusLabel.TextColor3 = Color3.fromRGB(150, 255, 150)
+                        statusLabel.Text = (currentLang == "ru") and "✓ Телепортирован к " .. player.Name or "✓ Teleported to " .. player.Name
+                        statusLabel.TextColor3 = Color3.fromRGB(100, 200, 100)
                     else
-                        statusLabel.Text = (currentLang == "ru") and "❌ Не удалось телепортироваться к " .. player.Name or "❌ Failed to teleport to " .. player.Name
-                        statusLabel.TextColor3 = Color3.fromRGB(255, 150, 150)
+                        statusLabel.Text = (currentLang == "ru") and "✗ Не удалось телепортироваться к " .. player.Name or "✗ Failed to teleport to " .. player.Name
+                        statusLabel.TextColor3 = Color3.fromRGB(255, 120, 120)
                     end
                     task.wait(2)
                     statusLabel.Text = ""
                 end
             end)
             
-            yOffset = yOffset + 45
+            yOffset = yOffset + 40
         end
     end
     
     if playerCount == 0 then
         local emptyLabel = Instance.new("TextLabel")
-        emptyLabel.Size = UDim2.new(1, -20, 0, 40)
+        emptyLabel.Size = UDim2.new(1, -20, 0, 35)
         emptyLabel.Position = UDim2.new(0, 0, 0, 0)
-        emptyLabel.Text = (currentLang == "ru") and "❌ Нет других игроков на сервере" or "❌ No other players on server"
-        emptyLabel.TextColor3 = Color3.fromRGB(255, 150, 150)
+        emptyLabel.Text = (currentLang == "ru") and "Нет других игроков на сервере" or "No other players on server"
+        emptyLabel.TextColor3 = Color3.fromRGB(180, 180, 200)
         emptyLabel.BackgroundTransparency = 1
         emptyLabel.Font = Enum.Font.Gotham
-        emptyLabel.TextSize = 14
+        emptyLabel.TextSize = 12
         emptyLabel.Parent = container
-        yOffset = 45
+        yOffset = 40
     end
     
     container.Size = UDim2.new(1, 0, 0, yOffset + 10)
@@ -1125,11 +1310,11 @@ local function updateContent()
         )
         
     elseif activeTab == "Teleport" then
-        -- Телепорт к игроку
+        -- Заголовок
         local teleportLabel = Instance.new("TextLabel")
         teleportLabel.Size = UDim2.new(1, -40, 0, 30)
         teleportLabel.Position = UDim2.new(0, 20, 0, 20)
-        teleportLabel.Text = (currentLang == "ru") and "🌟 Телепорт к игроку" or "🌟 Teleport to Player"
+        teleportLabel.Text = (currentLang == "ru") and "Телепорт к игроку" or "Teleport to Player"
         teleportLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
         teleportLabel.BackgroundTransparency = 1
         teleportLabel.Font = Enum.Font.GothamBold
@@ -1137,11 +1322,23 @@ local function updateContent()
         teleportLabel.TextXAlignment = Enum.TextXAlignment.Left
         teleportLabel.Parent = contentContainer
         
+        -- Описание
+        local teleportDesc = Instance.new("TextLabel")
+        teleportDesc.Size = UDim2.new(1, -40, 0, 25)
+        teleportDesc.Position = UDim2.new(0, 20, 0, 50)
+        teleportDesc.Text = (currentLang == "ru") and "Нажмите TP чтобы переместиться к игроку" or "Click TP to teleport to player"
+        teleportDesc.TextColor3 = Color3.fromRGB(150, 155, 170)
+        teleportDesc.BackgroundTransparency = 1
+        teleportDesc.Font = Enum.Font.Gotham
+        teleportDesc.TextSize = 11
+        teleportDesc.TextXAlignment = Enum.TextXAlignment.Left
+        teleportDesc.Parent = contentContainer
+        
         -- Контейнер для списка игроков
         local playersContainer = Instance.new("ScrollingFrame")
-        playersContainer.Size = UDim2.new(1, -40, 0, 300)
-        playersContainer.Position = UDim2.new(0, 20, 0, 55)
-        playersContainer.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+        playersContainer.Size = UDim2.new(1, -40, 0, 280)
+        playersContainer.Position = UDim2.new(0, 20, 0, 85)
+        playersContainer.BackgroundColor3 = Color3.fromRGB(12, 12, 18)
         playersContainer.BackgroundTransparency = 0.3
         playersContainer.BorderSizePixel = 0
         playersContainer.ScrollBarThickness = 4
@@ -1149,7 +1346,7 @@ local function updateContent()
         playersContainer.Parent = contentContainer
         
         local playersContainerCorner = Instance.new("UICorner")
-        playersContainerCorner.CornerRadius = UDim.new(0, 12)
+        playersContainerCorner.CornerRadius = UDim.new(0, 8)
         playersContainerCorner.Parent = playersContainer
         
         -- Внутренний контейнер для кнопок
@@ -1160,13 +1357,13 @@ local function updateContent()
         
         -- Статус телепорта
         local teleportStatus = Instance.new("TextLabel")
-        teleportStatus.Size = UDim2.new(1, -40, 0, 30)
-        teleportStatus.Position = UDim2.new(0, 20, 0, 365)
+        teleportStatus.Size = UDim2.new(1, -40, 0, 25)
+        teleportStatus.Position = UDim2.new(0, 20, 0, 375)
         teleportStatus.Text = ""
         teleportStatus.TextColor3 = Color3.fromRGB(150, 200, 150)
         teleportStatus.BackgroundTransparency = 1
         teleportStatus.Font = Enum.Font.Gotham
-        teleportStatus.TextSize = 12
+        teleportStatus.TextSize = 11
         teleportStatus.TextXAlignment = Enum.TextXAlignment.Left
         teleportStatus.Parent = contentContainer
         
@@ -1175,7 +1372,7 @@ local function updateContent()
         
         -- Обновляем CanvasSize
         local function updateCanvas()
-            playersContainer.CanvasSize = UDim2.new(0, 0, 0, innerContainer.Size.Y.Offset + 20)
+            playersContainer.CanvasSize = UDim2.new(0, 0, 0, innerContainer.Size.Y.Offset + 10)
         end
         
         innerContainer:GetPropertyChangedSignal("Size"):Connect(updateCanvas)
@@ -1191,16 +1388,70 @@ local function updateContent()
         Players.PlayerRemoving:Connect(refreshList)
         
     elseif activeTab == "ESP" then
+        -- Заголовок
         local espLabel = Instance.new("TextLabel")
         espLabel.Size = UDim2.new(1, -40, 0, 30)
         espLabel.Position = UDim2.new(0, 20, 0, 20)
-        espLabel.Text = (currentLang == "ru") and "ESP (в разработке)" or "ESP (in development)"
+        espLabel.Text = (currentLang == "ru") and "ESP (Highlight)" or "ESP (Highlight)"
         espLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
         espLabel.BackgroundTransparency = 1
         espLabel.Font = Enum.Font.GothamBold
         espLabel.TextSize = 16
         espLabel.TextXAlignment = Enum.TextXAlignment.Left
         espLabel.Parent = contentContainer
+        
+        -- ESP свитч с описанием
+        local espContainer, setEspState = createSwitchWithDesc(
+            contentContainer, 20, 55, "ESP",
+            (currentLang == "ru") and "Подсветка игроков через стены" or "Highlight players through walls",
+            espEnabled,
+            function(state)
+                if state then
+                    enableESP()
+                else
+                    disableESP()
+                end
+                setEspState(state)
+            end
+        )
+        
+        -- Информация о цветах
+        local colorInfoLabel = Instance.new("TextLabel")
+        colorInfoLabel.Size = UDim2.new(1, -40, 0, 25)
+        colorInfoLabel.Position = UDim2.new(0, 20, 0, 125)
+        colorInfoLabel.Text = (currentLang == "ru") and "Цвета подсветки:" or "Highlight colors:"
+        colorInfoLabel.TextColor3 = Color3.fromRGB(180, 185, 200)
+        colorInfoLabel.BackgroundTransparency = 1
+        colorInfoLabel.Font = Enum.Font.GothamBold
+        colorInfoLabel.TextSize = 13
+        colorInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
+        colorInfoLabel.Parent = contentContainer
+        
+        -- Описание цветов
+        local colorDesc = Instance.new("TextLabel")
+        colorDesc.Size = UDim2.new(1, -40, 0, 45)
+        colorDesc.Position = UDim2.new(0, 20, 0, 150)
+        colorDesc.Text = (currentLang == "ru") and "🔴 Враги: Красный\n🔵 Союзники: Синий" or "🔴 Enemies: Red\n🔵 Teammates: Blue"
+        colorDesc.TextColor3 = Color3.fromRGB(150, 155, 170)
+        colorDesc.BackgroundTransparency = 1
+        colorDesc.Font = Enum.Font.Gotham
+        colorDesc.TextSize = 11
+        colorDesc.TextXAlignment = Enum.TextXAlignment.Left
+        colorDesc.TextYAlignment = Enum.TextYAlignment.Top
+        colorDesc.Parent = contentContainer
+        
+        -- Дополнительная информация
+        local espInfo = Instance.new("TextLabel")
+        espInfo.Size = UDim2.new(1, -40, 0, 35)
+        espInfo.Position = UDim2.new(0, 20, 0, 210)
+        espInfo.Text = (currentLang == "ru") and "ESP работает через стены и показывает позицию игроков" or "ESP works through walls and shows player positions"
+        espInfo.TextColor3 = Color3.fromRGB(150, 155, 170)
+        espInfo.BackgroundTransparency = 1
+        espInfo.Font = Enum.Font.Gotham
+        espInfo.TextSize = 11
+        espInfo.TextWrapped = true
+        espInfo.TextXAlignment = Enum.TextXAlignment.Left
+        espInfo.Parent = contentContainer
         
     elseif activeTab == "Feedback" then
         local feedbackLabel = Instance.new("TextLabel")
@@ -1763,3 +2014,11 @@ enBtn.MouseButton1Click:Connect(function()
 end)
 
 print("✅ LugerGuard X успешно загружен!")
+print("📌 Доступные функции:")
+print("   - Скорость и прыжок")
+print("   - Режим полёта (клавиша Q)")
+print("   - Ноклип, Анти-AFK, FullBright")
+print("   - Телепорт к игроку")
+print("   - Infinity Jump (бесконечные прыжки)")
+print("   - ESP (подсветка игроков)")
+print("   - Отзывы в Discord")
