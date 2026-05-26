@@ -1,5 +1,5 @@
 -- LugerGuard X | Black Edition (инжектор-версия)
--- Исправленная версия: ESP с именами игроков
+-- Исправленная версия: имена и ESP работают независимо
 
 -- ========== ПОДКЛЮЧЕНИЕ СЕРВИСОВ ==========
 local Players = game:GetService("Players")
@@ -127,6 +127,11 @@ local espEnabled = false
 local espHighlightObjects = {}
 local espLoopConnection = nil
 local espColorUpdateLoop = nil
+
+-- Имена переменные
+local nameTagsEnabled = false
+local nameTagObjects = {}
+local nameTagUpdateLoop = nil
 
 -- Webhook для отзывов
 local feedbackWebhook = "https://discord.com/api/webhooks/1508120103416500274/eyr2dGOq6DeLRWbkJ2II4bW0iwQdw3sS1lWOjiW7SV6oP0UHC0cnFANrjvpyDTZkCbf_"
@@ -308,17 +313,14 @@ local function teleportToPlayer(targetPlayer)
     return true
 end
 
--- ========== ESP ФУНКЦИИ ДЛЯ MM2 (с именами игроков) ==========
+-- ========== ESP ФУНКЦИИ ДЛЯ MM2 ==========
 
 -- Настройки ESP
 local ESP_CONFIG = {
     FillTransparency = 0.7,
     OutlineTransparency = 0.5,
     OutlineColor = Color3.fromRGB(255, 255, 255),
-    DepthMode = Enum.HighlightDepthMode.AlwaysOnTop,
-    NameTagVisible = true,      -- Показывать имена
-    NameTagSize = 18,           -- Размер текста
-    NameTagOffset = 2.5         -- Смещение над головой
+    DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
 }
 
 -- Цвета для разных ролей в MM2
@@ -416,10 +418,20 @@ local function getPlayerColorForMM2(player)
     return ROLE_COLORS[role] or ROLE_COLORS.Normal
 end
 
--- Создание BillboardGui для имени игрока
-local function createNameTag(player)
+-- ========== ФУНКЦИИ ДЛЯ ИМЁН (НЕЗАВИСИМО ОТ ESP) ==========
+
+-- Создание имени для игрока
+local function createNameTagForPlayer(player)
     if not player or player == LocalPlayer then return nil end
     if not player.Character then return nil end
+    
+    -- Удаляем старый тег если есть
+    if nameTagObjects[player] then
+        pcall(function()
+            nameTagObjects[player]:Destroy()
+        end)
+        nameTagObjects[player] = nil
+    end
     
     local head = player.Character:FindFirstChild("Head")
     if not head then return nil end
@@ -429,7 +441,7 @@ local function createNameTag(player)
     billboard.Name = "LugerGuardNameTag"
     billboard.Adornee = head
     billboard.Size = UDim2.new(0, 200, 0, 40)
-    billboard.StudsOffset = Vector3.new(0, ESP_CONFIG.NameTagOffset, 0)
+    billboard.StudsOffset = Vector3.new(0, 2.5, 0)
     billboard.AlwaysOnTop = true
     billboard.Enabled = true
     billboard.Parent = head
@@ -440,20 +452,32 @@ local function createNameTag(player)
     textLabel.Size = UDim2.new(1, 0, 1, 0)
     textLabel.BackgroundTransparency = 1
     textLabel.Text = player.Name
-    textLabel.TextColor3 = getPlayerColorForMM2(player)
-    textLabel.TextSize = ESP_CONFIG.NameTagSize
+    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textLabel.TextSize = 18
     textLabel.TextStrokeTransparency = 0.3
     textLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
     textLabel.Font = Enum.Font.GothamBold
     textLabel.TextScaled = false
     textLabel.Parent = billboard
     
+    nameTagObjects[player] = billboard
     return billboard
 end
 
--- Обновление цвета имени
-local function updateNameTagColor(player)
-    if not player or not ESP_CONFIG.NameTagVisible then return end
+-- Удаление имени игрока
+local function removeNameTagFromPlayer(player)
+    if nameTagObjects[player] then
+        pcall(function()
+            nameTagObjects[player]:Destroy()
+        end)
+        nameTagObjects[player] = nil
+    end
+end
+
+-- Обновление цвета имени (по роли)
+local function updateNameTagColorForPlayer(player)
+    if not nameTagsEnabled then return end
+    if not nameTagObjects[player] then return end
     
     local character = player.Character
     if not character then return end
@@ -470,21 +494,61 @@ local function updateNameTagColor(player)
     end
 end
 
--- Удаление имени игрока
-local function removeNameTag(player)
-    if not player then return end
+-- Включение имён для всех игроков
+local function enableNameTags()
+    if nameTagsEnabled then return end
+    nameTagsEnabled = true
     
-    local character = player.Character
-    if not character then return end
-    
-    local head = character:FindFirstChild("Head")
-    if not head then return end
-    
-    local billboard = head:FindFirstChild("LugerGuardNameTag")
-    if billboard then
-        billboard:Destroy()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            createNameTagForPlayer(player)
+        end
     end
+    
+    -- Следим за новыми игроками
+    Players.PlayerAdded:Connect(function(player)
+        if nameTagsEnabled and player ~= LocalPlayer then
+            local function onCharacterAdded()
+                task.wait(0.5)
+                createNameTagForPlayer(player)
+            end
+            if player.Character then
+                createNameTagForPlayer(player)
+            else
+                player.CharacterAdded:Once(onCharacterAdded)
+            end
+        end
+    end)
+    
+    -- Запускаем цикл обновления цветов имён
+    if nameTagUpdateLoop then return end
+    nameTagUpdateLoop = task.spawn(function()
+        while nameTagsEnabled do
+            for player, _ in pairs(nameTagObjects) do
+                if player and player.Character then
+                    updateNameTagColorForPlayer(player)
+                end
+            end
+            task.wait(0.3)
+        end
+        nameTagUpdateLoop = nil
+    end)
 end
+
+-- Выключение имён
+local function disableNameTags()
+    if not nameTagsEnabled then return end
+    nameTagsEnabled = false
+    
+    for player, tag in pairs(nameTagObjects) do
+        pcall(function()
+            tag:Destroy()
+        end)
+    end
+    nameTagObjects = {}
+end
+
+-- ========== ESP ФУНКЦИИ ==========
 
 -- Создание ESP (Highlight) для одного игрока
 local function addESPToPlayer(player)
@@ -514,12 +578,6 @@ local function addESPToPlayer(player)
     highlight.Parent = character
     
     espHighlightObjects[player] = highlight
-    
-    -- Добавляем имя игрока если включено
-    if ESP_CONFIG.NameTagVisible then
-        task.wait(0.1)
-        createNameTag(player)
-    end
 end
 
 -- Удаление ESP для игрока
@@ -530,12 +588,9 @@ local function removeESPFromPlayer(player)
         end)
         espHighlightObjects[player] = nil
     end
-    
-    -- Удаляем имя игрока
-    removeNameTag(player)
 end
 
--- Обновление цвета ESP и имени для игрока
+-- Обновление цвета ESP для игрока
 local function updateESPColorForPlayer(player)
     if not espEnabled then return end
     if not espHighlightObjects[player] then return end
@@ -545,12 +600,10 @@ local function updateESPColorForPlayer(player)
         if espHighlightObjects[player].FillColor ~= newColor then
             espHighlightObjects[player].FillColor = newColor
         end
-        -- Обновляем цвет имени
-        updateNameTagColor(player)
     end)
 end
 
--- Функция постоянного обновления цветов
+-- Функция постоянного обновления цветов ESP
 local function startColorUpdateLoop()
     if espColorUpdateLoop then return end
     
@@ -572,6 +625,7 @@ local function enableESP()
     if espEnabled then return end
     espEnabled = true
     
+    -- Добавляем ESP для всех текущих игроков
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
             addESPToPlayer(player)
@@ -581,8 +635,8 @@ local function enableESP()
     -- Запускаем цикл обновления цветов
     startColorUpdateLoop()
     
-    -- Следим за появлением новых игроков
-    espLoopConnection = Players.PlayerAdded:Connect(function(player)
+    -- Следим за появлением новых игроков и добавляем им ESP
+    local function onPlayerAdded(player)
         if espEnabled and player ~= LocalPlayer then
             local function onCharacterAdded()
                 task.wait(0.5)
@@ -594,7 +648,16 @@ local function enableESP()
                 player.CharacterAdded:Once(onCharacterAdded)
             end
         end
-    end)
+    end
+    
+    espLoopConnection = Players.PlayerAdded:Connect(onPlayerAdded)
+    
+    -- Обрабатываем уже существующих игроков, у которых ещё нет ESP
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and not espHighlightObjects[player] and player.Character then
+            addESPToPlayer(player)
+        end
+    end
     
     -- Следим за добавлением оружия (мгновенное обновление)
     local function onWeaponAdded(child)
@@ -602,6 +665,9 @@ local function enableESP()
             for player, _ in pairs(espHighlightObjects) do
                 if player.Character and child.Parent == player.Character then
                     updateESPColorForPlayer(player)
+                    if nameTagsEnabled then
+                        updateNameTagColorForPlayer(player)
+                    end
                 end
             end
         end
@@ -628,8 +694,6 @@ local function disableESP()
         pcall(function()
             highlight:Destroy()
         end)
-        -- Удаляем имя игрока
-        removeNameTag(player)
     end
     espHighlightObjects = {}
 end
@@ -643,11 +707,6 @@ local function refreshESP()
             pcall(function()
                 highlight.Adornee = player.Character
                 highlight.FillColor = getPlayerColorForMM2(player)
-                -- Обновляем имя
-                removeNameTag(player)
-                if ESP_CONFIG.NameTagVisible then
-                    createNameTag(player)
-                end
             end)
         else
             removeESPFromPlayer(player)
@@ -661,9 +720,10 @@ local function refreshESP()
     end
 end
 
--- Подписываемся на события для обновления ESP
+-- Подписываемся на события
 Players.PlayerRemoving:Connect(function(player)
     removeESPFromPlayer(player)
+    removeNameTagFromPlayer(player)
 end)
 
 LocalPlayer.CharacterAdded:Connect(function()
@@ -671,7 +731,7 @@ LocalPlayer.CharacterAdded:Connect(function()
     refreshESP()
 end)
 
--- ========== ОСНОВНЫЕ ФУНКЦИИ ==========
+-- ========== ОСНОВНЫЕ ФУНКЦИИ (скорость, прыжок, ноклип, анти-AFK, полёт) ==========
 
 -- Анти-AFK
 local function startAntiAfk()
@@ -1200,7 +1260,7 @@ local function updateContent()
     end
     
     if activeTab == "Main" then
-        -- Скорость
+        -- Speed
         local speedContainer, setSpeedState = createSwitch(contentContainer, 20, 20, (currentLang == "ru") and "Скорость" or "Speed", speedEnabled, function(state)
             speedEnabled = state
             if speedEnabled then
@@ -1276,7 +1336,7 @@ local function updateContent()
         speedInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
         speedInfoLabel.Parent = contentContainer
         
-        -- Сила прыжка
+        -- Jump Power
         local jumpContainer, setJumpState = createSwitch(contentContainer, 20, 125, (currentLang == "ru") and "Сила прыжка" or "Jump Power", jumpEnabled, function(state)
             jumpEnabled = state
             if jumpEnabled then
@@ -1357,13 +1417,13 @@ local function updateContent()
             if state then startAntiAfk() else stopAntiAfk() end
         end)
         
-        -- Режим полёта
+        -- Fly Mode
         local flyContainer, setFlyState = createSwitch(contentContainer, 20, 300, (currentLang == "ru") and "Режим полёта" or "Fly Mode", flying, function(state)
             if state then startFly() else stopFly() end
         end)
         currentFlySwitchState = setFlyState
         
-        -- Скорость полёта
+        -- Fly Speed
         local flySpeedLabel = Instance.new("TextLabel")
         flySpeedLabel.Size = UDim2.new(0, 200, 0, 30)
         flySpeedLabel.Position = UDim2.new(0, 20, 0, 340)
@@ -1443,12 +1503,12 @@ local function updateContent()
         flyInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
         flyInfoLabel.Parent = contentContainer
         
-        -- Ноклип
+        -- Noclip
         local noclipContainer, setNoclipState = createSwitchWithDesc(contentContainer, 20, 480, (currentLang == "ru") and "Ноклип" or "Noclip", (currentLang == "ru") and "Проход сквозь стены" or "Walk through walls", noclipEnabled, function(state)
             if state then startNoclip() else stopNoclip() end
         end)
         
-        -- Бесконечные прыжки
+        -- Infinite Jump
         local infiniteJumpContainer, setInfiniteJumpState = createSwitchWithDesc(contentContainer, 20, 550, "Infinity Jump", (currentLang == "ru") and "Позволяет бесконечно прыгать в воздухе" or "Allows you to jump infinitely in the air", infiniteJumpEnabled, function(state)
             if state then enableInfiniteJump() else disableInfiniteJump() end
             setInfiniteJumpState(state)
@@ -1610,25 +1670,18 @@ local function updateContent()
             end
         )
         
-        -- Свитч для имён игроков
+        -- Свитч для имён игроков (отдельная функция)
         local nameTagContainer, setNameTagState = createSwitchWithDesc(
             contentContainer, 20, 125, (currentLang == "ru") and "Показывать имена" or "Show names",
-            (currentLang == "ru") and "Отображать никнеймы над игроками" or "Display player names above heads",
-            ESP_CONFIG.NameTagVisible,
+            (currentLang == "ru") and "Отображать никнеймы над игроками (работает без ESP)" or "Display player names above heads (works without ESP)",
+            nameTagsEnabled,
             function(state)
-                ESP_CONFIG.NameTagVisible = state
-                setNameTagState(state)
-                
-                -- Обновляем отображение имён для всех игроков
-                if espEnabled then
-                    for player, _ in pairs(espHighlightObjects) do
-                        if state then
-                            createNameTag(player)
-                        else
-                            removeNameTag(player)
-                        end
-                    end
+                if state then
+                    enableNameTags()
+                else
+                    disableNameTags()
                 end
+                setNameTagState(state)
             end
         )
         
@@ -2237,5 +2290,6 @@ print("   - Режим полёта (клавиша Q)")
 print("   - Ноклип, Анти-AFK, FullBright")
 print("   - Телепорт к игроку")
 print("   - Infinity Jump (бесконечные прыжки)")
-print("   - ESP (подсветка игроков + имена)")
+print("   - ESP (подсветка игроков)")
+print("   - Имена игроков (работают отдельно от ESP)")
 print("   - Отзывы в Discord")
