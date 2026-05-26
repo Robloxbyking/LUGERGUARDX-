@@ -2293,3 +2293,957 @@ print("   - Infinity Jump (бесконечные прыжки)")
 print("   - ESP (подсветка игроков)")
 print("   - Имена игроков (работают отдельно от ESP)")
 print("   - Отзывы в Discord")
+
+local function updateContent()
+    for _, child in pairs(contentContainer:GetChildren()) do
+        child:Destroy()
+    end
+    
+    if activeTab == "Main" then
+        -- Speed
+        local speedContainer, setSpeedState = createSwitch(contentContainer, 20, 20, (currentLang == "ru") and "Скорость" or "Speed", speedEnabled, function(state)
+            speedEnabled = state
+            if speedEnabled then
+                local character = LocalPlayer.Character
+                if character then
+                    local humanoid = character:FindFirstChildOfClass("Humanoid")
+                    if humanoid then humanoid.WalkSpeed = currentSpeed end
+                end
+            else
+                local character = LocalPlayer.Character
+                if character then
+                    local humanoid = character:FindFirstChildOfClass("Humanoid")
+                    if humanoid then humanoid.WalkSpeed = 16 end
+                end
+            end
+        end)
+        
+        local speedBox = Instance.new("TextBox")
+        speedBox.Size = UDim2.new(0, 150, 0, 35)
+        speedBox.Position = UDim2.new(0, 20, 0, 55)
+        speedBox.PlaceholderText = "1-1000"
+        speedBox.Text = tostring(currentSpeed)
+        speedBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+        speedBox.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        speedBox.BackgroundTransparency = 0.3
+        speedBox.BorderSizePixel = 0
+        speedBox.Font = Enum.Font.Gotham
+        speedBox.TextSize = 14
+        speedBox.Parent = contentContainer
+        Instance.new("UICorner").CornerRadius = UDim.new(0, 8).Parent = speedBox
+        
+        local applyBtn = Instance.new("TextButton")
+        applyBtn.Size = UDim2.new(0, 100, 0, 35)
+        applyBtn.Position = UDim2.new(0, 180, 0, 55)
+        applyBtn.Text = (currentLang == "ru") and "Применить" or "Apply"
+        applyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        applyBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 180)
+        applyBtn.BackgroundTransparency = 0.3
+        applyBtn.BorderSizePixel = 0
+        applyBtn.Font = Enum.Font.GothamBold
+        applyBtn.TextSize = 14
+        applyBtn.Parent = contentContainer
+        Instance.new("UICorner").CornerRadius = UDim.new(0, 8).Parent = applyBtn
+        
+        applyBtn.MouseButton1Click:Connect(function()
+            local ns = tonumber(speedBox.Text)
+            if ns then
+                currentSpeed = math.clamp(ns, 1, 1000)
+                if speedEnabled then
+                    local character = LocalPlayer.Character
+                    if character then
+                        local humanoid = character:FindFirstChildOfClass("Humanoid")
+                        if humanoid then humanoid.WalkSpeed = currentSpeed end
+                    end
+                end
+            end
+        end)
+        
+        local speedInfoLabel = Instance.new("TextLabel")
+        speedInfoLabel.Size = UDim2.new(0, 350, 0, 20)
+        speedInfoLabel.Position = UDim2.new(0, 20, 0, 95)
+        speedInfoLabel.Text = (currentLang == "ru") and "Вы можете установить скорость от 16 до 1000" or "You can set speed from 16 to 1000"
+        speedInfoLabel.TextColor3 = Color3.fromRGB(150, 150, 170)
+        speedInfoLabel.BackgroundTransparency = 1
+        speedInfoLabel.Font = Enum.Font.Gotham
+        speedInfoLabel.TextSize = 12
+        speedInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
+        speedInfoLabel.Parent = contentContainer
+        
+        -- Jump Power
+        local jumpContainer, setJumpState = createSwitch(contentContainer, 20, 125, (currentLang == "ru") and "Сила прыжка" or "Jump Power", jumpEnabled, function(state)
+            jumpEnabled = state
+            if jumpEnabled then
+                local character = LocalPlayer.Character
+                if character then
+                    local humanoid = character:FindFirstChildOfClass("Humanoid")
+                    if humanoid then humanoid.JumpPower = currentJumpPower end
+                end
+            else
+                local character = LocalPlayer.Character
+                if character then
+                    local humanoid = character:FindFirstChildOfClass("Humanoid")
+                    if humanoid then humanoid.JumpPower = 50 end
+                end
+            end
+        end)
+        
+        local jumpBox = Instance.new("TextBox")
+        jumpBox.Size = UDim2.new(0, 150, 0, 35)
+        jumpBox.Position = UDim2.new(0, 20, 0, 160)
+        jumpBox.PlaceholderText = "1-500"
+        jumpBox.Text = tostring(currentJumpPower)
+        jumpBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+        jumpBox.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        jumpBox.BackgroundTransparency = 0.3
+        jumpBox.BorderSizePixel = 0
+        jumpBox.Font = Enum.Font.Gotham
+        jumpBox.TextSize = 14
+        jumpBox.Parent = contentContainer
+        Instance.new("UICorner").CornerRadius = UDim.new(0, 8).Parent = jumpBox
+        
+        local applyJumpBtn = Instance.new("TextButton")
+        applyJumpBtn.Size = UDim2.new(0, 100, 0, 35)
+        applyJumpBtn.Position = UDim2.new(0, 180, 0, 160)
+        applyJumpBtn.Text = (currentLang == "ru") and "Применить" or "Apply"
+        applyJumpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        applyJumpBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 180)
+        applyJumpBtn.BackgroundTransparency = 0.3
+        applyJumpBtn.BorderSizePixel = 0
+        applyJumpBtn.Font = Enum.Font.GothamBold
+        applyJumpBtn.TextSize = 14
+        applyJumpBtn.Parent = contentContainer
+        Instance.new("UICorner").CornerRadius = UDim.new(0, 8).Parent = applyJumpBtn
+        
+        applyJumpBtn.MouseButton1Click:Connect(function()
+            local nj = tonumber(jumpBox.Text)
+            if nj then
+                currentJumpPower = math.clamp(nj, 1, 500)
+                if jumpEnabled then
+                    local character = LocalPlayer.Character
+                    if character then
+                        local humanoid = character:FindFirstChildOfClass("Humanoid")
+                        if humanoid then humanoid.JumpPower = currentJumpPower end
+                    end
+                end
+            end
+        end)
+        
+        local jumpInfoLabel = Instance.new("TextLabel")
+        jumpInfoLabel.Size = UDim2.new(0, 350, 0, 20)
+        jumpInfoLabel.Position = UDim2.new(0, 20, 0, 200)
+        jumpInfoLabel.Text = (currentLang == "ru") and "Вы можете установить силу прыжка от 50 до 500" or "You can set jump power from 50 to 500"
+        jumpInfoLabel.TextColor3 = Color3.fromRGB(150, 150, 170)
+        jumpInfoLabel.BackgroundTransparency = 1
+        jumpInfoLabel.Font = Enum.Font.Gotham
+        jumpInfoLabel.TextSize = 12
+        jumpInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
+        jumpInfoLabel.Parent = contentContainer
+        
+        -- Anti-AFK
+        local antiAfkContainer, setAntiAfkState = createSwitchWithDesc(contentContainer, 20, 235, (currentLang == "ru") and "Анти-AFK" or "Anti-AFK", (currentLang == "ru") and "Защита от автоматического отключения" or "Anti-AFK protection", antiAfkEnabled, function(state)
+            if state then startAntiAfk() else stopAntiAfk() end
+        end)
+        
+        -- Fly Mode
+        local flyContainer, setFlyState = createSwitch(contentContainer, 20, 300, (currentLang == "ru") and "Режим полёта" or "Fly Mode", flying, function(state)
+            if state then startFly() else stopFly() end
+        end)
+        currentFlySwitchState = setFlyState
+        
+        -- Fly Speed
+        local flySpeedLabel = Instance.new("TextLabel")
+        flySpeedLabel.Size = UDim2.new(0, 200, 0, 30)
+        flySpeedLabel.Position = UDim2.new(0, 20, 0, 340)
+        flySpeedLabel.Text = (currentLang == "ru") and "Скорость полёта" or "Fly Speed"
+        flySpeedLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
+        flySpeedLabel.BackgroundTransparency = 1
+        flySpeedLabel.Font = Enum.Font.GothamBold
+        flySpeedLabel.TextSize = 18
+        flySpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
+        flySpeedLabel.Parent = contentContainer
+        
+        local flySpeedBox = Instance.new("TextBox")
+        flySpeedBox.Size = UDim2.new(0, 150, 0, 35)
+        flySpeedBox.Position = UDim2.new(0, 20, 0, 375)
+        flySpeedBox.PlaceholderText = "10-500"
+        flySpeedBox.Text = tostring(flySpeed)
+        flySpeedBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+        flySpeedBox.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        flySpeedBox.BackgroundTransparency = 0.3
+        flySpeedBox.BorderSizePixel = 0
+        flySpeedBox.Font = Enum.Font.Gotham
+        flySpeedBox.TextSize = 14
+        flySpeedBox.Parent = contentContainer
+        Instance.new("UICorner").CornerRadius = UDim.new(0, 8).Parent = flySpeedBox
+        
+        local flyApplyBtn = Instance.new("TextButton")
+        flyApplyBtn.Size = UDim2.new(0, 100, 0, 35)
+        flyApplyBtn.Position = UDim2.new(0, 180, 0, 375)
+        flyApplyBtn.Text = (currentLang == "ru") and "Применить" or "Apply"
+        flyApplyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        flyApplyBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 180)
+        flyApplyBtn.BackgroundTransparency = 0.3
+        flyApplyBtn.BorderSizePixel = 0
+        flyApplyBtn.Font = Enum.Font.GothamBold
+        flyApplyBtn.TextSize = 14
+        flyApplyBtn.Parent = contentContainer
+        Instance.new("UICorner").CornerRadius = UDim.new(0, 8).Parent = flyApplyBtn
+        
+        flyApplyBtn.MouseButton1Click:Connect(function()
+            local nf = tonumber(flySpeedBox.Text)
+            if nf then
+                setFlySpeed(nf)
+                if flying then
+                    stopFly()
+                    task.wait(0.1)
+                    startFly()
+                end
+            end
+        end)
+        
+        local keybindInfoLabel = Instance.new("TextLabel")
+        keybindInfoLabel.Size = UDim2.new(0, 350, 0, 20)
+        keybindInfoLabel.Position = UDim2.new(0, 20, 0, 420)
+        keybindInfoLabel.Text = (currentLang == "ru") and "Клавиша Q - включить/выключить полёт" or "Press Q to toggle fly mode"
+        keybindInfoLabel.TextColor3 = Color3.fromRGB(150, 200, 255)
+        keybindInfoLabel.BackgroundTransparency = 1
+        keybindInfoLabel.Font = Enum.Font.Gotham
+        keybindInfoLabel.TextSize = 12
+        keybindInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
+        keybindInfoLabel.Parent = contentContainer
+        
+        local flyInfoLabel = Instance.new("TextLabel")
+        flyInfoLabel.Size = UDim2.new(0, 350, 0, 20)
+        flyInfoLabel.Position = UDim2.new(0, 20, 0, 445)
+        flyInfoLabel.Text = (currentLang == "ru") and "Управление: W/A/S/D - движение" or "Controls: W/A/S/D - movement"
+        flyInfoLabel.TextColor3 = Color3.fromRGB(150, 150, 170)
+        flyInfoLabel.BackgroundTransparency = 1
+        flyInfoLabel.Font = Enum.Font.Gotham
+        flyInfoLabel.TextSize = 11
+        flyInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
+        flyInfoLabel.Parent = contentContainer
+        
+        -- Noclip
+        local noclipContainer, setNoclipState = createSwitchWithDesc(contentContainer, 20, 480, (currentLang == "ru") and "Ноклип" or "Noclip", (currentLang == "ru") and "Проход сквозь стены" or "Walk through walls", noclipEnabled, function(state)
+            if state then startNoclip() else stopNoclip() end
+        end)
+        
+        -- Infinite Jump
+        local infiniteJumpContainer, setInfiniteJumpState = createSwitchWithDesc(contentContainer, 20, 550, "Infinity Jump", (currentLang == "ru") and "Позволяет бесконечно прыгать в воздухе" or "Allows you to jump infinitely in the air", infiniteJumpEnabled, function(state)
+            if state then enableInfiniteJump() else disableInfiniteJump() end
+            setInfiniteJumpState(state)
+        end)
+        
+    elseif activeTab == "Players" then
+        local playersLabel = Instance.new("TextLabel")
+        playersLabel.Size = UDim2.new(1, -40, 0, 30)
+        playersLabel.Position = UDim2.new(0, 20, 0, 20)
+        playersLabel.Text = (currentLang == "ru") and "Игроки на сервере:" or "Players on server:"
+        playersLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
+        playersLabel.BackgroundTransparency = 1
+        playersLabel.Font = Enum.Font.GothamBold
+        playersLabel.TextSize = 16
+        playersLabel.TextXAlignment = Enum.TextXAlignment.Left
+        playersLabel.Parent = contentContainer
+        
+        local yOffset = 60
+        for _, player in pairs(Players:GetPlayers()) do
+            local playerLabel = Instance.new("TextLabel")
+            playerLabel.Size = UDim2.new(1, -40, 0, 25)
+            playerLabel.Position = UDim2.new(0, 20, 0, yOffset)
+            playerLabel.Text = "• " .. player.Name
+            playerLabel.TextColor3 = Color3.fromRGB(200, 210, 230)
+            playerLabel.BackgroundTransparency = 1
+            playerLabel.Font = Enum.Font.Gotham
+            playerLabel.TextSize = 14
+            playerLabel.TextXAlignment = Enum.TextXAlignment.Left
+            playerLabel.Parent = contentContainer
+            yOffset = yOffset + 30
+        end
+        
+    elseif activeTab == "Visual" then
+        local visualLabel = Instance.new("TextLabel")
+        visualLabel.Size = UDim2.new(1, -40, 0, 30)
+        visualLabel.Position = UDim2.new(0, 20, 0, 20)
+        visualLabel.Text = (currentLang == "ru") and "Визуальные настройки" or "Visual Settings"
+        visualLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
+        visualLabel.BackgroundTransparency = 1
+        visualLabel.Font = Enum.Font.GothamBold
+        visualLabel.TextSize = 16
+        visualLabel.TextXAlignment = Enum.TextXAlignment.Left
+        visualLabel.Parent = contentContainer
+        
+        -- FullBright
+        local fullBrightContainer, setFullBrightState = createSwitchWithDesc(
+            contentContainer, 20, 55, "FullBright",
+            (currentLang == "ru") and "Полная яркость на карте (видно всё)" or "Maximum brightness on map (see everything)",
+            fullBrightEnabled,
+            function(state)
+                if state then enableFullBright() else disableFullBright() end
+                setFullBrightState(state)
+            end
+        )
+        
+    elseif activeTab == "Teleport" then
+        local teleportLabel = Instance.new("TextLabel")
+        teleportLabel.Size = UDim2.new(1, -40, 0, 30)
+        teleportLabel.Position = UDim2.new(0, 20, 0, 20)
+        teleportLabel.Text = (currentLang == "ru") and "Телепорт к игроку" or "Teleport to Player"
+        teleportLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
+        teleportLabel.BackgroundTransparency = 1
+        teleportLabel.Font = Enum.Font.GothamBold
+        teleportLabel.TextSize = 16
+        teleportLabel.TextXAlignment = Enum.TextXAlignment.Left
+        teleportLabel.Parent = contentContainer
+        
+        local teleportDesc = Instance.new("TextLabel")
+        teleportDesc.Size = UDim2.new(1, -40, 0, 25)
+        teleportDesc.Position = UDim2.new(0, 20, 0, 50)
+        teleportDesc.Text = (currentLang == "ru") and "Нажмите TP чтобы переместиться к игроку" or "Click TP to teleport to player"
+        teleportDesc.TextColor3 = Color3.fromRGB(150, 155, 170)
+        teleportDesc.BackgroundTransparency = 1
+        teleportDesc.Font = Enum.Font.Gotham
+        teleportDesc.TextSize = 11
+        teleportDesc.TextXAlignment = Enum.TextXAlignment.Left
+        teleportDesc.Parent = contentContainer
+        
+        local playersContainer = Instance.new("ScrollingFrame")
+        playersContainer.Size = UDim2.new(1, -40, 0, 280)
+        playersContainer.Position = UDim2.new(0, 20, 0, 85)
+        playersContainer.BackgroundColor3 = Color3.fromRGB(12, 12, 18)
+        playersContainer.BackgroundTransparency = 0.3
+        playersContainer.BorderSizePixel = 0
+        playersContainer.ScrollBarThickness = 4
+        playersContainer.ScrollBarImageColor3 = Color3.fromRGB(0, 150, 255)
+        playersContainer.Parent = contentContainer
+        Instance.new("UICorner").CornerRadius = UDim.new(0, 8).Parent = playersContainer
+        
+        local innerContainer = Instance.new("Frame")
+        innerContainer.Size = UDim2.new(1, -10, 0, 0)
+        innerContainer.BackgroundTransparency = 1
+        innerContainer.Parent = playersContainer
+        
+        local teleportStatus = Instance.new("TextLabel")
+        teleportStatus.Size = UDim2.new(1, -40, 0, 25)
+        teleportStatus.Position = UDim2.new(0, 20, 0, 375)
+        teleportStatus.Text = ""
+        teleportStatus.TextColor3 = Color3.fromRGB(150, 200, 150)
+        teleportStatus.BackgroundTransparency = 1
+        teleportStatus.Font = Enum.Font.Gotham
+        teleportStatus.TextSize = 11
+        teleportStatus.TextXAlignment = Enum.TextXAlignment.Left
+        teleportStatus.Parent = contentContainer
+        
+        updateTeleportPlayersList(innerContainer, teleportStatus)
+        
+        local function updateCanvas()
+            playersContainer.CanvasSize = UDim2.new(0, 0, 0, innerContainer.Size.Y.Offset + 10)
+        end
+        
+        innerContainer:GetPropertyChangedSignal("Size"):Connect(updateCanvas)
+        updateCanvas()
+        
+        local function refreshList()
+            updateTeleportPlayersList(innerContainer, teleportStatus)
+            updateCanvas()
+        end
+        
+        Players.PlayerAdded:Connect(refreshList)
+        Players.PlayerRemoving:Connect(refreshList)
+        
+    elseif activeTab == "ESP" then
+        local espLabel = Instance.new("TextLabel")
+        espLabel.Size = UDim2.new(1, -40, 0, 30)
+        espLabel.Position = UDim2.new(0, 20, 0, 20)
+        espLabel.Text = (currentLang == "ru") and "ESP (Highlight)" or "ESP (Highlight)"
+        espLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
+        espLabel.BackgroundTransparency = 1
+        espLabel.Font = Enum.Font.GothamBold
+        espLabel.TextSize = 16
+        espLabel.TextXAlignment = Enum.TextXAlignment.Left
+        espLabel.Parent = contentContainer
+        
+        local espContainer, setEspState = createSwitchWithDesc(
+            contentContainer, 20, 55, "ESP",
+            (currentLang == "ru") and "Подсветка игроков через стены" or "Highlight players through walls",
+            espEnabled,
+            function(state)
+                if state then enableESP() else disableESP() end
+                setEspState(state)
+            end
+        )
+        
+        local nameTagContainer, setNameTagState = createSwitchWithDesc(
+            contentContainer, 20, 125, (currentLang == "ru") and "Показывать имена" or "Show names",
+            (currentLang == "ru") and "Отображать никнеймы над игроками (работает без ESP)" or "Display player names above heads (works without ESP)",
+            nameTagsEnabled,
+            function(state)
+                if state then enableNameTags() else disableNameTags() end
+                setNameTagState(state)
+            end
+        )
+        
+        local colorInfoLabel = Instance.new("TextLabel")
+        colorInfoLabel.Size = UDim2.new(1, -40, 0, 25)
+        colorInfoLabel.Position = UDim2.new(0, 20, 0, 195)
+        colorInfoLabel.Text = (currentLang == "ru") and "Цвета подсветки:" or "Highlight colors:"
+        colorInfoLabel.TextColor3 = Color3.fromRGB(180, 185, 200)
+        colorInfoLabel.BackgroundTransparency = 1
+        colorInfoLabel.Font = Enum.Font.GothamBold
+        colorInfoLabel.TextSize = 13
+        colorInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
+        colorInfoLabel.Parent = contentContainer
+        
+        local colorDesc = Instance.new("TextLabel")
+        colorDesc.Size = UDim2.new(1, -40, 0, 60)
+        colorDesc.Position = UDim2.new(0, 20, 0, 220)
+        colorDesc.Text = (currentLang == "ru") and "🔴 Красный: Маньяк\n🔵 Синий: Шериф\n⚪ Серый: Обычный игрок" or "🔴 Red: Murderer\n🔵 Blue: Sheriff\n⚪ Gray: Normal player"
+        colorDesc.TextColor3 = Color3.fromRGB(150, 155, 170)
+        colorDesc.BackgroundTransparency = 1
+        colorDesc.Font = Enum.Font.Gotham
+        colorDesc.TextSize = 11
+        colorDesc.TextXAlignment = Enum.TextXAlignment.Left
+        colorDesc.TextYAlignment = Enum.TextYAlignment.Top
+        colorDesc.Parent = contentContainer
+        
+        local espInfo = Instance.new("TextLabel")
+        espInfo.Size = UDim2.new(1, -40, 0, 35)
+        espInfo.Position = UDim2.new(0, 20, 0, 295)
+        espInfo.Text = (currentLang == "ru") and "ESP автоматически определяет роли по оружию" or "ESP automatically detects roles by weapons"
+        espInfo.TextColor3 = Color3.fromRGB(150, 155, 170)
+        espInfo.BackgroundTransparency = 1
+        espInfo.Font = Enum.Font.Gotham
+        espInfo.TextSize = 11
+        espInfo.TextWrapped = true
+        espInfo.TextXAlignment = Enum.TextXAlignment.Left
+        espInfo.Parent = contentContainer
+        
+    elseif activeTab == "Feedback" then
+        local feedbackLabel = Instance.new("TextLabel")
+        feedbackLabel.Size = UDim2.new(1, -40, 0, 30)
+        feedbackLabel.Position = UDim2.new(0, 20, 0, 20)
+        feedbackLabel.Text = (currentLang == "ru") and "📢 Оставить отзыв" or "📢 Leave Feedback"
+        feedbackLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
+        feedbackLabel.BackgroundTransparency = 1
+        feedbackLabel.Font = Enum.Font.GothamBold
+        feedbackLabel.TextSize = 18
+        feedbackLabel.TextXAlignment = Enum.TextXAlignment.Left
+        feedbackLabel.Parent = contentContainer
+        
+        local feedbackDesc = Instance.new("TextLabel")
+        feedbackDesc.Size = UDim2.new(1, -40, 0, 40)
+        feedbackDesc.Position = UDim2.new(0, 20, 0, 55)
+        feedbackDesc.Text = (currentLang == "ru") and "Напиши свои впечатления о скрипте, предложения или сообщи об ошибке. Всё отправится разработчику!" or "Write your impressions of the script, suggestions, or report a bug. Everything will be sent to the developer!"
+        feedbackDesc.TextColor3 = Color3.fromRGB(180, 180, 200)
+        feedbackDesc.BackgroundTransparency = 1
+        feedbackDesc.Font = Enum.Font.Gotham
+        feedbackDesc.TextSize = 12
+        feedbackDesc.TextWrapped = true
+        feedbackDesc.TextXAlignment = Enum.TextXAlignment.Left
+        feedbackDesc.TextYAlignment = Enum.TextYAlignment.Top
+        feedbackDesc.Parent = contentContainer
+        
+        local feedbackBox = Instance.new("TextBox")
+        feedbackBox.Size = UDim2.new(1, -40, 0, 120)
+        feedbackBox.Position = UDim2.new(0, 20, 0, 110)
+        feedbackBox.PlaceholderText = (currentLang == "ru") and "Введите ваш отзыв здесь..." or "Enter your feedback here..."
+        feedbackBox.Text = ""
+        feedbackBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+        feedbackBox.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        feedbackBox.BackgroundTransparency = 0.3
+        feedbackBox.BorderSizePixel = 0
+        feedbackBox.Font = Enum.Font.Gotham
+        feedbackBox.TextSize = 14
+        feedbackBox.TextWrapped = true
+        feedbackBox.TextXAlignment = Enum.TextXAlignment.Left
+        feedbackBox.TextYAlignment = Enum.TextYAlignment.Top
+        feedbackBox.Parent = contentContainer
+        Instance.new("UICorner").CornerRadius = UDim.new(0, 8).Parent = feedbackBox
+        
+        local sendBtn = Instance.new("TextButton")
+        sendBtn.Size = UDim2.new(0, 200, 0, 40)
+        sendBtn.Position = UDim2.new(0, 20, 0, 245)
+        sendBtn.Text = (currentLang == "ru") and "📨 Отправить отзыв" or "📨 Send Feedback"
+        sendBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        sendBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
+        sendBtn.BackgroundTransparency = 0.3
+        sendBtn.BorderSizePixel = 0
+        sendBtn.Font = Enum.Font.GothamBold
+        sendBtn.TextSize = 14
+        sendBtn.Parent = contentContainer
+        Instance.new("UICorner").CornerRadius = UDim.new(0, 8).Parent = sendBtn
+        
+        local statusLabel = Instance.new("TextLabel")
+        statusLabel.Size = UDim2.new(1, -40, 0, 30)
+        statusLabel.Position = UDim2.new(0, 20, 0, 295)
+        statusLabel.Text = ""
+        statusLabel.TextColor3 = Color3.fromRGB(150, 200, 150)
+        statusLabel.BackgroundTransparency = 1
+        statusLabel.Font = Enum.Font.Gotham
+        statusLabel.TextSize = 12
+        statusLabel.TextXAlignment = Enum.TextXAlignment.Left
+        statusLabel.Parent = contentContainer
+        
+        sendBtn.MouseButton1Click:Connect(function()
+            local feedbackText = feedbackBox.Text
+            if not feedbackText or feedbackText == "" then
+                statusLabel.Text = (currentLang == "ru") and "❌ Введите текст отзыва!" or "❌ Enter feedback text!"
+                statusLabel.TextColor3 = Color3.fromRGB(255, 150, 150)
+                task.wait(2)
+                statusLabel.Text = ""
+                return
+            end
+            
+            statusLabel.Text = (currentLang == "ru") and "⏳ Отправка..." or "⏳ Sending..."
+            statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+            sendFeedback(LocalPlayer.Name, feedbackText, currentLang)
+            statusLabel.Text = (currentLang == "ru") and "✅ Спасибо за отзыв!" or "✅ Thanks for your feedback!"
+            statusLabel.TextColor3 = Color3.fromRGB(150, 255, 150)
+            feedbackBox.Text = ""
+            task.wait(3)
+            statusLabel.Text = ""
+        end)
+        
+    elseif activeTab == "Settings" then
+        local settingsLabel = Instance.new("TextLabel")
+        settingsLabel.Size = UDim2.new(1, -40, 0, 30)
+        settingsLabel.Position = UDim2.new(0, 20, 0, 20)
+        settingsLabel.Text = (currentLang == "ru") and "Настройки (в разработке)" or "Settings (in development)"
+        settingsLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
+        settingsLabel.BackgroundTransparency = 1
+        settingsLabel.Font = Enum.Font.GothamBold
+        settingsLabel.TextSize = 16
+        settingsLabel.TextXAlignment = Enum.TextXAlignment.Left
+        settingsLabel.Parent = contentContainer
+    end
+    
+    updateContentHeight()
+end
+
+local function applyLanguage(lang)
+    currentLang = lang
+    langChoiceFrame:Destroy()
+    
+    local sub = screenGui:FindFirstChild("SubtitleLabel")
+    if sub then
+        sub.Text = "Premium Murder Mystery 2 Script"
+    end
+    
+    for tab, btn in pairs(tabButtons) do
+        if lang == "ru" then
+            if tab == "Main" then btn.Text = "Главная"
+            elseif tab == "Visual" then btn.Text = "Визуал"
+            elseif tab == "Players" then btn.Text = "Игроки"
+            elseif tab == "Teleport" then btn.Text = "Телепорт"
+            elseif tab == "ESP" then btn.Text = "ESP"
+            elseif tab == "Feedback" then btn.Text = "Отзывы"
+            elseif tab == "Settings" then btn.Text = "Настройки"
+            end
+        else
+            if tab == "Main" then btn.Text = "Main"
+            elseif tab == "Visual" then btn.Text = "Visual"
+            elseif tab == "Players" then btn.Text = "Players"
+            elseif tab == "Teleport" then btn.Text = "Teleport"
+            elseif tab == "ESP" then btn.Text = "ESP"
+            elseif tab == "Feedback" then btn.Text = "Feedback"
+            elseif tab == "Settings" then btn.Text = "Settings"
+            end
+        end
+    end
+    
+    updateContent()
+end
+
+-- ========== СОЗДАНИЕ ОСНОВНОГО UI ==========
+local function createUI()
+    mainFrame = Instance.new("Frame")
+    mainFrame.Size = UDim2.new(0, currentWidth, 0, currentHeight)
+    mainFrame.Position = UDim2.new(0.5, -currentWidth/2, 0.5, -currentHeight/2)
+    mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    mainFrame.BackgroundTransparency = 0.4
+    mainFrame.BorderSizePixel = 0
+    mainFrame.ClipsDescendants = true
+    mainFrame.Parent = screenGui
+    Instance.new("UICorner").CornerRadius = UDim.new(0, 20).Parent = mainFrame
+    
+    local glowFrame = Instance.new("Frame")
+    glowFrame.Size = UDim2.new(1, 6, 1, 6)
+    glowFrame.Position = UDim2.new(0, -3, 0, -3)
+    glowFrame.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+    glowFrame.BackgroundTransparency = 0.5
+    glowFrame.BorderSizePixel = 0
+    glowFrame.Parent = mainFrame
+    Instance.new("UICorner").CornerRadius = UDim.new(0, 23).Parent = glowFrame
+    
+    topBar = Instance.new("Frame")
+    topBar.Size = UDim2.new(1, 0, 0, 85)
+    topBar.BackgroundColor3 = Color3.fromRGB(0, 70, 140)
+    topBar.BackgroundTransparency = 0.3
+    topBar.BorderSizePixel = 0
+    topBar.Parent = mainFrame
+    Instance.new("UICorner").CornerRadius = UDim.new(0, 20).Parent = topBar
+    
+    local topOnlyCorner = Instance.new("Frame")
+    topOnlyCorner.Size = UDim2.new(1, 0, 0, 20)
+    topOnlyCorner.Position = UDim2.new(0, 0, 1, -20)
+    topOnlyCorner.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    topOnlyCorner.BackgroundTransparency = 0.4
+    topOnlyCorner.BorderSizePixel = 0
+    topOnlyCorner.Parent = topBar
+    
+    local topGradient = Instance.new("UIGradient")
+    topGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 100, 200)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 150, 255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 100, 200))
+    }
+    topGradient.Rotation = 90
+    topGradient.Parent = topBar
+    
+    local titleContainer = Instance.new("Frame")
+    titleContainer.Size = UDim2.new(0, 350, 1, 0)
+    titleContainer.Position = UDim2.new(0, 25, 0, 0)
+    titleContainer.BackgroundTransparency = 1
+    titleContainer.Parent = topBar
+    
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(0, 200, 0, 40)
+    title.Position = UDim2.new(0, 0, 0, 8)
+    title.Text = "LUGERGUARD"
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.BackgroundTransparency = 1
+    title.Font = Enum.Font.GothamBlack
+    title.TextSize = 32
+    title.TextXAlignment = Enum.TextXAlignment.Left
+    title.TextYAlignment = Enum.TextYAlignment.Center
+    title.Parent = titleContainer
+    
+    local xLetter = Instance.new("TextLabel")
+    xLetter.Size = UDim2.new(0, 50, 0, 40)
+    xLetter.Position = UDim2.new(0, 200, 0, 8)
+    xLetter.Text = "X"
+    xLetter.TextColor3 = Color3.fromRGB(0, 200, 255)
+    xLetter.BackgroundTransparency = 1
+    xLetter.Font = Enum.Font.GothamBlack
+    xLetter.TextSize = 42
+    xLetter.TextXAlignment = Enum.TextXAlignment.Center
+    xLetter.TextYAlignment = Enum.TextYAlignment.Center
+    xLetter.Parent = titleContainer
+    
+    local versionLabel = Instance.new("TextLabel")
+    versionLabel.Size = UDim2.new(0, 80, 0, 25)
+    versionLabel.Position = UDim2.new(0, 250, 0, 15)
+    versionLabel.Text = "v1.0.0"
+    versionLabel.TextColor3 = Color3.fromRGB(150, 200, 255)
+    versionLabel.BackgroundTransparency = 1
+    versionLabel.Font = Enum.Font.Gotham
+    versionLabel.TextSize = 14
+    versionLabel.TextXAlignment = Enum.TextXAlignment.Left
+    versionLabel.TextYAlignment = Enum.TextYAlignment.Center
+    versionLabel.Parent = titleContainer
+    
+    local subtitleLabel = Instance.new("TextLabel")
+    subtitleLabel.Name = "SubtitleLabel"
+    subtitleLabel.Size = UDim2.new(1, -80, 0, 25)
+    subtitleLabel.Position = UDim2.new(0, 30, 0, 45)
+    subtitleLabel.Text = "Premium Murder Mystery 2 Script"
+    subtitleLabel.TextColor3 = Color3.fromRGB(150, 200, 255)
+    subtitleLabel.BackgroundTransparency = 1
+    subtitleLabel.Font = Enum.Font.Gotham
+    subtitleLabel.TextSize = 13
+    subtitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    subtitleLabel.TextYAlignment = Enum.TextYAlignment.Center
+    subtitleLabel.Parent = topBar
+    
+    local resizeBtn = Instance.new("TextButton")
+    resizeBtn.Size = UDim2.new(0, 28, 0, 28)
+    resizeBtn.Position = UDim2.new(1, -135, 0, 28)
+    resizeBtn.Text = "+"
+    resizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    resizeBtn.BackgroundTransparency = 1
+    resizeBtn.BorderSizePixel = 0
+    resizeBtn.Font = Enum.Font.GothamBold
+    resizeBtn.TextSize = 22
+    resizeBtn.Parent = topBar
+    
+    local minimizeBtn = Instance.new("TextButton")
+    minimizeBtn.Size = UDim2.new(0, 28, 0, 28)
+    minimizeBtn.Position = UDim2.new(1, -100, 0, 28)
+    minimizeBtn.Text = "—"
+    minimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    minimizeBtn.BackgroundTransparency = 1
+    minimizeBtn.BorderSizePixel = 0
+    minimizeBtn.Font = Enum.Font.GothamBold
+    minimizeBtn.TextSize = 24
+    minimizeBtn.Parent = topBar
+    
+    local closeBtn = Instance.new("TextButton")
+    closeBtn.Size = UDim2.new(0, 28, 0, 28)
+    closeBtn.Position = UDim2.new(1, -60, 0, 28)
+    closeBtn.Text = "X"
+    closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    closeBtn.BackgroundTransparency = 1
+    closeBtn.BorderSizePixel = 0
+    closeBtn.Font = Enum.Font.GothamBold
+    closeBtn.TextSize = 20
+    closeBtn.Parent = topBar
+    
+    contentFrame = Instance.new("Frame")
+    contentFrame.Size = UDim2.new(1, -30, 1, -105)
+    contentFrame.Position = UDim2.new(0, 15, 0, 95)
+    contentFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    contentFrame.BackgroundTransparency = 0.4
+    contentFrame.BorderSizePixel = 0
+    contentFrame.ClipsDescendants = true
+    contentFrame.Parent = mainFrame
+    Instance.new("UICorner").CornerRadius = UDim.new(0, 16).Parent = contentFrame
+    
+    leftPanel = Instance.new("ScrollingFrame")
+    leftPanel.Size = UDim2.new(0, 150, 1, -70)
+    leftPanel.Position = UDim2.new(0, 0, 0, 0)
+    leftPanel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    leftPanel.BackgroundTransparency = 0.5
+    leftPanel.BorderSizePixel = 0
+    leftPanel.ScrollBarThickness = 4
+    leftPanel.ScrollBarImageColor3 = Color3.fromRGB(0, 150, 255)
+    leftPanel.CanvasSize = UDim2.new(0, 0, 0, 0)
+    leftPanel.Parent = contentFrame
+    Instance.new("UICorner").CornerRadius = UDim.new(0, 12).Parent = leftPanel
+    
+    local blueLine = Instance.new("Frame")
+    blueLine.Size = UDim2.new(0, 2, 1, -20)
+    blueLine.Position = UDim2.new(1, -2, 0, 10)
+    blueLine.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+    blueLine.BackgroundTransparency = 0.5
+    blueLine.BorderSizePixel = 0
+    blueLine.Parent = leftPanel
+    
+    local buttonsContainer = Instance.new("Frame")
+    buttonsContainer.Size = UDim2.new(1, 0, 0, 0)
+    buttonsContainer.BackgroundTransparency = 1
+    buttonsContainer.Parent = leftPanel
+    
+    rightContent = Instance.new("ScrollingFrame")
+    rightContent.Size = UDim2.new(1, -165, 1, -10)
+    rightContent.Position = UDim2.new(0, 160, 0, 5)
+    rightContent.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    rightContent.BackgroundTransparency = 0.45
+    rightContent.BorderSizePixel = 0
+    rightContent.ScrollBarThickness = 4
+    rightContent.ScrollBarImageColor3 = Color3.fromRGB(0, 150, 255)
+    rightContent.CanvasSize = UDim2.new(0, 0, 0, 0)
+    rightContent.Parent = contentFrame
+    Instance.new("UICorner").CornerRadius = UDim.new(0, 12).Parent = rightContent
+    
+    local rightStroke = Instance.new("UIStroke")
+    rightStroke.Color = Color3.fromRGB(0, 150, 255)
+    rightStroke.Thickness = 1
+    rightStroke.Transparency = 0.6
+    rightStroke.Parent = rightContent
+    
+    contentContainer = Instance.new("Frame")
+    contentContainer.Size = UDim2.new(1, 0, 0, 0)
+    contentContainer.BackgroundTransparency = 1
+    contentContainer.Parent = rightContent
+    
+    local tabsList = {"Main", "Visual", "Players", "Teleport", "ESP", "Feedback", "Settings"}
+    local buttonHeight = 40
+    local buttonSpacing = 5
+    local currentY = 10
+    
+    for i, tab in pairs(tabsList) do
+        local btn = Instance.new("TextButton")
+        btn.Size = UDim2.new(1, -10, 0, buttonHeight)
+        btn.Position = UDim2.new(0, 5, 0, currentY)
+        
+        if currentLang == "ru" then
+            if tab == "Main" then btn.Text = "Главная"
+            elseif tab == "Visual" then btn.Text = "Визуал"
+            elseif tab == "Players" then btn.Text = "Игроки"
+            elseif tab == "Teleport" then btn.Text = "Телепорт"
+            elseif tab == "ESP" then btn.Text = "ESP"
+            elseif tab == "Feedback" then btn.Text = "Отзывы"
+            elseif tab == "Settings" then btn.Text = "Настройки"
+            end
+        else
+            btn.Text = tab
+        end
+        
+        btn.TextColor3 = Color3.fromRGB(160, 170, 190)
+        btn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        btn.BackgroundTransparency = 0.6
+        btn.BorderSizePixel = 0
+        btn.Font = Enum.Font.GothamBold
+        btn.TextSize = 14
+        btn.Parent = buttonsContainer
+        Instance.new("UICorner").CornerRadius = UDim.new(0, 8).Parent = btn
+        
+        btn.MouseButton1Click:Connect(function()
+            if activeTab == tab then return end
+            for _, b in pairs(tabButtons) do
+                b.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+                b.BackgroundTransparency = 0.6
+                b.TextColor3 = Color3.fromRGB(160, 170, 190)
+            end
+            btn.BackgroundColor3 = Color3.fromRGB(0, 80, 140)
+            btn.BackgroundTransparency = 0.3
+            btn.TextColor3 = Color3.fromRGB(0, 200, 255)
+            activeTab = tab
+            updateContent()
+        end)
+        
+        tabButtons[tab] = btn
+        currentY = currentY + buttonHeight + buttonSpacing
+    end
+    
+    buttonsContainer.Size = UDim2.new(1, 0, 0, currentY + 20)
+    leftPanel.CanvasSize = UDim2.new(0, 0, 0, currentY + 30)
+    
+    activeTab = "Main"
+    if tabButtons["Main"] then
+        tabButtons["Main"].BackgroundColor3 = Color3.fromRGB(0, 80, 140)
+        tabButtons["Main"].BackgroundTransparency = 0.3
+        tabButtons["Main"].TextColor3 = Color3.fromRGB(0, 200, 255)
+    end
+    
+    updateContent()
+    
+    local isMinimized = false
+    minimizeBtn.MouseButton1Click:Connect(function()
+        isMinimized = not isMinimized
+        if isMinimized then
+            TweenService:Create(mainFrame, TweenInfo.new(0.3), {Size = UDim2.new(0, currentWidth, 0, 85)}):Play()
+            TweenService:Create(contentFrame, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
+            task.wait(0.15)
+            contentFrame.Visible = false
+        else
+            contentFrame.Visible = true
+            TweenService:Create(contentFrame, TweenInfo.new(0.2), {BackgroundTransparency = 0.4}):Play()
+            TweenService:Create(mainFrame, TweenInfo.new(0.3), {Size = UDim2.new(0, currentWidth, 0, currentHeight)}):Play()
+        end
+    end)
+    
+    closeBtn.MouseButton1Click:Connect(function()
+        TweenService:Create(mainFrame, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
+        task.wait(0.2)
+        screenGui:Destroy()
+    end)
+    
+    local dragging = false
+    local dragStart = nil
+    local startPos = nil
+    
+    topBar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = Vector2.new(input.Position.X, input.Position.Y)
+            startPos = mainFrame.Position
+        end
+    end)
+    
+    topBar.InputEnded:Connect(function()
+        dragging = false
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local delta = Vector2.new(input.Position.X, input.Position.Y) - dragStart
+            mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+    
+    local function resizeWindow(newWidth, newHeight)
+        newWidth = math.clamp(newWidth, minWidth, maxWidth)
+        newHeight = math.clamp(newHeight, minHeight, maxHeight)
+        currentWidth = newWidth
+        currentHeight = newHeight
+        local newXOffset = -newWidth/2
+        local newYOffset = -newHeight/2
+        TweenService:Create(mainFrame, TweenInfo.new(0.2), {
+            Size = UDim2.new(0, newWidth, 0, newHeight),
+            Position = UDim2.new(0.5, newXOffset, 0.5, newYOffset)
+        }):Play()
+        if not isMinimized then
+            contentFrame.Visible = true
+            contentFrame.BackgroundTransparency = 0.4
+        end
+        updateContentHeight()
+    end
+    
+    local sizes = {{500, 400}, {650, 450}, {750, 520}, {900, 600}, {1000, 700}}
+    local sizeIndex = 3
+    
+    resizeBtn.MouseButton1Click:Connect(function()
+        if isMinimized then
+            isMinimized = false
+            contentFrame.Visible = true
+            contentFrame.BackgroundTransparency = 0.4
+            TweenService:Create(mainFrame, TweenInfo.new(0.3), {Size = UDim2.new(0, currentWidth, 0, currentHeight)}):Play()
+        else
+            sizeIndex = sizeIndex % #sizes + 1
+            local newSize = sizes[sizeIndex]
+            resizeWindow(newSize[1], newSize[2])
+        end
+    end)
+    
+    local avatarFrame = Instance.new("Frame")
+    avatarFrame.Size = UDim2.new(0, 45, 0, 45)
+    avatarFrame.Position = UDim2.new(0, 10, 1, -55)
+    avatarFrame.BackgroundColor3 = Color3.fromRGB(0, 100, 180)
+    avatarFrame.BackgroundTransparency = 0.4
+    avatarFrame.BorderSizePixel = 0
+    avatarFrame.Parent = contentFrame
+    Instance.new("UICorner").CornerRadius = UDim.new(1, 0).Parent = avatarFrame
+    
+    local avatarImage = Instance.new("ImageLabel")
+    avatarImage.Size = UDim2.new(1, -4, 1, -4)
+    avatarImage.Position = UDim2.new(0, 2, 0, 2)
+    avatarImage.BackgroundTransparency = 1
+    avatarImage.Parent = avatarFrame
+    Instance.new("UICorner").CornerRadius = UDim.new(1, 0).Parent = avatarImage
+    avatarImage.Image = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. LocalPlayer.UserId .. "&width=100&height=100&format=png"
+    
+    local playerName = Instance.new("TextLabel")
+    playerName.Size = UDim2.new(0, 100, 0, 20)
+    playerName.Position = UDim2.new(0, 60, 1, -50)
+    playerName.Text = "@" .. LocalPlayer.Name
+    playerName.TextColor3 = Color3.fromRGB(100, 180, 230)
+    playerName.BackgroundTransparency = 1
+    playerName.Font = Enum.Font.GothamBold
+    playerName.TextSize = 11
+    playerName.TextXAlignment = Enum.TextXAlignment.Left
+    playerName.Parent = contentFrame
+    
+    local line = Instance.new("Frame")
+    line.Size = UDim2.new(0, 100, 0, 1)
+    line.Position = UDim2.new(0, 60, 1, -32)
+    line.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+    line.BackgroundTransparency = 0.5
+    line.BorderSizePixel = 0
+    line.Parent = contentFrame
+end
+
+-- ========== ЗАПУСК ==========
+ruBtn.MouseButton1Click:Connect(function()
+    currentLang = "ru"
+    langChoiceFrame:Destroy()
+    createUI()
+end)
+
+enBtn.MouseButton1Click:Connect(function()
+    currentLang = "en"
+    langChoiceFrame:Destroy()
+    createUI()
+end)
+
+print("✅ LugerGuard X успешно загружен!")
+print("📌 Доступные функции:")
+print("   - Скорость и прыжок")
+print("   - Режим полёта (клавиша Q)")
+print("   - Ноклип, Анти-AFK, FullBright")
+print("   - Телепорт к игроку")
+print("   - Infinity Jump (бесконечные прыжки)")
+print("   - ESP (подсветка игроков)")
+print("   - Имена игроков (работают отдельно от ESP)")
+print("   - Отзывы в Discord")
