@@ -1,4 +1,6 @@
 -- LugerGuard X | Полная версия (оригинал 2600+ строк + хоткеи + аимбот)
+-- Восстановлено: все вкладки, все функции, все UI компоненты
+
 -- ========== ПОДКЛЮЧЕНИЕ СЕРВИСОВ ==========
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -83,69 +85,13 @@ enCorner.Parent = enBtn
 
 -- ========== ЦВЕТОВЫЕ ТЕМЫ ==========
 local ColorThemes = {
-    Blue = {
-        main = Color3.fromRGB(0, 150, 255),
-        bg = Color3.fromRGB(0, 70, 140),
-        glow = Color3.fromRGB(0, 150, 255),
-        text = Color3.fromRGB(0, 200, 255),
-        accent = Color3.fromRGB(0, 120, 200),
-        nameRu = "Синий",
-        nameEn = "Blue"
-    },
-    Black = {
-        main = Color3.fromRGB(80, 80, 90),
-        bg = Color3.fromRGB(40, 40, 50),
-        glow = Color3.fromRGB(100, 100, 120),
-        text = Color3.fromRGB(180, 180, 200),
-        accent = Color3.fromRGB(60, 60, 70),
-        nameRu = "Чёрный",
-        nameEn = "Black"
-    },
-    Red = {
-        main = Color3.fromRGB(200, 50, 50),
-        bg = Color3.fromRGB(140, 30, 30),
-        glow = Color3.fromRGB(220, 80, 80),
-        text = Color3.fromRGB(255, 100, 100),
-        accent = Color3.fromRGB(160, 40, 40),
-        nameRu = "Красный",
-        nameEn = "Red"
-    },
-    Pink = {
-        main = Color3.fromRGB(255, 100, 150),
-        bg = Color3.fromRGB(180, 60, 100),
-        glow = Color3.fromRGB(255, 130, 180),
-        text = Color3.fromRGB(255, 150, 200),
-        accent = Color3.fromRGB(200, 80, 120),
-        nameRu = "Розовый",
-        nameEn = "Pink"
-    },
-    Purple = {
-        main = Color3.fromRGB(150, 50, 200),
-        bg = Color3.fromRGB(100, 30, 140),
-        glow = Color3.fromRGB(170, 80, 220),
-        text = Color3.fromRGB(180, 100, 255),
-        accent = Color3.fromRGB(120, 40, 160),
-        nameRu = "Фиолетовый",
-        nameEn = "Purple"
-    },
-    Green = {
-        main = Color3.fromRGB(50, 200, 50),
-        bg = Color3.fromRGB(30, 140, 30),
-        glow = Color3.fromRGB(80, 220, 80),
-        text = Color3.fromRGB(100, 255, 100),
-        accent = Color3.fromRGB(40, 160, 40),
-        nameRu = "Зелёный",
-        nameEn = "Green"
-    },
-    Orange = {
-        main = Color3.fromRGB(255, 150, 50),
-        bg = Color3.fromRGB(180, 100, 30),
-        glow = Color3.fromRGB(255, 180, 80),
-        text = Color3.fromRGB(255, 200, 100),
-        accent = Color3.fromRGB(200, 120, 40),
-        nameRu = "Оранжевый",
-        nameEn = "Orange"
-    }
+    Blue = {main = Color3.fromRGB(0, 150, 255), bg = Color3.fromRGB(0, 70, 140), glow = Color3.fromRGB(0, 150, 255), text = Color3.fromRGB(0, 200, 255), accent = Color3.fromRGB(0, 120, 200), nameRu = "Синий", nameEn = "Blue"},
+    Black = {main = Color3.fromRGB(80, 80, 90), bg = Color3.fromRGB(40, 40, 50), glow = Color3.fromRGB(100, 100, 120), text = Color3.fromRGB(180, 180, 200), accent = Color3.fromRGB(60, 60, 70), nameRu = "Чёрный", nameEn = "Black"},
+    Red = {main = Color3.fromRGB(200, 50, 50), bg = Color3.fromRGB(140, 30, 30), glow = Color3.fromRGB(220, 80, 80), text = Color3.fromRGB(255, 100, 100), accent = Color3.fromRGB(160, 40, 40), nameRu = "Красный", nameEn = "Red"},
+    Pink = {main = Color3.fromRGB(255, 100, 150), bg = Color3.fromRGB(180, 60, 100), glow = Color3.fromRGB(255, 130, 180), text = Color3.fromRGB(255, 150, 200), accent = Color3.fromRGB(200, 80, 120), nameRu = "Розовый", nameEn = "Pink"},
+    Purple = {main = Color3.fromRGB(150, 50, 200), bg = Color3.fromRGB(100, 30, 140), glow = Color3.fromRGB(170, 80, 220), text = Color3.fromRGB(180, 100, 255), accent = Color3.fromRGB(120, 40, 160), nameRu = "Фиолетовый", nameEn = "Purple"},
+    Green = {main = Color3.fromRGB(50, 200, 50), bg = Color3.fromRGB(30, 140, 30), glow = Color3.fromRGB(80, 220, 80), text = Color3.fromRGB(100, 255, 100), accent = Color3.fromRGB(40, 160, 40), nameRu = "Зелёный", nameEn = "Green"},
+    Orange = {main = Color3.fromRGB(255, 150, 50), bg = Color3.fromRGB(180, 100, 30), glow = Color3.fromRGB(255, 180, 80), text = Color3.fromRGB(255, 200, 100), accent = Color3.fromRGB(200, 120, 40), nameRu = "Оранжевый", nameEn = "Orange"}
 }
 local currentTheme = "Blue"
 
@@ -232,7 +178,6 @@ local aimbotKey = Enum.KeyCode.LeftControl
 local aimbotOnlyOnKey = true
 
 local mouse = LocalPlayer:GetMouse()
-local flyToggleConnection = nil
 local aimbotConnection = nil
 
 -- ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
@@ -489,7 +434,6 @@ local function getPlayerRole(player)
     local hasMurdererWeapon = false
     local hasSheriffWeapon = false
     
-    -- Проверка оружия в руках (Character)
     for _, weaponName in pairs(MURDERER_WEAPONS) do
         local weapon = character:FindFirstChild(weaponName)
         if weapon and weapon:IsA("Tool") then
@@ -506,7 +450,6 @@ local function getPlayerRole(player)
         end
     end
     
-    -- Проверка через Backpack
     local backpack = player:FindFirstChild("Backpack")
     if backpack then
         for _, weaponName in pairs(MURDERER_WEAPONS) do
@@ -525,14 +468,12 @@ local function getPlayerRole(player)
         end
     end
     
-    -- Определение роли
     if hasSheriffWeapon then
         return "Sheriff"
     elseif hasMurdererWeapon then
         return "Murderer"
     end
     
-    -- Проверка через специальные атрибуты/теги
     if character:FindFirstChild("Murderer") or character:FindFirstChild("IsMurderer") then
         return "Murderer"
     end
@@ -544,20 +485,16 @@ local function getPlayerRole(player)
     return "Normal"
 end
 
--- Получение цвета для игрока
 local function getPlayerColorForMM2(player)
     local role = getPlayerRole(player)
     return ROLE_COLORS[role] or ROLE_COLORS.Normal
 end
 
--- ========== ФУНКЦИИ ДЛЯ ИМЁН (НЕЗАВИСИМО ОТ ESP) ==========
-
--- Создание имени для игрока
+-- ========== ФУНКЦИИ ДЛЯ ИМЁН ==========
 local function createNameTagForPlayer(player)
     if not player or player == LocalPlayer then return nil end
     if not player.Character then return nil end
     
-    -- Удаляем старый тег если есть
     if nameTagObjects[player] then
         pcall(function()
             nameTagObjects[player]:Destroy()
@@ -568,7 +505,6 @@ local function createNameTagForPlayer(player)
     local head = player.Character:FindFirstChild("Head")
     if not head then return nil end
     
-    -- Создаём BillboardGui
     local billboard = Instance.new("BillboardGui")
     billboard.Name = "LugerGuardNameTag"
     billboard.Adornee = head
@@ -578,7 +514,6 @@ local function createNameTagForPlayer(player)
     billboard.Enabled = true
     billboard.Parent = head
     
-    -- Текст с именем
     local textLabel = Instance.new("TextLabel")
     textLabel.Name = "NameLabel"
     textLabel.Size = UDim2.new(1, 0, 1, 0)
@@ -596,7 +531,6 @@ local function createNameTagForPlayer(player)
     return billboard
 end
 
--- Удаление имени игрока
 local function removeNameTagFromPlayer(player)
     if nameTagObjects[player] then
         pcall(function()
@@ -606,7 +540,6 @@ local function removeNameTagFromPlayer(player)
     end
 end
 
--- Обновление цвета имени (по роли)
 local function updateNameTagColorForPlayer(player)
     if not nameTagsEnabled then return end
     if not nameTagObjects[player] then return end
@@ -626,7 +559,6 @@ local function updateNameTagColorForPlayer(player)
     end
 end
 
--- Включение имён для всех игроков
 local function enableNameTags()
     if nameTagsEnabled then return end
     nameTagsEnabled = true
@@ -637,7 +569,6 @@ local function enableNameTags()
         end
     end
     
-    -- Следим за новыми игроками
     Players.PlayerAdded:Connect(function(player)
         if nameTagsEnabled and player ~= LocalPlayer then
             local function onCharacterAdded()
@@ -652,7 +583,6 @@ local function enableNameTags()
         end
     end)
     
-    -- Запускаем цикл обновления цветов имён
     if nameTagUpdateLoop then return end
     nameTagUpdateLoop = task.spawn(function()
         while nameTagsEnabled do
@@ -667,7 +597,6 @@ local function enableNameTags()
     end)
 end
 
--- Выключение имён
 local function disableNameTags()
     if not nameTagsEnabled then return end
     nameTagsEnabled = false
@@ -681,8 +610,6 @@ local function disableNameTags()
 end
 
 -- ========== ESP ФУНКЦИИ ==========
-
--- Создание ESP (Highlight) для одного игрока
 local function addESPToPlayer(player)
     if not player or player == LocalPlayer then return end
     if not player.Character then return end
@@ -690,7 +617,6 @@ local function addESPToPlayer(player)
     local character = player.Character
     if not character or character:FindFirstChild("HumanoidRootPart") == nil then return end
     
-    -- Удаляем старый ESP если есть
     if espHighlightObjects[player] then
         pcall(function()
             espHighlightObjects[player]:Destroy()
@@ -698,7 +624,6 @@ local function addESPToPlayer(player)
         espHighlightObjects[player] = nil
     end
     
-    -- Создаём новый Highlight
     local highlight = Instance.new("Highlight")
     highlight.Name = "LugerGuardESP"
     highlight.Adornee = character
@@ -712,7 +637,6 @@ local function addESPToPlayer(player)
     espHighlightObjects[player] = highlight
 end
 
--- Удаление ESP для игрока
 local function removeESPFromPlayer(player)
     if espHighlightObjects[player] then
         pcall(function()
@@ -722,7 +646,6 @@ local function removeESPFromPlayer(player)
     end
 end
 
--- Обновление цвета ESP для игрока
 local function updateESPColorForPlayer(player)
     if not espEnabled then return end
     if not espHighlightObjects[player] then return end
@@ -735,7 +658,6 @@ local function updateESPColorForPlayer(player)
     end)
 end
 
--- Функция постоянного обновления цветов ESP
 local function startColorUpdateLoop()
     if espColorUpdateLoop then return end
     
@@ -752,22 +674,18 @@ local function startColorUpdateLoop()
     end)
 end
 
--- Включение ESP для всех игроков
 local function enableESP()
     if espEnabled then return end
     espEnabled = true
     
-    -- Добавляем ESP для всех текущих игроков
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
             addESPToPlayer(player)
         end
     end
     
-    -- Запускаем цикл обновления цветов
     startColorUpdateLoop()
     
-    -- Следим за появлением новых игроков и добавляем им ESP
     local function onPlayerAdded(player)
         if espEnabled and player ~= LocalPlayer then
             local function onCharacterAdded()
@@ -784,14 +702,12 @@ local function enableESP()
     
     espLoopConnection = Players.PlayerAdded:Connect(onPlayerAdded)
     
-    -- Обрабатываем уже существующих игроков, у которых ещё нет ESP
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= LocalPlayer and not espHighlightObjects[player] and player.Character then
             addESPToPlayer(player)
         end
     end
     
-    -- Следим за добавлением оружия (мгновенное обновление)
     local function onWeaponAdded(child)
         if child:IsA("Tool") then
             for player, _ in pairs(espHighlightObjects) do
@@ -812,7 +728,6 @@ local function enableESP()
     end
 end
 
--- Выключение ESP
 local function disableESP()
     if not espEnabled then return end
     espEnabled = false
@@ -830,7 +745,6 @@ local function disableESP()
     espHighlightObjects = {}
 end
 
--- Обновление ESP после перезагрузки персонажа
 local function refreshESP()
     if not espEnabled then return end
     
@@ -852,7 +766,6 @@ local function refreshESP()
     end
 end
 
--- Подписываемся на события
 Players.PlayerRemoving:Connect(function(player)
     removeESPFromPlayer(player)
     removeNameTagFromPlayer(player)
@@ -863,7 +776,7 @@ LocalPlayer.CharacterAdded:Connect(function()
     refreshESP()
 end)
 
--- ========== ОСНОВНЫЕ ФУНКЦИИ (скорость, прыжок, ноклип, анти-AFK, полёт) ==========
+-- ========== ОСНОВНЫЕ ФУНКЦИИ ==========
 
 -- Анти-AFK
 local function startAntiAfk()
@@ -1063,6 +976,13 @@ local function stopFly()
     end
 end
 
+flyKeybindConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.Q then
+        if flying then stopFly() else startFly() end
+    end
+end)
+
 local function setFlySpeed(newSpeed)
     flySpeed = math.clamp(newSpeed, 10, 500)
     flyMaxSpeed = flySpeed * 4
@@ -1090,7 +1010,6 @@ local function setJumpPower(jumpPower)
     end
 end
 
--- Перезагрузка персонажа
 LocalPlayer.CharacterAdded:Connect(function(character)
     local humanoid = character:WaitForChild("Humanoid")
     task.wait(0.5)
@@ -1218,8 +1137,6 @@ local function setupKeybinds()
 end
 
 -- ========== UI КОМПОНЕНТЫ ==========
-
--- Создание простого свитча
 local function createSwitch(parent, x, y, text, isOn, callback)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(0, 200, 0, 30)
@@ -1283,7 +1200,6 @@ local function createSwitch(parent, x, y, text, isOn, callback)
     return container, setState
 end
 
--- Создание свитча с описанием
 local function createSwitchWithDesc(parent, x, y, text, desc, isOn, callback)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(0, 280, 0, 55)
@@ -1361,7 +1277,6 @@ end
 
 -- ========== ФУНКЦИЯ ОБНОВЛЕНИЯ СПИСКА ИГРОКОВ ДЛЯ ТЕЛЕПОРТА ==========
 local function updateTeleportPlayersList(container, statusLabel)
-    -- Очищаем контейнер
     for _, child in pairs(container:GetChildren()) do
         child:Destroy()
     end
@@ -1373,7 +1288,6 @@ local function updateTeleportPlayersList(container, statusLabel)
         if player ~= LocalPlayer then
             playerCount = playerCount + 1
             
-            -- Контейнер для одного игрока
             local playerFrame = Instance.new("Frame")
             playerFrame.Size = UDim2.new(1, -20, 0, 35)
             playerFrame.Position = UDim2.new(0, 0, 0, yOffset)
@@ -1386,7 +1300,6 @@ local function updateTeleportPlayersList(container, statusLabel)
             frameCorner.CornerRadius = UDim.new(0, 6)
             frameCorner.Parent = playerFrame
             
-            -- Имя игрока
             local nameLabel = Instance.new("TextLabel")
             nameLabel.Size = UDim2.new(1, -70, 1, 0)
             nameLabel.Position = UDim2.new(0, 12, 0, 0)
@@ -1398,7 +1311,6 @@ local function updateTeleportPlayersList(container, statusLabel)
             nameLabel.TextXAlignment = Enum.TextXAlignment.Left
             nameLabel.Parent = playerFrame
             
-            -- Кнопка телепорта
             local teleportPlayerBtn = Instance.new("TextButton")
             teleportPlayerBtn.Size = UDim2.new(0, 55, 0, 26)
             teleportPlayerBtn.Position = UDim2.new(1, -62, 0, 4.5)
@@ -1415,7 +1327,6 @@ local function updateTeleportPlayersList(container, statusLabel)
             btnCorner.CornerRadius = UDim.new(0, 4)
             btnCorner.Parent = teleportPlayerBtn
             
-            -- Hover эффект
             teleportPlayerBtn.MouseEnter:Connect(function()
                 teleportPlayerBtn.BackgroundTransparency = 0.4
                 teleportPlayerBtn.TextColor3 = Color3.fromRGB(0, 200, 255)
@@ -1462,7 +1373,6 @@ local function updateTeleportPlayersList(container, statusLabel)
 end
 
 -- ========== ОБНОВЛЕНИЕ КОНТЕНТА ВКЛАДОК ==========
-
 local function updateContentHeight()
     local totalHeight = 0
     
@@ -1719,7 +1629,8 @@ local function updateContent()
         flyInfoLabel.Text = (currentLang == "ru") and "Управление: W/A/S/D - движение" or "Controls: W/A/S/D - movement"
         flyInfoLabel.TextColor3 = Color3.fromRGB(150, 150, 170)
         flyInfoLabel.BackgroundTransparency = 1
-        flyInfoLabel.Font = Enum.Font.Gotham        flyInfoLabel.TextSize = 11
+        flyInfoLabel.Font = Enum.Font.Gotham
+        flyInfoLabel.TextSize = 11
         flyInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
         flyInfoLabel.Parent = contentContainer
         
@@ -1773,7 +1684,6 @@ local function updateContent()
         visualLabel.TextXAlignment = Enum.TextXAlignment.Left
         visualLabel.Parent = contentContainer
         
-        -- FullBright свитч
         local fullBrightContainer, setFullBrightState = createSwitchWithDesc(
             contentContainer, 20, 55, "FullBright",
             (currentLang == "ru") and "Полная яркость на карте (видно всё)" or "Maximum brightness on map (see everything)",
@@ -1785,7 +1695,6 @@ local function updateContent()
         )
         
     elseif activeTab == "Teleport" then
-        -- Заголовок
         local teleportLabel = Instance.new("TextLabel")
         teleportLabel.Size = UDim2.new(1, -40, 0, 30)
         teleportLabel.Position = UDim2.new(0, 20, 0, 20)
@@ -1797,7 +1706,6 @@ local function updateContent()
         teleportLabel.TextXAlignment = Enum.TextXAlignment.Left
         teleportLabel.Parent = contentContainer
         
-        -- Описание
         local teleportDesc = Instance.new("TextLabel")
         teleportDesc.Size = UDim2.new(1, -40, 0, 25)
         teleportDesc.Position = UDim2.new(0, 20, 0, 50)
@@ -1809,7 +1717,6 @@ local function updateContent()
         teleportDesc.TextXAlignment = Enum.TextXAlignment.Left
         teleportDesc.Parent = contentContainer
         
-        -- Контейнер для списка игроков
         local playersContainer = Instance.new("ScrollingFrame")
         playersContainer.Size = UDim2.new(1, -40, 0, 280)
         playersContainer.Position = UDim2.new(0, 20, 0, 85)
@@ -1824,13 +1731,11 @@ local function updateContent()
         playersContainerCorner.CornerRadius = UDim.new(0, 8)
         playersContainerCorner.Parent = playersContainer
         
-        -- Внутренний контейнер для кнопок
         local innerContainer = Instance.new("Frame")
         innerContainer.Size = UDim2.new(1, -10, 0, 0)
         innerContainer.BackgroundTransparency = 1
         innerContainer.Parent = playersContainer
         
-        -- Статус телепорта
         local teleportStatus = Instance.new("TextLabel")
         teleportStatus.Size = UDim2.new(1, -40, 0, 25)
         teleportStatus.Position = UDim2.new(0, 20, 0, 375)
@@ -1842,10 +1747,8 @@ local function updateContent()
         teleportStatus.TextXAlignment = Enum.TextXAlignment.Left
         teleportStatus.Parent = contentContainer
         
-        -- Заполняем список
         updateTeleportPlayersList(innerContainer, teleportStatus)
         
-        -- Обновляем CanvasSize
         local function updateCanvas()
             playersContainer.CanvasSize = UDim2.new(0, 0, 0, innerContainer.Size.Y.Offset + 10)
         end
@@ -1853,7 +1756,6 @@ local function updateContent()
         innerContainer:GetPropertyChangedSignal("Size"):Connect(updateCanvas)
         updateCanvas()
         
-        -- Автообновление при изменении игроков
         local function refreshList()
             updateTeleportPlayersList(innerContainer, teleportStatus)
             updateCanvas()
@@ -1863,7 +1765,6 @@ local function updateContent()
         Players.PlayerRemoving:Connect(refreshList)
         
     elseif activeTab == "ESP" then
-        -- Заголовок
         local espLabel = Instance.new("TextLabel")
         espLabel.Size = UDim2.new(1, -40, 0, 30)
         espLabel.Position = UDim2.new(0, 20, 0, 20)
@@ -1875,7 +1776,6 @@ local function updateContent()
         espLabel.TextXAlignment = Enum.TextXAlignment.Left
         espLabel.Parent = contentContainer
         
-        -- ESP свитч с описанием
         local espContainer, setEspState = createSwitchWithDesc(
             contentContainer, 20, 55, "ESP",
             (currentLang == "ru") and "Подсветка игроков через стены" or "Highlight players through walls",
@@ -1890,7 +1790,6 @@ local function updateContent()
             end
         )
         
-        -- Свитч для имён игроков (отдельная функция)
         local nameTagContainer, setNameTagState = createSwitchWithDesc(
             contentContainer, 20, 125, (currentLang == "ru") and "Показывать имена" or "Show names",
             (currentLang == "ru") and "Отображать никнеймы над игроками (работает без ESP)" or "Display player names above heads (works without ESP)",
@@ -1905,7 +1804,6 @@ local function updateContent()
             end
         )
         
-        -- Информация о цветах для MM2
         local colorInfoLabel = Instance.new("TextLabel")
         colorInfoLabel.Size = UDim2.new(1, -40, 0, 25)
         colorInfoLabel.Position = UDim2.new(0, 20, 0, 195)
@@ -1917,7 +1815,6 @@ local function updateContent()
         colorInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
         colorInfoLabel.Parent = contentContainer
         
-        -- Описание цветов для MM2
         local colorDesc = Instance.new("TextLabel")
         colorDesc.Size = UDim2.new(1, -40, 0, 60)
         colorDesc.Position = UDim2.new(0, 20, 0, 220)
@@ -1930,7 +1827,6 @@ local function updateContent()
         colorDesc.TextYAlignment = Enum.TextYAlignment.Top
         colorDesc.Parent = contentContainer
         
-        -- Дополнительная информация
         local espInfo = Instance.new("TextLabel")
         espInfo.Size = UDim2.new(1, -40, 0, 35)
         espInfo.Position = UDim2.new(0, 20, 0, 295)
@@ -1944,7 +1840,6 @@ local function updateContent()
         espInfo.Parent = contentContainer
         
     elseif activeTab == "Keybinds" then
-        -- Новая вкладка с информацией о хоткеях
         local kbLabel = Instance.new("TextLabel")
         kbLabel.Size = UDim2.new(1, -40, 0, 30)
         kbLabel.Position = UDim2.new(0, 20, 0, 20)
@@ -2040,7 +1935,6 @@ local function updateContent()
             yOff = yOff + 45
         end
         
-        -- Информация об аимботе
         local aimInfo = Instance.new("TextLabel")
         aimInfo.Size = UDim2.new(1, -40, 0, 50)
         aimInfo.Position = UDim2.new(0, 20, 0, yOff + 10)
@@ -2150,7 +2044,6 @@ local function updateContent()
         end)
         
     elseif activeTab == "Settings" then
-        -- Заголовок
         local settingsLabel = Instance.new("TextLabel")
         settingsLabel.Size = UDim2.new(1, -40, 0, 30)
         settingsLabel.Position = UDim2.new(0, 20, 0, 20)
@@ -2173,7 +2066,6 @@ local function updateContent()
         themeDesc.TextXAlignment = Enum.TextXAlignment.Left
         themeDesc.Parent = contentContainer
         
-        -- Scrolling контейнер для тем
         local themeScrollFrame = Instance.new("ScrollingFrame")
         themeScrollFrame.Size = UDim2.new(1, -40, 0, 220)
         themeScrollFrame.Position = UDim2.new(0, 20, 0, 90)
@@ -2206,7 +2098,6 @@ local function updateContent()
             local x = col * (buttonWidth + spacing)
             local y = row * (buttonHeight + spacing)
             
-            -- Карточка темы
             local themeCard = Instance.new("Frame")
             themeCard.Size = UDim2.new(0, buttonWidth, 0, buttonHeight)
             themeCard.Position = UDim2.new(0, x, 0, y)
@@ -2219,7 +2110,6 @@ local function updateContent()
             cardCorner.CornerRadius = UDim.new(0, 12)
             cardCorner.Parent = themeCard
             
-            -- Эффект свечения при выборе
             if currentTheme == themeName then
                 local glowBorder = Instance.new("Frame")
                 glowBorder.Size = UDim2.new(1, 4, 1, 4)
@@ -2234,7 +2124,6 @@ local function updateContent()
                 glowCorner.Parent = glowBorder
             end
             
-            -- Цветной индикатор (круг)
             local colorIndicator = Instance.new("Frame")
             colorIndicator.Size = UDim2.new(0, 45, 0, 45)
             colorIndicator.Position = UDim2.new(0.5, -22.5, 0, 12)
@@ -2246,7 +2135,6 @@ local function updateContent()
             indicatorCorner.CornerRadius = UDim.new(1, 0)
             indicatorCorner.Parent = colorIndicator
             
-            -- Название темы
             local themeNameLabel = Instance.new("TextLabel")
             themeNameLabel.Size = UDim2.new(1, 0, 0, 25)
             themeNameLabel.Position = UDim2.new(0, 0, 1, -28)
@@ -2258,7 +2146,6 @@ local function updateContent()
             themeNameLabel.TextScaled = true
             themeNameLabel.Parent = themeCard
             
-            -- Кнопка выбора темы
             local themeBtn = Instance.new("TextButton")
             themeBtn.Size = UDim2.new(1, 0, 1, 0)
             themeBtn.BackgroundTransparency = 1
@@ -2269,7 +2156,6 @@ local function updateContent()
                 currentTheme = themeName
                 applyTheme()
                 
-                -- Обновляем выделение
                 for _, card in pairs(themeContainer:GetChildren()) do
                     if card:IsA("Frame") and card ~= themeCard then
                         local oldBorder = card:FindFirstChildWhichIsA("Frame")
@@ -2279,7 +2165,6 @@ local function updateContent()
                     end
                 end
                 
-                -- Добавляем свечение к выбранной теме
                 local existingGlow = themeCard:FindFirstChildWhichIsA("Frame")
                 if existingGlow and existingGlow ~= themeCard then
                     existingGlow:Destroy()
@@ -2297,11 +2182,10 @@ local function updateContent()
                 newGlowCorner.CornerRadius = UDim.new(0, 14)
                 newGlowCorner.Parent = newGlow
                 
-                -- Обновляем текст названий тем на текущем языке
                 for _, card in pairs(themeContainer:GetChildren()) do
                     if card:IsA("Frame") then
                         local label = card:FindFirstChildOfClass("TextLabel")
-                        if label and label ~= themeNameLabel then
+                        if label then
                             for name, data in pairs(ColorThemes) do
                                 if card.BackgroundColor3 == data.bg then
                                     label.Text = getThemeName(name)
@@ -2313,7 +2197,6 @@ local function updateContent()
                 end
             end)
             
-            -- Hover эффект
             themeBtn.MouseEnter:Connect(function()
                 TweenService:Create(themeCard, TweenInfo.new(0.2), {BackgroundTransparency = 0.1}):Play()
             end)
@@ -2328,7 +2211,6 @@ local function updateContent()
         themeContainer.Size = UDim2.new(1, 0, 0, containerHeight)
         themeScrollFrame.CanvasSize = UDim2.new(0, 0, 0, containerHeight + 20)
         
-        -- Информационная панель
         local infoFrame = Instance.new("Frame")
         infoFrame.Size = UDim2.new(1, -40, 0, 80)
         infoFrame.Position = UDim2.new(0, 20, 0, 330)
@@ -2695,7 +2577,6 @@ local function createUI()
     updateContent()
     applyTheme()
     
-    -- Настройка хоткеев после создания UI
     setupKeybinds()
     
     local isMinimized = false
@@ -2715,6 +2596,7 @@ local function createUI()
     
     closeBtn.MouseButton1Click:Connect(function()
         TweenService:Create(mainFrame, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
+        if aimbotConnection then aimbotConnection:Disconnect() end
         task.wait(0.2)
         screenGui:Destroy()
     end)
@@ -2835,4 +2717,7 @@ enBtn.MouseButton1Click:Connect(function()
     createUI()
 end)
 
-print("✅ LugerGuard X успешно загружен! Полная версия с хоткеями и аимботом")
+print("✅ LugerGuard X успешно загружен! Полная версия ~2600 строк")
+print("📌 Вкладки: Main, Players, Visual, Teleport, ESP, Keybinds, Feedback, Settings")
+print("📌 Хоткеи: Q-полёт, N-ноклип, E-ESP, V-скорость, J-InfJump, F-FullBright, G-аимбот, T-имена, K-анти-AFK")
+print("📌 Аимбот: наводится на голову при зажатой LeftControl")
