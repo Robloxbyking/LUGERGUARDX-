@@ -1,7 +1,4 @@
--- LugerGuard X | Black Edition (инжектор-версия)
--- Исправленная версия: имена и ESP работают независимо
--- Исправлено: названия цветов по языку, прокрутка настроек, смена цвета всех элементов
-
+-- LugerGuard X | Полная версия (оригинал 2600+ строк + хоткеи + аимбот)
 -- ========== ПОДКЛЮЧЕНИЕ СЕРВИСОВ ==========
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -84,7 +81,7 @@ local enCorner = Instance.new("UICorner")
 enCorner.CornerRadius = UDim.new(0, 8)
 enCorner.Parent = enBtn
 
--- ========== ЦВЕТОВЫЕ ТЕМЫ (с двуязычными названиями) ==========
+-- ========== ЦВЕТОВЫЕ ТЕМЫ ==========
 local ColorThemes = {
     Blue = {
         main = Color3.fromRGB(0, 150, 255),
@@ -93,12 +90,7 @@ local ColorThemes = {
         text = Color3.fromRGB(0, 200, 255),
         accent = Color3.fromRGB(0, 120, 200),
         nameRu = "Синий",
-        nameEn = "Blue",
-        gradient = {
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 100, 200)),
-            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 150, 255)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 100, 200))
-        }
+        nameEn = "Blue"
     },
     Black = {
         main = Color3.fromRGB(80, 80, 90),
@@ -107,12 +99,7 @@ local ColorThemes = {
         text = Color3.fromRGB(180, 180, 200),
         accent = Color3.fromRGB(60, 60, 70),
         nameRu = "Чёрный",
-        nameEn = "Black",
-        gradient = {
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 50, 60)),
-            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(80, 80, 90)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(50, 50, 60))
-        }
+        nameEn = "Black"
     },
     Red = {
         main = Color3.fromRGB(200, 50, 50),
@@ -121,12 +108,7 @@ local ColorThemes = {
         text = Color3.fromRGB(255, 100, 100),
         accent = Color3.fromRGB(160, 40, 40),
         nameRu = "Красный",
-        nameEn = "Red",
-        gradient = {
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(180, 40, 40)),
-            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(220, 60, 60)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 40, 40))
-        }
+        nameEn = "Red"
     },
     Pink = {
         main = Color3.fromRGB(255, 100, 150),
@@ -135,12 +117,7 @@ local ColorThemes = {
         text = Color3.fromRGB(255, 150, 200),
         accent = Color3.fromRGB(200, 80, 120),
         nameRu = "Розовый",
-        nameEn = "Pink",
-        gradient = {
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(220, 70, 120)),
-            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 120, 170)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 70, 120))
-        }
+        nameEn = "Pink"
     },
     Purple = {
         main = Color3.fromRGB(150, 50, 200),
@@ -149,12 +126,7 @@ local ColorThemes = {
         text = Color3.fromRGB(180, 100, 255),
         accent = Color3.fromRGB(120, 40, 160),
         nameRu = "Фиолетовый",
-        nameEn = "Purple",
-        gradient = {
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(120, 40, 160)),
-            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(160, 70, 210)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(120, 40, 160))
-        }
+        nameEn = "Purple"
     },
     Green = {
         main = Color3.fromRGB(50, 200, 50),
@@ -163,12 +135,7 @@ local ColorThemes = {
         text = Color3.fromRGB(100, 255, 100),
         accent = Color3.fromRGB(40, 160, 40),
         nameRu = "Зелёный",
-        nameEn = "Green",
-        gradient = {
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 160, 40)),
-            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(70, 210, 70)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(40, 160, 40))
-        }
+        nameEn = "Green"
     },
     Orange = {
         main = Color3.fromRGB(255, 150, 50),
@@ -177,12 +144,7 @@ local ColorThemes = {
         text = Color3.fromRGB(255, 200, 100),
         accent = Color3.fromRGB(200, 120, 40),
         nameRu = "Оранжевый",
-        nameEn = "Orange",
-        gradient = {
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(200, 120, 40)),
-            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 160, 70)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 120, 40))
-        }
+        nameEn = "Orange"
     }
 }
 local currentTheme = "Blue"
@@ -249,6 +211,30 @@ local maxHeight = 700
 local currentWidth = 750
 local currentHeight = 520
 
+-- ========== НОВЫЕ ФУНКЦИИ: ХОТКЕИ И АИМБОТ ==========
+local keybinds = {
+    toggleFly = Enum.KeyCode.Q,
+    toggleNoclip = Enum.KeyCode.N,
+    toggleESP = Enum.KeyCode.E,
+    toggleSpeed = Enum.KeyCode.V,
+    toggleInfiniteJump = Enum.KeyCode.J,
+    toggleFullBright = Enum.KeyCode.F,
+    toggleAimbot = Enum.KeyCode.G,
+    toggleNameTags = Enum.KeyCode.T,
+    toggleAntiAfk = Enum.KeyCode.K
+}
+
+local aimbotEnabled = false
+local aimbotSmoothing = 0.3
+local aimbotFOV = 200
+local aimbotTargetPart = "Head"
+local aimbotKey = Enum.KeyCode.LeftControl
+local aimbotOnlyOnKey = true
+
+local mouse = LocalPlayer:GetMouse()
+local flyToggleConnection = nil
+local aimbotConnection = nil
+
 -- ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
 local function getText(ru, en)
     return currentLang == "ru" and ru or en
@@ -267,7 +253,11 @@ local function applyTheme()
         if topBar then 
             topBar.BackgroundColor3 = theme.bg
             if topGradient then
-                topGradient.Color = ColorSequence.new(theme.gradient)
+                topGradient.Color = ColorSequence.new({
+                    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 100, 200)),
+                    ColorSequenceKeypoint.new(0.5, theme.main),
+                    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 100, 200))
+                })
             end
         end
         if glowFrame then glowFrame.BackgroundColor3 = theme.glow end
@@ -288,9 +278,7 @@ local function applyTheme()
     end)
 end
 
--- ========== ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ ==========
-
--- Infinite Jump
+-- ========== INFINITE JUMP ==========
 local function enableInfiniteJump()
     if infiniteJumpEnabled then return end
     infiniteJumpEnabled = true
@@ -1075,14 +1063,6 @@ local function stopFly()
     end
 end
 
--- Клавиша для полёта
-flyKeybindConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
-    if input.KeyCode == Enum.KeyCode.Q then
-        if flying then stopFly() else startFly() end
-    end
-end)
-
 local function setFlySpeed(newSpeed)
     flySpeed = math.clamp(newSpeed, 10, 500)
     flyMaxSpeed = flySpeed * 4
@@ -1138,6 +1118,104 @@ LocalPlayer.CharacterAdded:Connect(function(character)
         enableInfiniteJump()
     end
 end)
+
+-- ========== АИМБОТ ==========
+local function getBestTarget()
+    local bestPlayer = nil
+    local bestDistance = aimbotFOV
+    local mousePos = Vector2.new(mouse.X, mouse.Y)
+    
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            local targetPart = player.Character:FindFirstChild(aimbotTargetPart)
+            if targetPart then
+                local screenPos, onScreen = workspace.CurrentCamera:WorldToScreenPoint(targetPart.Position)
+                if onScreen then
+                    local dist = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
+                    if dist < bestDistance then
+                        bestDistance = dist
+                        bestPlayer = player
+                    end
+                end
+            end
+        end
+    end
+    return bestPlayer
+end
+
+local function smoothLookAt(targetPlayer)
+    if not targetPlayer or not targetPlayer.Character then return end
+    local targetPart = targetPlayer.Character:FindFirstChild(aimbotTargetPart)
+    if not targetPart then return end
+    local camera = workspace.CurrentCamera
+    local newCFrame = CFrame.new(camera.CFrame.Position, targetPart.Position)
+    camera.CFrame = camera.CFrame:Lerp(newCFrame, aimbotSmoothing)
+end
+
+local function onAimbot()
+    if not aimbotEnabled then return end
+    if aimbotOnlyOnKey and not UserInputService:IsKeyDown(aimbotKey) then return end
+    local target = getBestTarget()
+    if target then smoothLookAt(target) end
+end
+
+local function startAimbot()
+    if aimbotConnection then return end
+    aimbotConnection = RunService.RenderStepped:Connect(onAimbot)
+end
+
+local function stopAimbot()
+    if aimbotConnection then
+        aimbotConnection:Disconnect()
+        aimbotConnection = nil
+    end
+end
+
+local function enableAimbot()
+    if aimbotEnabled then return end
+    aimbotEnabled = true
+    startAimbot()
+end
+
+local function disableAimbot()
+    if not aimbotEnabled then return end
+    aimbotEnabled = false
+    stopAimbot()
+end
+
+-- ========== НАСТРОЙКА ХОТКЕЕВ ==========
+local function setupKeybinds()
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then return end
+        
+        local key = input.KeyCode
+        
+        if key == keybinds.toggleFly then
+            if flying then stopFly() else startFly() end
+        elseif key == keybinds.toggleNoclip then
+            if noclipEnabled then stopNoclip() else startNoclip() end
+        elseif key == keybinds.toggleESP then
+            if espEnabled then disableESP() else enableESP() end
+        elseif key == keybinds.toggleSpeed then
+            speedEnabled = not speedEnabled
+            local char = LocalPlayer.Character
+            if char then
+                local hum = char:FindFirstChildOfClass("Humanoid")
+                if hum then hum.WalkSpeed = speedEnabled and currentSpeed or 16 end
+            end
+        elseif key == keybinds.toggleInfiniteJump then
+            if infiniteJumpEnabled then disableInfiniteJump() else enableInfiniteJump() end
+        elseif key == keybinds.toggleFullBright then
+            if fullBrightEnabled then disableFullBright() else enableFullBright() end
+        elseif key == keybinds.toggleAimbot then
+            if aimbotEnabled then disableAimbot() else enableAimbot() end
+        elseif key == keybinds.toggleNameTags then
+            if nameTagsEnabled then disableNameTags() else enableNameTags() end
+        elseif key == keybinds.toggleAntiAfk then
+            if antiAfkEnabled then stopAntiAfk() else startAntiAfk() end
+        end
+    end)
+end
 
 -- ========== UI КОМПОНЕНТЫ ==========
 
@@ -1641,8 +1719,7 @@ local function updateContent()
         flyInfoLabel.Text = (currentLang == "ru") and "Управление: W/A/S/D - движение" or "Controls: W/A/S/D - movement"
         flyInfoLabel.TextColor3 = Color3.fromRGB(150, 150, 170)
         flyInfoLabel.BackgroundTransparency = 1
-        flyInfoLabel.Font = Enum.Font.Gotham
-        flyInfoLabel.TextSize = 11
+        flyInfoLabel.Font = Enum.Font.Gotham        flyInfoLabel.TextSize = 11
         flyInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
         flyInfoLabel.Parent = contentContainer
         
@@ -1866,6 +1943,117 @@ local function updateContent()
         espInfo.TextXAlignment = Enum.TextXAlignment.Left
         espInfo.Parent = contentContainer
         
+    elseif activeTab == "Keybinds" then
+        -- Новая вкладка с информацией о хоткеях
+        local kbLabel = Instance.new("TextLabel")
+        kbLabel.Size = UDim2.new(1, -40, 0, 30)
+        kbLabel.Position = UDim2.new(0, 20, 0, 20)
+        kbLabel.Text = getText("⌨️ Настраиваемые хоткеи", "⌨️ Custom Keybinds")
+        kbLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
+        kbLabel.BackgroundTransparency = 1
+        kbLabel.Font = Enum.Font.GothamBold
+        kbLabel.TextSize = 18
+        kbLabel.Parent = contentContainer
+        
+        local kbDesc = Instance.new("TextLabel")
+        kbDesc.Size = UDim2.new(1, -40, 0, 25)
+        kbDesc.Position = UDim2.new(0, 20, 0, 55)
+        kbDesc.Text = getText("Нажми на кнопку, чтобы изменить клавишу", "Click a button to change the key")
+        kbDesc.TextColor3 = Color3.fromRGB(150, 155, 170)
+        kbDesc.BackgroundTransparency = 1
+        kbDesc.Font = Enum.Font.Gotham
+        kbDesc.TextSize = 12
+        kbDesc.Parent = contentContainer
+        
+        local keybindsList = {
+            {name = getText("Полёт", "Fly"), key = keybinds.toggleFly, var = "toggleFly"},
+            {name = getText("Ноклип", "Noclip"), key = keybinds.toggleNoclip, var = "toggleNoclip"},
+            {name = "ESP", key = keybinds.toggleESP, var = "toggleESP"},
+            {name = getText("Скорость", "Speed"), key = keybinds.toggleSpeed, var = "toggleSpeed"},
+            {name = "Infinity Jump", key = keybinds.toggleInfiniteJump, var = "toggleInfiniteJump"},
+            {name = "FullBright", key = keybinds.toggleFullBright, var = "toggleFullBright"},
+            {name = getText("Аимбот", "Aimbot"), key = keybinds.toggleAimbot, var = "toggleAimbot"},
+            {name = getText("Имена игроков", "Name Tags"), key = keybinds.toggleNameTags, var = "toggleNameTags"},
+            {name = getText("Анти-AFK", "Anti-AFK"), key = keybinds.toggleAntiAfk, var = "toggleAntiAfk"}
+        }
+        
+        local yOff = 90
+        for _, kb in pairs(keybindsList) do
+            local row = Instance.new("Frame")
+            row.Size = UDim2.new(1, -40, 0, 35)
+            row.Position = UDim2.new(0, 20, 0, yOff)
+            row.BackgroundColor3 = Color3.fromRGB(25, 30, 35)
+            row.BackgroundTransparency = 0.3
+            row.BorderSizePixel = 0
+            row.Parent = contentContainer
+            Instance.new("UICorner").CornerRadius = UDim.new(0, 6).Parent = row
+            
+            local nameLbl = Instance.new("TextLabel")
+            nameLbl.Size = UDim2.new(0, 150, 1, 0)
+            nameLbl.Position = UDim2.new(0, 15, 0, 0)
+            nameLbl.Text = kb.name
+            nameLbl.TextColor3 = Color3.fromRGB(200, 210, 230)
+            nameLbl.BackgroundTransparency = 1
+            nameLbl.Font = Enum.Font.GothamBold
+            nameLbl.TextSize = 14
+            nameLbl.TextXAlignment = Enum.TextXAlignment.Left
+            nameLbl.Parent = row
+            
+            local keyBtn = Instance.new("TextButton")
+            keyBtn.Size = UDim2.new(0, 100, 0, 28)
+            keyBtn.Position = UDim2.new(1, -115, 0, 3.5)
+            keyBtn.Text = kb.key.Name
+            keyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+            keyBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 180)
+            keyBtn.BackgroundTransparency = 0.2
+            keyBtn.BorderSizePixel = 0
+            keyBtn.Font = Enum.Font.GothamBold
+            keyBtn.TextSize = 12
+            keyBtn.Parent = row
+            Instance.new("UICorner").CornerRadius = UDim.new(0, 4).Parent = keyBtn
+            
+            local waiting = false
+            keyBtn.MouseButton1Click:Connect(function()
+                if waiting then return end
+                waiting = true
+                local oldText = keyBtn.Text
+                keyBtn.Text = getText("Нажми клавишу...", "Press a key...")
+                
+                local conn
+                conn = UserInputService.InputBegan:Connect(function(input, gp)
+                    if gp then return end
+                    if input.KeyCode ~= Enum.KeyCode.Unknown then
+                        keybinds[kb.var] = input.KeyCode
+                        keyBtn.Text = input.KeyCode.Name
+                        waiting = false
+                        conn:Disconnect()
+                    end
+                end)
+                task.wait(3)
+                if waiting then
+                    keyBtn.Text = oldText
+                    waiting = false
+                    if conn then conn:Disconnect() end
+                end
+            end)
+            
+            yOff = yOff + 45
+        end
+        
+        -- Информация об аимботе
+        local aimInfo = Instance.new("TextLabel")
+        aimInfo.Size = UDim2.new(1, -40, 0, 50)
+        aimInfo.Position = UDim2.new(0, 20, 0, yOff + 10)
+        aimInfo.Text = getText("🎯 Аимбот: Наводится на игроков\n   Клавиша активации: LeftControl (можно зажать)", "🎯 Aimbot: Aims at players\n   Activation key: LeftControl (can be held)")
+        aimInfo.TextColor3 = Color3.fromRGB(150, 155, 170)
+        aimInfo.BackgroundTransparency = 1
+        aimInfo.Font = Enum.Font.Gotham
+        aimInfo.TextSize = 11
+        aimInfo.TextXAlignment = Enum.TextXAlignment.Left
+        aimInfo.TextYAlignment = Enum.TextYAlignment.Top
+        aimInfo.TextWrapped = true
+        aimInfo.Parent = contentContainer
+        
     elseif activeTab == "Feedback" then
         local feedbackLabel = Instance.new("TextLabel")
         feedbackLabel.Size = UDim2.new(1, -40, 0, 30)
@@ -1985,7 +2173,7 @@ local function updateContent()
         themeDesc.TextXAlignment = Enum.TextXAlignment.Left
         themeDesc.Parent = contentContainer
         
-        -- Scrolling контейнер для тем (исправлено — теперь можно листать!)
+        -- Scrolling контейнер для тем
         local themeScrollFrame = Instance.new("ScrollingFrame")
         themeScrollFrame.Size = UDim2.new(1, -40, 0, 220)
         themeScrollFrame.Position = UDim2.new(0, 20, 0, 90)
@@ -2058,7 +2246,7 @@ local function updateContent()
             indicatorCorner.CornerRadius = UDim.new(1, 0)
             indicatorCorner.Parent = colorIndicator
             
-            -- Название темы (теперь на правильном языке)
+            -- Название темы
             local themeNameLabel = Instance.new("TextLabel")
             themeNameLabel.Size = UDim2.new(1, 0, 0, 25)
             themeNameLabel.Position = UDim2.new(0, 0, 1, -28)
@@ -2198,6 +2386,7 @@ local function applyLanguage(lang)
             elseif tab == "Players" then btn.Text = "Игроки"
             elseif tab == "Teleport" then btn.Text = "Телепорт"
             elseif tab == "ESP" then btn.Text = "ESP"
+            elseif tab == "Keybinds" then btn.Text = "Хоткеи"
             elseif tab == "Feedback" then btn.Text = "Отзывы"
             elseif tab == "Settings" then btn.Text = "Настройки"
             end
@@ -2207,6 +2396,7 @@ local function applyLanguage(lang)
             elseif tab == "Players" then btn.Text = "Players"
             elseif tab == "Teleport" then btn.Text = "Teleport"
             elseif tab == "ESP" then btn.Text = "ESP"
+            elseif tab == "Keybinds" then btn.Text = "Keybinds"
             elseif tab == "Feedback" then btn.Text = "Feedback"
             elseif tab == "Settings" then btn.Text = "Settings"
             end
@@ -2427,7 +2617,7 @@ local function createUI()
     contentContainer.BackgroundTransparency = 1
     contentContainer.Parent = rightContent
     
-    local tabsList = {"Main", "Players", "Visual", "Teleport", "ESP", "Feedback", "Settings"}
+    local tabsList = {"Main", "Players", "Visual", "Teleport", "ESP", "Keybinds", "Feedback", "Settings"}
     local buttonHeight = 40
     local buttonSpacing = 5
     local currentY = 10
@@ -2443,6 +2633,7 @@ local function createUI()
             elseif tab == "Players" then btn.Text = "Игроки"
             elseif tab == "Teleport" then btn.Text = "Телепорт"
             elseif tab == "ESP" then btn.Text = "ESP"
+            elseif tab == "Keybinds" then btn.Text = "Хоткеи"
             elseif tab == "Feedback" then btn.Text = "Отзывы"
             elseif tab == "Settings" then btn.Text = "Настройки"
             end
@@ -2452,6 +2643,7 @@ local function createUI()
             elseif tab == "Players" then btn.Text = "Players"
             elseif tab == "Teleport" then btn.Text = "Teleport"
             elseif tab == "ESP" then btn.Text = "ESP"
+            elseif tab == "Keybinds" then btn.Text = "Keybinds"
             elseif tab == "Feedback" then btn.Text = "Feedback"
             elseif tab == "Settings" then btn.Text = "Settings"
             end
@@ -2502,6 +2694,9 @@ local function createUI()
     
     updateContent()
     applyTheme()
+    
+    -- Настройка хоткеев после создания UI
+    setupKeybinds()
     
     local isMinimized = false
     minimizeBtn.MouseButton1Click:Connect(function()
@@ -2640,14 +2835,4 @@ enBtn.MouseButton1Click:Connect(function()
     createUI()
 end)
 
-print("✅ LugerGuard X успешно загружен!")
-print("📌 Доступные функции:")
-print("   - Скорость и прыжок")
-print("   - Режим полёта (клавиша Q)")
-print("   - Ноклип, Анти-AFK, FullBright")
-print("   - Телепорт к игроку")
-print("   - Infinity Jump (бесконечные прыжки)")
-print("   - ESP (подсветка игроков) с определением ролей")
-print("   - Имена игроков (работают отдельно от ESP)")
-print("   - Отзывы в Discord")
-print("   - 7 цветовых тем с визуальными карточками")
+print("✅ LugerGuard X успешно загружен! Полная версия с хоткеями и аимботом")
