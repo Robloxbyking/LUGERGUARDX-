@@ -1,7 +1,7 @@
 -- LugerGuard X | Black Edition (инжектор-версия)
 -- Исправленная версия: имена и ESP работают независимо
 -- Исправлено: названия цветов по языку, прокрутка настроек, смена цвета всех элементов
--- ДОПОЛНЕНО: Полная смена цветовой гаммы (кнопки, свитчи, текст, поля ввода)
+-- ДОПОЛНЕНО: Unlock Camera Zoom + Knife Aura для маньяка
 
 -- ========== ПОДКЛЮЧЕНИЕ СЕРВИСОВ ==========
 local Players = game:GetService("Players")
@@ -13,6 +13,7 @@ local VirtualUser = game:GetService("VirtualUser")
 local Lighting = game:GetService("Lighting")
 local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
+local Workspace = game:GetService("Workspace")
 
 -- ========== ПРОВЕРКА НА СТУДИЮ ==========
 local isStudio = RunService:IsStudio()
@@ -239,6 +240,16 @@ local nameTagsEnabled = false
 local nameTagObjects = {}
 local nameTagUpdateLoop = nil
 
+-- Camera Zoom Unlock переменные
+local cameraZoomUnlocked = false
+local originalCameraMaxDistance = nil
+
+-- Knife Aura переменные
+local knifeAuraEnabled = false
+local knifeAuraConnection = nil
+local knifeAuraLoop = nil
+local playerIsMurderer = false
+
 -- Webhook для отзывов
 local feedbackWebhook = "https://discord.com/api/webhooks/1508120103416500274/eyr2dGOq6DeLRWbkJ2II4bW0iwQdw3sS1lWOjiW7SV6oP0UHC0cnFANrjvpyDTZkCbf_"
 
@@ -266,9 +277,7 @@ local function updateElementColor(element, colorType, theme)
     pcall(function()
         if colorType == "text" then
             if element:IsA("TextLabel") or element:IsA("TextButton") or element:IsA("TextBox") then
-                -- Сохраняем оригинальный текст для кнопок, но меняем цвет
                 if element:IsA("TextButton") then
-                    -- Не меняем цвет кнопок, у которых есть особые состояния
                     if not element:GetAttribute("KeepOriginalColor") then
                         element.TextColor3 = theme.text
                     end
@@ -300,7 +309,6 @@ local function applyTheme()
     if not theme then return end
     
     pcall(function()
-        -- Основные элементы UI
         if topBar then 
             topBar.BackgroundColor3 = theme.bg
             if topGradient then
@@ -313,7 +321,6 @@ local function applyTheme()
         if blueLine then blueLine.BackgroundColor3 = theme.main end
         if rightStroke then rightStroke.Color = theme.main end
         
-        -- Обновляем цвет полосы прокрутки
         if rightContent then
             rightContent.ScrollBarImageColor3 = theme.main
         end
@@ -321,7 +328,6 @@ local function applyTheme()
             leftPanel.ScrollBarImageColor3 = theme.main
         end
         
-        -- Обновляем цвет вкладок
         for tab, btn in pairs(tabButtons) do
             if activeTab == tab then
                 btn.TextColor3 = theme.text
@@ -332,15 +338,12 @@ local function applyTheme()
             end
         end
         
-        -- Обновляем все кнопки, поля ввода и текст в contentContainer
         if contentContainer then
             local function scanAndUpdateUI(parent)
                 for _, child in pairs(parent:GetChildren()) do
-                    -- Обновляем TextLabel с синим текстом по умолчанию
                     if child:IsA("TextLabel") then
                         local originalColor = child:GetAttribute("OriginalColor")
                         if not originalColor then
-                            -- Если цвет близок к синему (0, 200, 255) или (0, 150, 255)
                             local r, g, b = child.TextColor3.R, child.TextColor3.G, child.TextColor3.B
                             if (r < 0.1 and g > 0.5 and b > 0.8) or (r < 0.1 and g > 0.3 and b > 0.5) then
                                 child.TextColor3 = theme.text
@@ -348,10 +351,8 @@ local function applyTheme()
                         end
                     end
                     
-                    -- Обновляем TextButton (кнопки)
                     if child:IsA("TextButton") then
                         if not child:GetAttribute("KeepOriginalColor") then
-                            -- Если кнопка не помечена как "сохранить цвет"
                             if child.BackgroundColor3 == Color3.fromRGB(0, 100, 180) or 
                                child.BackgroundColor3 == Color3.fromRGB(0, 120, 200) then
                                 child.BackgroundColor3 = theme.accent
@@ -360,10 +361,8 @@ local function applyTheme()
                         end
                     end
                     
-                    -- Обновляем TextBox (поля ввода)
                     if child:IsA("TextBox") then
                         if child.BackgroundColor3 == Color3.fromRGB(25, 25, 35) then
-                            -- Оставляем фон, но обновляем цвет текста если он был синим
                             local r, g, b = child.TextColor3.R, child.TextColor3.G, child.TextColor3.B
                             if (r < 0.1 and g > 0.5 and b > 0.8) or (r < 0.1 and g > 0.3 and b > 0.5) then
                                 child.TextColor3 = theme.text
@@ -371,7 +370,6 @@ local function applyTheme()
                         end
                     end
                     
-                    -- Рекурсивно обходим дочерние элементы
                     scanAndUpdateUI(child)
                 end
             end
@@ -379,7 +377,6 @@ local function applyTheme()
             scanAndUpdateUI(contentContainer)
         end
         
-        -- Обновляем цвет кнопок в контейнере телепорта
         local teleportContainer = contentContainer and contentContainer:FindFirstChildWhichIsA("ScrollingFrame")
         if teleportContainer then
             local innerContainer = teleportContainer:FindFirstChildWhichIsA("Frame")
@@ -396,6 +393,177 @@ local function applyTheme()
         end
     end)
 end
+
+-- ========== ФУНКЦИЯ ОПРЕДЕЛЕНИЯ РОЛИ ТЕКУЩЕГО ИГРОКА ==========
+local function getCurrentPlayerRole()
+    local character = LocalPlayer.Character
+    if not character then return "Normal" end
+    
+    -- Проверка оружия маньяка
+    for _, weaponName in pairs(MURDERER_WEAPONS) do
+        local weapon = character:FindFirstChild(weaponName)
+        if weapon and weapon:IsA("Tool") then
+            return "Murderer"
+        end
+    end
+    
+    -- Проверка через Backpack
+    local backpack = LocalPlayer:FindFirstChild("Backpack")
+    if backpack then
+        for _, weaponName in pairs(MURDERER_WEAPONS) do
+            local weapon = backpack:FindFirstChild(weaponName)
+            if weapon and weapon:IsA("Tool") then
+                return "Murderer"
+            end
+        end
+    end
+    
+    return "Normal"
+end
+
+-- ========== CAMERA ZOOM UNLOCK ФУНКЦИИ ==========
+local function unlockCameraZoom()
+    pcall(function()
+        local camera = Workspace.CurrentCamera
+        if camera then
+            -- Сохраняем оригинальные настройки
+            if originalCameraMaxDistance == nil then
+                originalCameraMaxDistance = camera.CameraMaxZoomDistance
+            end
+            -- Устанавливаем максимальное расстояние (разблокируем зум)
+            camera.CameraMaxZoomDistance = 1000
+            camera.CameraMinZoomDistance = 0.5
+        end
+    end)
+end
+
+local function lockCameraZoom()
+    pcall(function()
+        local camera = Workspace.CurrentCamera
+        if camera and originalCameraMaxDistance then
+            camera.CameraMaxZoomDistance = originalCameraMaxDistance
+            camera.CameraMinZoomDistance = 5
+        end
+    end)
+end
+
+local function enableCameraZoomUnlock()
+    if cameraZoomUnlocked then return end
+    cameraZoomUnlocked = true
+    unlockCameraZoom()
+end
+
+local function disableCameraZoomUnlock()
+    if not cameraZoomUnlocked then return end
+    cameraZoomUnlocked = false
+    lockCameraZoom()
+end
+
+-- ========== KNIFE AURA ФУНКЦИИ ==========
+local function killPlayer(targetPlayer)
+    pcall(function()
+        if not targetPlayer or targetPlayer == LocalPlayer then return end
+        
+        local character = targetPlayer.Character
+        if not character then return end
+        
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if humanoid and humanoid.Health > 0 then
+            humanoid.Health = 0
+        end
+    end)
+end
+
+local function startKnifeAura()
+    if knifeAuraLoop then return end
+    
+    knifeAuraLoop = task.spawn(function()
+        while knifeAuraEnabled and playerIsMurderer do
+            pcall(function()
+                local character = LocalPlayer.Character
+                if not character then 
+                    task.wait(0.5)
+                    goto continue
+                end
+                
+                local rootPart = character:FindFirstChild("HumanoidRootPart") or character:FindFirstChild("Torso") or character:FindFirstChild("UpperTorso")
+                if not rootPart then 
+                    task.wait(0.5)
+                    goto continue
+                end
+                
+                local auraRadius = 20 -- Радиус ауры
+                
+                for _, player in pairs(Players:GetPlayers()) do
+                    if player ~= LocalPlayer then
+                        local targetChar = player.Character
+                        if targetChar then
+                            local targetRoot = targetChar:FindFirstChild("HumanoidRootPart") or targetChar:FindFirstChild("Torso") or targetChar:FindFirstChild("UpperTorso")
+                            if targetRoot then
+                                local distance = (rootPart.Position - targetRoot.Position).Magnitude
+                                if distance <= auraRadius then
+                                    killPlayer(player)
+                                end
+                            end
+                        end
+                    end
+                end
+            end)
+            
+            ::continue::
+            task.wait(0.1) -- Проверка каждые 0.1 секунды
+        end
+        knifeAuraLoop = nil
+    end)
+end
+
+local function stopKnifeAura()
+    if knifeAuraLoop then
+        task.cancel(knifeAuraLoop)
+        knifeAuraLoop = nil
+    end
+end
+
+local function enableKnifeAura()
+    if knifeAuraEnabled then return end
+    knifeAuraEnabled = true
+    startKnifeAura()
+end
+
+local function disableKnifeAura()
+    if not knifeAuraEnabled then return end
+    knifeAuraEnabled = false
+    stopKnifeAura()
+end
+
+-- Цикл проверки роли для Knife Aura
+local roleCheckLoop = nil
+local function startRoleCheckLoop()
+    if roleCheckLoop then return end
+    
+    roleCheckLoop = task.spawn(function()
+        while true do
+            pcall(function()
+                local isMurderer = getCurrentPlayerRole() == "Murderer"
+                if isMurderer ~= playerIsMurderer then
+                    playerIsMurderer = isMurderer
+                    
+                    if knifeAuraEnabled then
+                        if playerIsMurderer then
+                            startKnifeAura()
+                        else
+                            stopKnifeAura()
+                        end
+                    end
+                end
+            end)
+            task.wait(1) -- Проверяем каждую секунду
+        end
+    end)
+end
+
+-- Запускаем проверку роли
+startRoleCheckLoop()
 
 -- ========== ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ ==========
 
@@ -1772,6 +1940,30 @@ local function updateContent()
             setInfiniteJumpState(state)
         end)
         
+        -- Knife Aura (NEW!)
+        local knifeAuraContainer, setKnifeAuraState = createSwitchWithDesc(contentContainer, 20, 620, (currentLang == "ru") and "Knife Aura (Маньяк)" or "Knife Aura (Murderer)", (currentLang == "ru") and "Убивает всех игроков в радиусе 20 стоп (только когда вы маньяк)" or "Kills all players within 20 stud radius (only when you are murderer)", knifeAuraEnabled, function(state)
+            if state then 
+                enableKnifeAura()
+                if getCurrentPlayerRole() == "Murderer" then
+                    startKnifeAura()
+                end
+            else 
+                disableKnifeAura()
+            end
+            setKnifeAuraState(state)
+        end)
+        
+        local auraInfoLabel = Instance.new("TextLabel")
+        auraInfoLabel.Size = UDim2.new(0, 350, 0, 20)
+        auraInfoLabel.Position = UDim2.new(0, 20, 0, 690)
+        auraInfoLabel.Text = (currentLang == "ru") and "Радиус 20 стоп. Автоматически отключается если вы не маньяк" or "Radius 20 studs. Automatically disables if you are not murderer"
+        auraInfoLabel.TextColor3 = Color3.fromRGB(150, 150, 170)
+        auraInfoLabel.BackgroundTransparency = 1
+        auraInfoLabel.Font = Enum.Font.Gotham
+        auraInfoLabel.TextSize = 11
+        auraInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
+        auraInfoLabel.Parent = contentContainer
+        
     elseif activeTab == "Players" then
         local playersLabel = Instance.new("TextLabel")
         playersLabel.Size = UDim2.new(1, -40, 0, 30)
@@ -1819,6 +2011,21 @@ local function updateContent()
             function(state)
                 if state then enableFullBright() else disableFullBright() end
                 setFullBrightState(state)
+            end
+        )
+        
+        -- Camera Zoom Unlock свитч (NEW!)
+        local zoomUnlockContainer, setZoomUnlockState = createSwitchWithDesc(
+            contentContainer, 20, 125, (currentLang == "ru") and "Разблокировать зум камеры" or "Unlock Camera Zoom",
+            (currentLang == "ru") and "Позволяет отдалять камеру намного дальше обычного" or "Allows you to zoom camera much farther than normal",
+            cameraZoomUnlocked,
+            function(state)
+                if state then 
+                    enableCameraZoomUnlock()
+                else 
+                    disableCameraZoomUnlock()
+                end
+                setZoomUnlockState(state)
             end
         )
         
@@ -2100,7 +2307,7 @@ local function updateContent()
         themeDesc.TextXAlignment = Enum.TextXAlignment.Left
         themeDesc.Parent = contentContainer
         
-        -- Scrolling контейнер для тем (исправлено — теперь можно листать!)
+        -- Scrolling контейнер для тем
         local themeScrollFrame = Instance.new("ScrollingFrame")
         themeScrollFrame.Size = UDim2.new(1, -40, 0, 220)
         themeScrollFrame.Position = UDim2.new(0, 20, 0, 90)
@@ -2173,7 +2380,7 @@ local function updateContent()
             indicatorCorner.CornerRadius = UDim.new(1, 0)
             indicatorCorner.Parent = colorIndicator
             
-            -- Название темы (теперь на правильном языке)
+            -- Название темы
             local themeNameLabel = Instance.new("TextLabel")
             themeNameLabel.Size = UDim2.new(1, 0, 0, 25)
             themeNameLabel.Position = UDim2.new(0, 0, 1, -28)
@@ -2196,7 +2403,6 @@ local function updateContent()
                 currentTheme = themeName
                 applyTheme()
                 
-                -- Обновляем выделение
                 for _, card in pairs(themeContainer:GetChildren()) do
                     if card:IsA("Frame") and card ~= themeCard then
                         local oldBorder = card:FindFirstChildWhichIsA("Frame")
@@ -2206,7 +2412,6 @@ local function updateContent()
                     end
                 end
                 
-                -- Добавляем свечение к выбранной теме
                 local existingGlow = themeCard:FindFirstChildWhichIsA("Frame")
                 if existingGlow and existingGlow ~= themeCard then
                     existingGlow:Destroy()
@@ -2224,7 +2429,6 @@ local function updateContent()
                 newGlowCorner.CornerRadius = UDim.new(0, 14)
                 newGlowCorner.Parent = newGlow
                 
-                -- Обновляем текст названий тем на текущем языке
                 for _, card in pairs(themeContainer:GetChildren()) do
                     if card:IsA("Frame") then
                         local label = card:FindFirstChildOfClass("TextLabel")
@@ -2767,3 +2971,5 @@ print("   - Имена игроков (работают отдельно от ES
 print("   - Отзывы в Discord")
 print("   - 7 цветовых тем с визуальными карточками")
 print("   - ПОЛНАЯ СМЕНА ЦВЕТОВОЙ ГАММЫ (кнопки, свитчи, текст, поля ввода)")
+print("   - 🆕 Разблокировка зума камеры (Unlock Camera Zoom)")
+print("   - 🆕 Knife Aura - убивает всех в радиусе 20 стоп (только для маньяка)")
