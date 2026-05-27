@@ -1,6 +1,7 @@
 -- LugerGuard X | Black Edition (инжектор-версия)
 -- Исправленная версия: имена и ESP работают независимо
 -- Исправлено: названия цветов по языку, прокрутка настроек, смена цвета всех элементов
+-- ДОПОЛНЕНО: Полная смена цветовой гаммы (кнопки, свитчи, текст, поля ввода)
 
 -- ========== ПОДКЛЮЧЕНИЕ СЕРВИСОВ ==========
 local Players = game:GetService("Players")
@@ -258,12 +259,48 @@ local function getThemeName(theme)
     return currentLang == "ru" and ColorThemes[theme].nameRu or ColorThemes[theme].nameEn
 end
 
--- ========== ФУНКЦИЯ ПРИМЕНЕНИЯ ТЕМЫ ==========
+-- ========== ФУНКЦИЯ ОБНОВЛЕНИЯ ЦВЕТА ЭЛЕМЕНТА ==========
+local function updateElementColor(element, colorType, theme)
+    if not element or not theme then return end
+    
+    pcall(function()
+        if colorType == "text" then
+            if element:IsA("TextLabel") or element:IsA("TextButton") or element:IsA("TextBox") then
+                -- Сохраняем оригинальный текст для кнопок, но меняем цвет
+                if element:IsA("TextButton") then
+                    -- Не меняем цвет кнопок, у которых есть особые состояния
+                    if not element:GetAttribute("KeepOriginalColor") then
+                        element.TextColor3 = theme.text
+                    end
+                else
+                    element.TextColor3 = theme.text
+                end
+            end
+        elseif colorType == "background" then
+            if element:IsA("Frame") or element:IsA("TextButton") then
+                if not element:GetAttribute("NoTheme") then
+                    element.BackgroundColor3 = theme.bg
+                end
+            end
+        elseif colorType == "accent" then
+            if element:IsA("Frame") or element:IsA("TextButton") then
+                element.BackgroundColor3 = theme.accent
+            end
+        elseif colorType == "main" then
+            if element:IsA("Frame") then
+                element.BackgroundColor3 = theme.main
+            end
+        end
+    end)
+end
+
+-- ========== ФУНКЦИЯ ПРИМЕНЕНИЯ ТЕМЫ (РАСШИРЕННАЯ) ==========
 local function applyTheme()
     local theme = ColorThemes[currentTheme]
     if not theme then return end
     
     pcall(function()
+        -- Основные элементы UI
         if topBar then 
             topBar.BackgroundColor3 = theme.bg
             if topGradient then
@@ -276,6 +313,15 @@ local function applyTheme()
         if blueLine then blueLine.BackgroundColor3 = theme.main end
         if rightStroke then rightStroke.Color = theme.main end
         
+        -- Обновляем цвет полосы прокрутки
+        if rightContent then
+            rightContent.ScrollBarImageColor3 = theme.main
+        end
+        if leftPanel then
+            leftPanel.ScrollBarImageColor3 = theme.main
+        end
+        
+        -- Обновляем цвет вкладок
         for tab, btn in pairs(tabButtons) do
             if activeTab == tab then
                 btn.TextColor3 = theme.text
@@ -283,6 +329,69 @@ local function applyTheme()
             else
                 btn.TextColor3 = Color3.fromRGB(160, 170, 190)
                 btn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+            end
+        end
+        
+        -- Обновляем все кнопки, поля ввода и текст в contentContainer
+        if contentContainer then
+            local function scanAndUpdateUI(parent)
+                for _, child in pairs(parent:GetChildren()) do
+                    -- Обновляем TextLabel с синим текстом по умолчанию
+                    if child:IsA("TextLabel") then
+                        local originalColor = child:GetAttribute("OriginalColor")
+                        if not originalColor then
+                            -- Если цвет близок к синему (0, 200, 255) или (0, 150, 255)
+                            local r, g, b = child.TextColor3.R, child.TextColor3.G, child.TextColor3.B
+                            if (r < 0.1 and g > 0.5 and b > 0.8) or (r < 0.1 and g > 0.3 and b > 0.5) then
+                                child.TextColor3 = theme.text
+                            end
+                        end
+                    end
+                    
+                    -- Обновляем TextButton (кнопки)
+                    if child:IsA("TextButton") then
+                        if not child:GetAttribute("KeepOriginalColor") then
+                            -- Если кнопка не помечена как "сохранить цвет"
+                            if child.BackgroundColor3 == Color3.fromRGB(0, 100, 180) or 
+                               child.BackgroundColor3 == Color3.fromRGB(0, 120, 200) then
+                                child.BackgroundColor3 = theme.accent
+                            end
+                            child.TextColor3 = Color3.fromRGB(255, 255, 255)
+                        end
+                    end
+                    
+                    -- Обновляем TextBox (поля ввода)
+                    if child:IsA("TextBox") then
+                        if child.BackgroundColor3 == Color3.fromRGB(25, 25, 35) then
+                            -- Оставляем фон, но обновляем цвет текста если он был синим
+                            local r, g, b = child.TextColor3.R, child.TextColor3.G, child.TextColor3.B
+                            if (r < 0.1 and g > 0.5 and b > 0.8) or (r < 0.1 and g > 0.3 and b > 0.5) then
+                                child.TextColor3 = theme.text
+                            end
+                        end
+                    end
+                    
+                    -- Рекурсивно обходим дочерние элементы
+                    scanAndUpdateUI(child)
+                end
+            end
+            
+            scanAndUpdateUI(contentContainer)
+        end
+        
+        -- Обновляем цвет кнопок в контейнере телепорта
+        local teleportContainer = contentContainer and contentContainer:FindFirstChildWhichIsA("ScrollingFrame")
+        if teleportContainer then
+            local innerContainer = teleportContainer:FindFirstChildWhichIsA("Frame")
+            if innerContainer then
+                for _, playerFrame in pairs(innerContainer:GetChildren()) do
+                    if playerFrame:IsA("Frame") then
+                        local tpBtn = playerFrame:FindFirstChildWhichIsA("TextButton")
+                        if tpBtn and tpBtn.Text == "TP" then
+                            tpBtn.BackgroundColor3 = theme.accent
+                        end
+                    end
+                end
             end
         end
     end)
@@ -1186,8 +1295,9 @@ local function createSwitch(parent, x, y, text, isOn, callback)
     switchKnobCorner.Parent = switchKnob
     
     local function setState(on)
+        local theme = ColorThemes[currentTheme]
         isOn = on
-        switchBg.BackgroundColor3 = isOn and Color3.fromRGB(0, 150, 255) or Color3.fromRGB(80, 80, 90)
+        switchBg.BackgroundColor3 = isOn and (theme and theme.main or Color3.fromRGB(0, 150, 255)) or Color3.fromRGB(80, 80, 90)
         switchKnob.Position = isOn and UDim2.new(1, -18, 0, 2) or UDim2.new(0, 2, 0, 2)
     end
     
@@ -1234,7 +1344,6 @@ local function createSwitchWithDesc(parent, x, y, text, desc, isOn, callback)
     description.Font = Enum.Font.Gotham
     description.TextSize = 11
     description.TextXAlignment = Enum.TextXAlignment.Left
-    description.TextYAlignment = Enum.TextYAlignment.Center
     description.Parent = container
     
     local switchBg = Instance.new("Frame")
@@ -1262,8 +1371,9 @@ local function createSwitchWithDesc(parent, x, y, text, desc, isOn, callback)
     switchKnobCorner.Parent = switchKnob
     
     local function setState(on)
+        local theme = ColorThemes[currentTheme]
         isOn = on
-        switchBg.BackgroundColor3 = isOn and Color3.fromRGB(0, 150, 255) or Color3.fromRGB(80, 80, 90)
+        switchBg.BackgroundColor3 = isOn and (theme and theme.main or Color3.fromRGB(0, 150, 255)) or Color3.fromRGB(80, 80, 90)
         switchKnob.Position = isOn and UDim2.new(1, -18, 0, 2) or UDim2.new(0, 2, 0, 2)
     end
     
@@ -1290,6 +1400,7 @@ local function updateTeleportPlayersList(container, statusLabel)
     
     local yOffset = 0
     local playerCount = 0
+    local theme = ColorThemes[currentTheme]
     
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
@@ -1326,7 +1437,7 @@ local function updateTeleportPlayersList(container, statusLabel)
             teleportPlayerBtn.Position = UDim2.new(1, -62, 0, 4.5)
             teleportPlayerBtn.Text = "TP"
             teleportPlayerBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-            teleportPlayerBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 180)
+            teleportPlayerBtn.BackgroundColor3 = theme and theme.accent or Color3.fromRGB(0, 100, 180)
             teleportPlayerBtn.BackgroundTransparency = 0.2
             teleportPlayerBtn.BorderSizePixel = 0
             teleportPlayerBtn.Font = Enum.Font.GothamBold
@@ -1340,7 +1451,7 @@ local function updateTeleportPlayersList(container, statusLabel)
             -- Hover эффект
             teleportPlayerBtn.MouseEnter:Connect(function()
                 teleportPlayerBtn.BackgroundTransparency = 0.4
-                teleportPlayerBtn.TextColor3 = Color3.fromRGB(0, 200, 255)
+                teleportPlayerBtn.TextColor3 = theme and theme.text or Color3.fromRGB(0, 200, 255)
             end)
             
             teleportPlayerBtn.MouseLeave:Connect(function()
@@ -1403,6 +1514,10 @@ local function updateContent()
         child:Destroy()
     end
     
+    local theme = ColorThemes[currentTheme]
+    local accentColor = theme and theme.accent or Color3.fromRGB(0, 100, 180)
+    local textColor = theme and theme.text or Color3.fromRGB(0, 200, 255)
+    
     if activeTab == "Main" then
         -- Speed
         local speedContainer, setSpeedState = createSwitch(contentContainer, 20, 20, (currentLang == "ru") and "Скорость" or "Speed", speedEnabled, function(state)
@@ -1444,7 +1559,7 @@ local function updateContent()
         applyBtn.Position = UDim2.new(0, 180, 0, 55)
         applyBtn.Text = (currentLang == "ru") and "Применить" or "Apply"
         applyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        applyBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 180)
+        applyBtn.BackgroundColor3 = accentColor
         applyBtn.BackgroundTransparency = 0.3
         applyBtn.BorderSizePixel = 0
         applyBtn.Font = Enum.Font.GothamBold
@@ -1520,7 +1635,7 @@ local function updateContent()
         applyJumpBtn.Position = UDim2.new(0, 180, 0, 160)
         applyJumpBtn.Text = (currentLang == "ru") and "Применить" or "Apply"
         applyJumpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        applyJumpBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 180)
+        applyJumpBtn.BackgroundColor3 = accentColor
         applyJumpBtn.BackgroundTransparency = 0.3
         applyJumpBtn.BorderSizePixel = 0
         applyJumpBtn.Font = Enum.Font.GothamBold
@@ -1572,7 +1687,7 @@ local function updateContent()
         flySpeedLabel.Size = UDim2.new(0, 200, 0, 30)
         flySpeedLabel.Position = UDim2.new(0, 20, 0, 340)
         flySpeedLabel.Text = (currentLang == "ru") and "Скорость полёта" or "Fly Speed"
-        flySpeedLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
+        flySpeedLabel.TextColor3 = textColor
         flySpeedLabel.BackgroundTransparency = 1
         flySpeedLabel.Font = Enum.Font.GothamBold
         flySpeedLabel.TextSize = 18
@@ -1601,7 +1716,7 @@ local function updateContent()
         flyApplyBtn.Position = UDim2.new(0, 180, 0, 375)
         flyApplyBtn.Text = (currentLang == "ru") and "Применить" or "Apply"
         flyApplyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        flyApplyBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 180)
+        flyApplyBtn.BackgroundColor3 = accentColor
         flyApplyBtn.BackgroundTransparency = 0.3
         flyApplyBtn.BorderSizePixel = 0
         flyApplyBtn.Font = Enum.Font.GothamBold
@@ -1662,7 +1777,7 @@ local function updateContent()
         playersLabel.Size = UDim2.new(1, -40, 0, 30)
         playersLabel.Position = UDim2.new(0, 20, 0, 20)
         playersLabel.Text = (currentLang == "ru") and "Игроки на сервере:" or "Players on server:"
-        playersLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
+        playersLabel.TextColor3 = textColor
         playersLabel.BackgroundTransparency = 1
         playersLabel.Font = Enum.Font.GothamBold
         playersLabel.TextSize = 16
@@ -1689,7 +1804,7 @@ local function updateContent()
         visualLabel.Size = UDim2.new(1, -40, 0, 30)
         visualLabel.Position = UDim2.new(0, 20, 0, 20)
         visualLabel.Text = (currentLang == "ru") and "Визуальные настройки" or "Visual Settings"
-        visualLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
+        visualLabel.TextColor3 = textColor
         visualLabel.BackgroundTransparency = 1
         visualLabel.Font = Enum.Font.GothamBold
         visualLabel.TextSize = 16
@@ -1713,7 +1828,7 @@ local function updateContent()
         teleportLabel.Size = UDim2.new(1, -40, 0, 30)
         teleportLabel.Position = UDim2.new(0, 20, 0, 20)
         teleportLabel.Text = (currentLang == "ru") and "Телепорт к игроку" or "Teleport to Player"
-        teleportLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
+        teleportLabel.TextColor3 = textColor
         teleportLabel.BackgroundTransparency = 1
         teleportLabel.Font = Enum.Font.GothamBold
         teleportLabel.TextSize = 16
@@ -1740,7 +1855,7 @@ local function updateContent()
         playersContainer.BackgroundTransparency = 0.3
         playersContainer.BorderSizePixel = 0
         playersContainer.ScrollBarThickness = 4
-        playersContainer.ScrollBarImageColor3 = Color3.fromRGB(0, 150, 255)
+        playersContainer.ScrollBarImageColor3 = theme and theme.main or Color3.fromRGB(0, 150, 255)
         playersContainer.Parent = contentContainer
         
         local playersContainerCorner = Instance.new("UICorner")
@@ -1791,7 +1906,7 @@ local function updateContent()
         espLabel.Size = UDim2.new(1, -40, 0, 30)
         espLabel.Position = UDim2.new(0, 20, 0, 20)
         espLabel.Text = (currentLang == "ru") and "ESP (Highlight)" or "ESP (Highlight)"
-        espLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
+        espLabel.TextColor3 = textColor
         espLabel.BackgroundTransparency = 1
         espLabel.Font = Enum.Font.GothamBold
         espLabel.TextSize = 16
@@ -1871,7 +1986,7 @@ local function updateContent()
         feedbackLabel.Size = UDim2.new(1, -40, 0, 30)
         feedbackLabel.Position = UDim2.new(0, 20, 0, 20)
         feedbackLabel.Text = (currentLang == "ru") and "📢 Оставить отзыв" or "📢 Leave Feedback"
-        feedbackLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
+        feedbackLabel.TextColor3 = textColor
         feedbackLabel.BackgroundTransparency = 1
         feedbackLabel.Font = Enum.Font.GothamBold
         feedbackLabel.TextSize = 18
@@ -1916,7 +2031,7 @@ local function updateContent()
         sendBtn.Position = UDim2.new(0, 20, 0, 245)
         sendBtn.Text = (currentLang == "ru") and "📨 Отправить отзыв" or "📨 Send Feedback"
         sendBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        sendBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
+        sendBtn.BackgroundColor3 = accentColor
         sendBtn.BackgroundTransparency = 0.3
         sendBtn.BorderSizePixel = 0
         sendBtn.Font = Enum.Font.GothamBold
@@ -1967,7 +2082,7 @@ local function updateContent()
         settingsLabel.Size = UDim2.new(1, -40, 0, 30)
         settingsLabel.Position = UDim2.new(0, 20, 0, 20)
         settingsLabel.Text = (currentLang == "ru") and "🎨 Цветовая тема" or "🎨 Color Theme"
-        settingsLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
+        settingsLabel.TextColor3 = textColor
         settingsLabel.BackgroundTransparency = 1
         settingsLabel.Font = Enum.Font.GothamBold
         settingsLabel.TextSize = 18
@@ -1993,7 +2108,7 @@ local function updateContent()
         themeScrollFrame.BackgroundTransparency = 0.3
         themeScrollFrame.BorderSizePixel = 0
         themeScrollFrame.ScrollBarThickness = 4
-        themeScrollFrame.ScrollBarImageColor3 = Color3.fromRGB(0, 150, 255)
+        themeScrollFrame.ScrollBarImageColor3 = theme and theme.main or Color3.fromRGB(0, 150, 255)
         themeScrollFrame.Parent = contentContainer
         
         local themeScrollCorner = Instance.new("UICorner")
@@ -2157,7 +2272,7 @@ local function updateContent()
         infoTitle.Size = UDim2.new(1, -20, 0, 25)
         infoTitle.Position = UDim2.new(0, 10, 0, 5)
         infoTitle.Text = (currentLang == "ru") and "ℹ️ Информация" or "ℹ️ Info"
-        infoTitle.TextColor3 = Color3.fromRGB(0, 200, 255)
+        infoTitle.TextColor3 = textColor
         infoTitle.BackgroundTransparency = 1
         infoTitle.Font = Enum.Font.GothamBold
         infoTitle.TextSize = 14
@@ -2651,3 +2766,4 @@ print("   - ESP (подсветка игроков) с определением 
 print("   - Имена игроков (работают отдельно от ESP)")
 print("   - Отзывы в Discord")
 print("   - 7 цветовых тем с визуальными карточками")
+print("   - ПОЛНАЯ СМЕНА ЦВЕТОВОЙ ГАММЫ (кнопки, свитчи, текст, поля ввода)")
