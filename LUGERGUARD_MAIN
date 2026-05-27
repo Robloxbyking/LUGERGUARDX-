@@ -1,6 +1,6 @@
 -- LugerGuard X | Black Edition (инжектор-версия)
 -- Исправленная версия: имена и ESP работают независимо
--- ДОБАВЛЕНО: Хоткеи и Аимбот (оригинальный код не изменён)
+-- Исправлено: названия цветов по языку, прокрутка настроек, смена цвета всех элементов
 
 -- ========== ПОДКЛЮЧЕНИЕ СЕРВИСОВ ==========
 local Players = game:GetService("Players")
@@ -27,6 +27,7 @@ end
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "LugerGuardX"
 screenGui.Parent = parentGui
+screenGui.ResetOnSpawn = false
 
 -- ========== ВЫБОР ЯЗЫКА ==========
 local langChoiceFrame = Instance.new("Frame")
@@ -83,9 +84,112 @@ local enCorner = Instance.new("UICorner")
 enCorner.CornerRadius = UDim.new(0, 8)
 enCorner.Parent = enBtn
 
+-- ========== ЦВЕТОВЫЕ ТЕМЫ (с двуязычными названиями) ==========
+local ColorThemes = {
+    Blue = {
+        main = Color3.fromRGB(0, 150, 255),
+        bg = Color3.fromRGB(0, 70, 140),
+        glow = Color3.fromRGB(0, 150, 255),
+        text = Color3.fromRGB(0, 200, 255),
+        accent = Color3.fromRGB(0, 120, 200),
+        nameRu = "Синий",
+        nameEn = "Blue",
+        gradient = {
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 100, 200)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 150, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 100, 200))
+        }
+    },
+    Black = {
+        main = Color3.fromRGB(80, 80, 90),
+        bg = Color3.fromRGB(40, 40, 50),
+        glow = Color3.fromRGB(100, 100, 120),
+        text = Color3.fromRGB(180, 180, 200),
+        accent = Color3.fromRGB(60, 60, 70),
+        nameRu = "Чёрный",
+        nameEn = "Black",
+        gradient = {
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 50, 60)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(80, 80, 90)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(50, 50, 60))
+        }
+    },
+    Red = {
+        main = Color3.fromRGB(200, 50, 50),
+        bg = Color3.fromRGB(140, 30, 30),
+        glow = Color3.fromRGB(220, 80, 80),
+        text = Color3.fromRGB(255, 100, 100),
+        accent = Color3.fromRGB(160, 40, 40),
+        nameRu = "Красный",
+        nameEn = "Red",
+        gradient = {
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(180, 40, 40)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(220, 60, 60)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 40, 40))
+        }
+    },
+    Pink = {
+        main = Color3.fromRGB(255, 100, 150),
+        bg = Color3.fromRGB(180, 60, 100),
+        glow = Color3.fromRGB(255, 130, 180),
+        text = Color3.fromRGB(255, 150, 200),
+        accent = Color3.fromRGB(200, 80, 120),
+        nameRu = "Розовый",
+        nameEn = "Pink",
+        gradient = {
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(220, 70, 120)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 120, 170)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 70, 120))
+        }
+    },
+    Purple = {
+        main = Color3.fromRGB(150, 50, 200),
+        bg = Color3.fromRGB(100, 30, 140),
+        glow = Color3.fromRGB(170, 80, 220),
+        text = Color3.fromRGB(180, 100, 255),
+        accent = Color3.fromRGB(120, 40, 160),
+        nameRu = "Фиолетовый",
+        nameEn = "Purple",
+        gradient = {
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(120, 40, 160)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(160, 70, 210)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(120, 40, 160))
+        }
+    },
+    Green = {
+        main = Color3.fromRGB(50, 200, 50),
+        bg = Color3.fromRGB(30, 140, 30),
+        glow = Color3.fromRGB(80, 220, 80),
+        text = Color3.fromRGB(100, 255, 100),
+        accent = Color3.fromRGB(40, 160, 40),
+        nameRu = "Зелёный",
+        nameEn = "Green",
+        gradient = {
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 160, 40)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(70, 210, 70)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(40, 160, 40))
+        }
+    },
+    Orange = {
+        main = Color3.fromRGB(255, 150, 50),
+        bg = Color3.fromRGB(180, 100, 30),
+        glow = Color3.fromRGB(255, 180, 80),
+        text = Color3.fromRGB(255, 200, 100),
+        accent = Color3.fromRGB(200, 120, 40),
+        nameRu = "Оранжевый",
+        nameEn = "Orange",
+        gradient = {
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(200, 120, 40)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 160, 70)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 120, 40))
+        }
+    }
+}
+local currentTheme = "Blue"
+
 -- ========== ПЕРЕМЕННЫЕ ==========
 local currentLang = nil
-local mainFrame, topBar, contentFrame, leftPanel, rightContent, contentContainer
+local mainFrame, topBar, contentFrame, leftPanel, rightContent, contentContainer, glowFrame, xLetter, subtitleLabel, blueLine, rightStroke, topGradient
 local tabButtons = {}
 local activeTab = "Main"
 
@@ -145,109 +249,33 @@ local maxHeight = 700
 local currentWidth = 750
 local currentHeight = 520
 
--- ========== НОВЫЕ ПЕРЕМЕННЫЕ ДЛЯ ХОТКЕЕВ И АИМБОТА ==========
-local aimbotEnabled = false
-local aimbotSmoothing = 0.3
-local aimbotFOV = 200
-local aimbotTargetPart = "Head"
-local aimbotKey = Enum.KeyCode.LeftControl
-local aimbotOnlyOnKey = true
-local mouse = LocalPlayer:GetMouse()
-local aimbotConnection = nil
-
-local keybinds = {
-    toggleFly = Enum.KeyCode.Q,
-    toggleNoclip = Enum.KeyCode.N,
-    toggleESP = Enum.KeyCode.E,
-    toggleSpeed = Enum.KeyCode.V,
-    toggleInfiniteJump = Enum.KeyCode.J,
-    toggleFullBright = Enum.KeyCode.F,
-    toggleAimbot = Enum.KeyCode.G,
-    toggleNameTags = Enum.KeyCode.T,
-    toggleAntiAfk = Enum.KeyCode.K
-}
-
--- ========== ЦВЕТОВЫЕ ТЕМЫ ==========
-local ColorThemes = {
-    Blue = {
-        main = Color3.fromRGB(0, 150, 255),
-        bg = Color3.fromRGB(0, 70, 140),
-        glow = Color3.fromRGB(0, 150, 255),
-        text = Color3.fromRGB(0, 200, 255),
-        accent = Color3.fromRGB(0, 120, 200),
-        name = {ru = "Синий", en = "Blue"}
-    },
-    Black = {
-        main = Color3.fromRGB(80, 80, 90),
-        bg = Color3.fromRGB(40, 40, 50),
-        glow = Color3.fromRGB(100, 100, 120),
-        text = Color3.fromRGB(180, 180, 200),
-        accent = Color3.fromRGB(60, 60, 70),
-        name = {ru = "Чёрный", en = "Black"}
-    },
-    Red = {
-        main = Color3.fromRGB(200, 50, 50),
-        bg = Color3.fromRGB(140, 30, 30),
-        glow = Color3.fromRGB(220, 80, 80),
-        text = Color3.fromRGB(255, 100, 100),
-        accent = Color3.fromRGB(160, 40, 40),
-        name = {ru = "Красный", en = "Red"}
-    },
-    Pink = {
-        main = Color3.fromRGB(255, 100, 150),
-        bg = Color3.fromRGB(180, 60, 100),
-        glow = Color3.fromRGB(255, 130, 180),
-        text = Color3.fromRGB(255, 150, 200),
-        accent = Color3.fromRGB(200, 80, 120),
-        name = {ru = "Розовый", en = "Pink"}
-    },
-    Purple = {
-        main = Color3.fromRGB(150, 50, 200),
-        bg = Color3.fromRGB(100, 30, 140),
-        glow = Color3.fromRGB(170, 80, 220),
-        text = Color3.fromRGB(180, 100, 255),
-        accent = Color3.fromRGB(120, 40, 160),
-        name = {ru = "Фиолетовый", en = "Purple"}
-    },
-    Green = {
-        main = Color3.fromRGB(50, 200, 50),
-        bg = Color3.fromRGB(30, 140, 30),
-        glow = Color3.fromRGB(80, 220, 80),
-        text = Color3.fromRGB(100, 255, 100),
-        accent = Color3.fromRGB(40, 160, 40),
-        name = {ru = "Зелёный", en = "Green"}
-    },
-    Orange = {
-        main = Color3.fromRGB(255, 150, 50),
-        bg = Color3.fromRGB(180, 100, 30),
-        glow = Color3.fromRGB(255, 180, 80),
-        text = Color3.fromRGB(255, 200, 100),
-        accent = Color3.fromRGB(200, 120, 40),
-        name = {ru = "Оранжевый", en = "Orange"}
-    }
-}
-local currentTheme = "Blue"
-
 -- ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
 local function getText(ru, en)
     return currentLang == "ru" and ru or en
 end
 
 local function getThemeName(theme)
-    return currentLang == "ru" and ColorThemes[theme].name.ru or ColorThemes[theme].name.en
+    return currentLang == "ru" and ColorThemes[theme].nameRu or ColorThemes[theme].nameEn
 end
 
 -- ========== ФУНКЦИЯ ПРИМЕНЕНИЯ ТЕМЫ ==========
 local function applyTheme()
     local theme = ColorThemes[currentTheme]
     if not theme then return end
+    
     pcall(function()
-        if topBar then topBar.BackgroundColor3 = theme.bg end
+        if topBar then 
+            topBar.BackgroundColor3 = theme.bg
+            if topGradient then
+                topGradient.Color = ColorSequence.new(theme.gradient)
+            end
+        end
         if glowFrame then glowFrame.BackgroundColor3 = theme.glow end
         if xLetter then xLetter.TextColor3 = theme.text end
         if subtitleLabel then subtitleLabel.TextColor3 = theme.text end
         if blueLine then blueLine.BackgroundColor3 = theme.main end
         if rightStroke then rightStroke.Color = theme.main end
+        
         for tab, btn in pairs(tabButtons) do
             if activeTab == tab then
                 btn.TextColor3 = theme.text
@@ -473,6 +501,7 @@ local function getPlayerRole(player)
     local hasMurdererWeapon = false
     local hasSheriffWeapon = false
     
+    -- Проверка оружия в руках (Character)
     for _, weaponName in pairs(MURDERER_WEAPONS) do
         local weapon = character:FindFirstChild(weaponName)
         if weapon and weapon:IsA("Tool") then
@@ -489,6 +518,7 @@ local function getPlayerRole(player)
         end
     end
     
+    -- Проверка через Backpack
     local backpack = player:FindFirstChild("Backpack")
     if backpack then
         for _, weaponName in pairs(MURDERER_WEAPONS) do
@@ -507,12 +537,14 @@ local function getPlayerRole(player)
         end
     end
     
+    -- Определение роли
     if hasSheriffWeapon then
         return "Sheriff"
     elseif hasMurdererWeapon then
         return "Murderer"
     end
     
+    -- Проверка через специальные атрибуты/теги
     if character:FindFirstChild("Murderer") or character:FindFirstChild("IsMurderer") then
         return "Murderer"
     end
@@ -524,6 +556,7 @@ local function getPlayerRole(player)
     return "Normal"
 end
 
+-- Получение цвета для игрока
 local function getPlayerColorForMM2(player)
     local role = getPlayerRole(player)
     return ROLE_COLORS[role] or ROLE_COLORS.Normal
@@ -531,10 +564,12 @@ end
 
 -- ========== ФУНКЦИИ ДЛЯ ИМЁН (НЕЗАВИСИМО ОТ ESP) ==========
 
+-- Создание имени для игрока
 local function createNameTagForPlayer(player)
     if not player or player == LocalPlayer then return nil end
     if not player.Character then return nil end
     
+    -- Удаляем старый тег если есть
     if nameTagObjects[player] then
         pcall(function()
             nameTagObjects[player]:Destroy()
@@ -545,6 +580,7 @@ local function createNameTagForPlayer(player)
     local head = player.Character:FindFirstChild("Head")
     if not head then return nil end
     
+    -- Создаём BillboardGui
     local billboard = Instance.new("BillboardGui")
     billboard.Name = "LugerGuardNameTag"
     billboard.Adornee = head
@@ -554,6 +590,7 @@ local function createNameTagForPlayer(player)
     billboard.Enabled = true
     billboard.Parent = head
     
+    -- Текст с именем
     local textLabel = Instance.new("TextLabel")
     textLabel.Name = "NameLabel"
     textLabel.Size = UDim2.new(1, 0, 1, 0)
@@ -571,6 +608,7 @@ local function createNameTagForPlayer(player)
     return billboard
 end
 
+-- Удаление имени игрока
 local function removeNameTagFromPlayer(player)
     if nameTagObjects[player] then
         pcall(function()
@@ -580,6 +618,7 @@ local function removeNameTagFromPlayer(player)
     end
 end
 
+-- Обновление цвета имени (по роли)
 local function updateNameTagColorForPlayer(player)
     if not nameTagsEnabled then return end
     if not nameTagObjects[player] then return end
@@ -599,6 +638,7 @@ local function updateNameTagColorForPlayer(player)
     end
 end
 
+-- Включение имён для всех игроков
 local function enableNameTags()
     if nameTagsEnabled then return end
     nameTagsEnabled = true
@@ -609,6 +649,7 @@ local function enableNameTags()
         end
     end
     
+    -- Следим за новыми игроками
     Players.PlayerAdded:Connect(function(player)
         if nameTagsEnabled and player ~= LocalPlayer then
             local function onCharacterAdded()
@@ -623,6 +664,7 @@ local function enableNameTags()
         end
     end)
     
+    -- Запускаем цикл обновления цветов имён
     if nameTagUpdateLoop then return end
     nameTagUpdateLoop = task.spawn(function()
         while nameTagsEnabled do
@@ -637,6 +679,7 @@ local function enableNameTags()
     end)
 end
 
+-- Выключение имён
 local function disableNameTags()
     if not nameTagsEnabled then return end
     nameTagsEnabled = false
@@ -651,6 +694,7 @@ end
 
 -- ========== ESP ФУНКЦИИ ==========
 
+-- Создание ESP (Highlight) для одного игрока
 local function addESPToPlayer(player)
     if not player or player == LocalPlayer then return end
     if not player.Character then return end
@@ -658,6 +702,7 @@ local function addESPToPlayer(player)
     local character = player.Character
     if not character or character:FindFirstChild("HumanoidRootPart") == nil then return end
     
+    -- Удаляем старый ESP если есть
     if espHighlightObjects[player] then
         pcall(function()
             espHighlightObjects[player]:Destroy()
@@ -665,6 +710,7 @@ local function addESPToPlayer(player)
         espHighlightObjects[player] = nil
     end
     
+    -- Создаём новый Highlight
     local highlight = Instance.new("Highlight")
     highlight.Name = "LugerGuardESP"
     highlight.Adornee = character
@@ -678,6 +724,7 @@ local function addESPToPlayer(player)
     espHighlightObjects[player] = highlight
 end
 
+-- Удаление ESP для игрока
 local function removeESPFromPlayer(player)
     if espHighlightObjects[player] then
         pcall(function()
@@ -687,6 +734,7 @@ local function removeESPFromPlayer(player)
     end
 end
 
+-- Обновление цвета ESP для игрока
 local function updateESPColorForPlayer(player)
     if not espEnabled then return end
     if not espHighlightObjects[player] then return end
@@ -699,6 +747,7 @@ local function updateESPColorForPlayer(player)
     end)
 end
 
+-- Функция постоянного обновления цветов ESP
 local function startColorUpdateLoop()
     if espColorUpdateLoop then return end
     
@@ -715,18 +764,22 @@ local function startColorUpdateLoop()
     end)
 end
 
+-- Включение ESP для всех игроков
 local function enableESP()
     if espEnabled then return end
     espEnabled = true
     
+    -- Добавляем ESP для всех текущих игроков
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
             addESPToPlayer(player)
         end
     end
     
+    -- Запускаем цикл обновления цветов
     startColorUpdateLoop()
     
+    -- Следим за появлением новых игроков и добавляем им ESP
     local function onPlayerAdded(player)
         if espEnabled and player ~= LocalPlayer then
             local function onCharacterAdded()
@@ -743,12 +796,14 @@ local function enableESP()
     
     espLoopConnection = Players.PlayerAdded:Connect(onPlayerAdded)
     
+    -- Обрабатываем уже существующих игроков, у которых ещё нет ESP
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= LocalPlayer and not espHighlightObjects[player] and player.Character then
             addESPToPlayer(player)
         end
     end
     
+    -- Следим за добавлением оружия (мгновенное обновление)
     local function onWeaponAdded(child)
         if child:IsA("Tool") then
             for player, _ in pairs(espHighlightObjects) do
@@ -769,6 +824,7 @@ local function enableESP()
     end
 end
 
+-- Выключение ESP
 local function disableESP()
     if not espEnabled then return end
     espEnabled = false
@@ -786,6 +842,7 @@ local function disableESP()
     espHighlightObjects = {}
 end
 
+-- Обновление ESP после перезагрузки персонажа
 local function refreshESP()
     if not espEnabled then return end
     
@@ -807,6 +864,7 @@ local function refreshESP()
     end
 end
 
+-- Подписываемся на события
 Players.PlayerRemoving:Connect(function(player)
     removeESPFromPlayer(player)
     removeNameTagFromPlayer(player)
@@ -819,6 +877,7 @@ end)
 
 -- ========== ОСНОВНЫЕ ФУНКЦИИ (скорость, прыжок, ноклип, анти-AFK, полёт) ==========
 
+-- Анти-AFK
 local function startAntiAfk()
     if antiAfkEnabled then return end
     antiAfkEnabled = true
@@ -855,6 +914,7 @@ local function stopAntiAfk()
     afkTicks = 0
 end
 
+-- Ноклип
 local function startNoclip()
     if noclipEnabled then return end
     noclipEnabled = true
@@ -892,6 +952,7 @@ local function stopNoclip()
     end
 end
 
+-- Полёт
 local function startFly()
     if flying then return end
     flying = true
@@ -1014,6 +1075,7 @@ local function stopFly()
     end
 end
 
+-- Клавиша для полёта
 flyKeybindConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     if input.KeyCode == Enum.KeyCode.Q then
@@ -1048,6 +1110,7 @@ local function setJumpPower(jumpPower)
     end
 end
 
+-- Перезагрузка персонажа
 LocalPlayer.CharacterAdded:Connect(function(character)
     local humanoid = character:WaitForChild("Humanoid")
     task.wait(0.5)
@@ -1076,106 +1139,9 @@ LocalPlayer.CharacterAdded:Connect(function(character)
     end
 end)
 
--- ========== АИМБОТ (НОВАЯ ФУНКЦИЯ) ==========
-local function getBestTarget()
-    local bestPlayer = nil
-    local bestDistance = aimbotFOV
-    local mousePos = Vector2.new(mouse.X, mouse.Y)
-    
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character then
-            local targetPart = player.Character:FindFirstChild(aimbotTargetPart)
-            if targetPart then
-                local screenPos, onScreen = workspace.CurrentCamera:WorldToScreenPoint(targetPart.Position)
-                if onScreen then
-                    local dist = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
-                    if dist < bestDistance then
-                        bestDistance = dist
-                        bestPlayer = player
-                    end
-                end
-            end
-        end
-    end
-    return bestPlayer
-end
-
-local function smoothLookAt(targetPlayer)
-    if not targetPlayer or not targetPlayer.Character then return end
-    local targetPart = targetPlayer.Character:FindFirstChild(aimbotTargetPart)
-    if not targetPart then return end
-    local camera = workspace.CurrentCamera
-    local newCFrame = CFrame.new(camera.CFrame.Position, targetPart.Position)
-    camera.CFrame = camera.CFrame:Lerp(newCFrame, aimbotSmoothing)
-end
-
-local function onAimbot()
-    if not aimbotEnabled then return end
-    if aimbotOnlyOnKey and not UserInputService:IsKeyDown(aimbotKey) then return end
-    local target = getBestTarget()
-    if target then smoothLookAt(target) end
-end
-
-local function startAimbot()
-    if aimbotConnection then return end
-    aimbotConnection = RunService.RenderStepped:Connect(onAimbot)
-end
-
-local function stopAimbot()
-    if aimbotConnection then
-        aimbotConnection:Disconnect()
-        aimbotConnection = nil
-    end
-end
-
-local function enableAimbot()
-    if aimbotEnabled then return end
-    aimbotEnabled = true
-    startAimbot()
-end
-
-local function disableAimbot()
-    if not aimbotEnabled then return end
-    aimbotEnabled = false
-    stopAimbot()
-end
-
--- ========== НАСТРОЙКА ХОТКЕЕВ (НОВАЯ ФУНКЦИЯ) ==========
-local function setupKeybinds()
-    UserInputService.InputBegan:Connect(function(input, gameProcessed)
-        if gameProcessed then return end
-        
-        local key = input.KeyCode
-        
-        if key == keybinds.toggleFly then
-            if flying then stopFly() else startFly() end
-        elseif key == keybinds.toggleNoclip then
-            if noclipEnabled then stopNoclip() else startNoclip() end
-        elseif key == keybinds.toggleESP then
-            if espEnabled then disableESP() else enableESP() end
-        elseif key == keybinds.toggleSpeed then
-            speedEnabled = not speedEnabled
-            local char = LocalPlayer.Character
-            if char then
-                local hum = char:FindFirstChildOfClass("Humanoid")
-                if hum then hum.WalkSpeed = speedEnabled and currentSpeed or 16 end
-            end
-        elseif key == keybinds.toggleInfiniteJump then
-            if infiniteJumpEnabled then disableInfiniteJump() else enableInfiniteJump() end
-        elseif key == keybinds.toggleFullBright then
-            if fullBrightEnabled then disableFullBright() else enableFullBright() end
-        elseif key == keybinds.toggleAimbot then
-            if aimbotEnabled then disableAimbot() else enableAimbot() end
-        elseif key == keybinds.toggleNameTags then
-            if nameTagsEnabled then disableNameTags() else enableNameTags() end
-        elseif key == keybinds.toggleAntiAfk then
-            if antiAfkEnabled then stopAntiAfk() else startAntiAfk() end
-        end
-    end)
-end
-
 -- ========== UI КОМПОНЕНТЫ ==========
 
+-- Создание простого свитча
 local function createSwitch(parent, x, y, text, isOn, callback)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(0, 200, 0, 30)
@@ -1239,6 +1205,7 @@ local function createSwitch(parent, x, y, text, isOn, callback)
     return container, setState
 end
 
+-- Создание свитча с описанием
 local function createSwitchWithDesc(parent, x, y, text, desc, isOn, callback)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(0, 280, 0, 55)
@@ -1314,8 +1281,9 @@ local function createSwitchWithDesc(parent, x, y, text, desc, isOn, callback)
     return container, setState
 end
 
--- ========== ФУНКЦИЯ ОБНОВЛЕНИЯ СПИСКА ТЕЛЕПОРТА ==========
+-- ========== ФУНКЦИЯ ОБНОВЛЕНИЯ СПИСКА ИГРОКОВ ДЛЯ ТЕЛЕПОРТА ==========
 local function updateTeleportPlayersList(container, statusLabel)
+    -- Очищаем контейнер
     for _, child in pairs(container:GetChildren()) do
         child:Destroy()
     end
@@ -1327,6 +1295,7 @@ local function updateTeleportPlayersList(container, statusLabel)
         if player ~= LocalPlayer then
             playerCount = playerCount + 1
             
+            -- Контейнер для одного игрока
             local playerFrame = Instance.new("Frame")
             playerFrame.Size = UDim2.new(1, -20, 0, 35)
             playerFrame.Position = UDim2.new(0, 0, 0, yOffset)
@@ -1339,6 +1308,7 @@ local function updateTeleportPlayersList(container, statusLabel)
             frameCorner.CornerRadius = UDim.new(0, 6)
             frameCorner.Parent = playerFrame
             
+            -- Имя игрока
             local nameLabel = Instance.new("TextLabel")
             nameLabel.Size = UDim2.new(1, -70, 1, 0)
             nameLabel.Position = UDim2.new(0, 12, 0, 0)
@@ -1350,33 +1320,35 @@ local function updateTeleportPlayersList(container, statusLabel)
             nameLabel.TextXAlignment = Enum.TextXAlignment.Left
             nameLabel.Parent = playerFrame
             
-            local teleportBtn = Instance.new("TextButton")
-            teleportBtn.Size = UDim2.new(0, 55, 0, 26)
-            teleportBtn.Position = UDim2.new(1, -62, 0, 4.5)
-            teleportBtn.Text = "TP"
-            teleportBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-            teleportBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 180)
-            teleportBtn.BackgroundTransparency = 0.2
-            teleportBtn.BorderSizePixel = 0
-            teleportBtn.Font = Enum.Font.GothamBold
-            teleportBtn.TextSize = 12
-            teleportBtn.Parent = playerFrame
+            -- Кнопка телепорта
+            local teleportPlayerBtn = Instance.new("TextButton")
+            teleportPlayerBtn.Size = UDim2.new(0, 55, 0, 26)
+            teleportPlayerBtn.Position = UDim2.new(1, -62, 0, 4.5)
+            teleportPlayerBtn.Text = "TP"
+            teleportPlayerBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+            teleportPlayerBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 180)
+            teleportPlayerBtn.BackgroundTransparency = 0.2
+            teleportPlayerBtn.BorderSizePixel = 0
+            teleportPlayerBtn.Font = Enum.Font.GothamBold
+            teleportPlayerBtn.TextSize = 12
+            teleportPlayerBtn.Parent = playerFrame
             
             local btnCorner = Instance.new("UICorner")
             btnCorner.CornerRadius = UDim.new(0, 4)
-            btnCorner.Parent = teleportBtn
+            btnCorner.Parent = teleportPlayerBtn
             
-            teleportBtn.MouseEnter:Connect(function()
-                teleportBtn.BackgroundTransparency = 0.4
-                teleportBtn.TextColor3 = Color3.fromRGB(0, 200, 255)
+            -- Hover эффект
+            teleportPlayerBtn.MouseEnter:Connect(function()
+                teleportPlayerBtn.BackgroundTransparency = 0.4
+                teleportPlayerBtn.TextColor3 = Color3.fromRGB(0, 200, 255)
             end)
             
-            teleportBtn.MouseLeave:Connect(function()
-                teleportBtn.BackgroundTransparency = 0.2
-                teleportBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+            teleportPlayerBtn.MouseLeave:Connect(function()
+                teleportPlayerBtn.BackgroundTransparency = 0.2
+                teleportPlayerBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
             end)
             
-            teleportBtn.MouseButton1Click:Connect(function()
+            teleportPlayerBtn.MouseButton1Click:Connect(function()
                 local success = teleportToPlayer(player)
                 if statusLabel then
                     if success then
@@ -1427,11 +1399,13 @@ local function updateContentHeight()
 end
 
 local function updateContent()
-    for _, child in pairs(contentContainer:GetChildren()) do child:Destroy() end
+    for _, child in pairs(contentContainer:GetChildren()) do
+        child:Destroy()
+    end
     
     if activeTab == "Main" then
         -- Speed
-        createSwitch(contentContainer, 20, 20, (currentLang == "ru") and "Скорость" or "Speed", speedEnabled, function(state)
+        local speedContainer, setSpeedState = createSwitch(contentContainer, 20, 20, (currentLang == "ru") and "Скорость" or "Speed", speedEnabled, function(state)
             speedEnabled = state
             if speedEnabled then
                 local character = LocalPlayer.Character
@@ -1507,7 +1481,7 @@ local function updateContent()
         speedInfoLabel.Parent = contentContainer
         
         -- Jump Power
-        createSwitch(contentContainer, 20, 125, (currentLang == "ru") and "Сила прыжка" or "Jump Power", jumpEnabled, function(state)
+        local jumpContainer, setJumpState = createSwitch(contentContainer, 20, 125, (currentLang == "ru") and "Сила прыжка" or "Jump Power", jumpEnabled, function(state)
             jumpEnabled = state
             if jumpEnabled then
                 local character = LocalPlayer.Character
@@ -1583,15 +1557,15 @@ local function updateContent()
         jumpInfoLabel.Parent = contentContainer
         
         -- Anti-AFK
-        createSwitchWithDesc(contentContainer, 20, 235, (currentLang == "ru") and "Анти-AFK" or "Anti-AFK", (currentLang == "ru") and "Защита от автоматического отключения" or "Anti-AFK protection", antiAfkEnabled, function(state)
+        local antiAfkContainer, setAntiAfkState = createSwitchWithDesc(contentContainer, 20, 235, (currentLang == "ru") and "Анти-AFK" or "Anti-AFK", (currentLang == "ru") and "Защита от автоматического отключения" or "Anti-AFK protection", antiAfkEnabled, function(state)
             if state then startAntiAfk() else stopAntiAfk() end
         end)
         
         -- Fly Mode
-        local flyCon, setFly = createSwitch(contentContainer, 20, 300, (currentLang == "ru") and "Режим полёта" or "Fly Mode", flying, function(state)
+        local flyContainer, setFlyState = createSwitch(contentContainer, 20, 300, (currentLang == "ru") and "Режим полёта" or "Fly Mode", flying, function(state)
             if state then startFly() else stopFly() end
         end)
-        currentFlySwitchState = setFly
+        currentFlySwitchState = setFlyState
         
         -- Fly Speed
         local flySpeedLabel = Instance.new("TextLabel")
@@ -1673,13 +1647,14 @@ local function updateContent()
         flyInfoLabel.Parent = contentContainer
         
         -- Noclip
-        createSwitchWithDesc(contentContainer, 20, 480, (currentLang == "ru") and "Ноклип" or "Noclip", (currentLang == "ru") and "Проход сквозь стены" or "Walk through walls", noclipEnabled, function(state)
+        local noclipContainer, setNoclipState = createSwitchWithDesc(contentContainer, 20, 480, (currentLang == "ru") and "Ноклип" or "Noclip", (currentLang == "ru") and "Проход сквозь стены" or "Walk through walls", noclipEnabled, function(state)
             if state then startNoclip() else stopNoclip() end
         end)
         
         -- Infinite Jump
-        createSwitchWithDesc(contentContainer, 20, 550, "Infinity Jump", (currentLang == "ru") and "Позволяет бесконечно прыгать в воздухе" or "Allows you to jump infinitely in the air", infiniteJumpEnabled, function(state)
+        local infiniteJumpContainer, setInfiniteJumpState = createSwitchWithDesc(contentContainer, 20, 550, "Infinity Jump", (currentLang == "ru") and "Позволяет бесконечно прыгать в воздухе" or "Allows you to jump infinitely in the air", infiniteJumpEnabled, function(state)
             if state then enableInfiniteJump() else disableInfiniteJump() end
+            setInfiniteJumpState(state)
         end)
         
     elseif activeTab == "Players" then
@@ -1721,16 +1696,19 @@ local function updateContent()
         visualLabel.TextXAlignment = Enum.TextXAlignment.Left
         visualLabel.Parent = contentContainer
         
-        createSwitchWithDesc(
+        -- FullBright свитч
+        local fullBrightContainer, setFullBrightState = createSwitchWithDesc(
             contentContainer, 20, 55, "FullBright",
             (currentLang == "ru") and "Полная яркость на карте (видно всё)" or "Maximum brightness on map (see everything)",
             fullBrightEnabled,
             function(state)
                 if state then enableFullBright() else disableFullBright() end
+                setFullBrightState(state)
             end
         )
         
     elseif activeTab == "Teleport" then
+        -- Заголовок
         local teleportLabel = Instance.new("TextLabel")
         teleportLabel.Size = UDim2.new(1, -40, 0, 30)
         teleportLabel.Position = UDim2.new(0, 20, 0, 20)
@@ -1742,6 +1720,7 @@ local function updateContent()
         teleportLabel.TextXAlignment = Enum.TextXAlignment.Left
         teleportLabel.Parent = contentContainer
         
+        -- Описание
         local teleportDesc = Instance.new("TextLabel")
         teleportDesc.Size = UDim2.new(1, -40, 0, 25)
         teleportDesc.Position = UDim2.new(0, 20, 0, 50)
@@ -1753,6 +1732,7 @@ local function updateContent()
         teleportDesc.TextXAlignment = Enum.TextXAlignment.Left
         teleportDesc.Parent = contentContainer
         
+        -- Контейнер для списка игроков
         local playersContainer = Instance.new("ScrollingFrame")
         playersContainer.Size = UDim2.new(1, -40, 0, 280)
         playersContainer.Position = UDim2.new(0, 20, 0, 85)
@@ -1767,11 +1747,13 @@ local function updateContent()
         playersContainerCorner.CornerRadius = UDim.new(0, 8)
         playersContainerCorner.Parent = playersContainer
         
+        -- Внутренний контейнер для кнопок
         local innerContainer = Instance.new("Frame")
         innerContainer.Size = UDim2.new(1, -10, 0, 0)
         innerContainer.BackgroundTransparency = 1
         innerContainer.Parent = playersContainer
         
+        -- Статус телепорта
         local teleportStatus = Instance.new("TextLabel")
         teleportStatus.Size = UDim2.new(1, -40, 0, 25)
         teleportStatus.Position = UDim2.new(0, 20, 0, 375)
@@ -1783,8 +1765,10 @@ local function updateContent()
         teleportStatus.TextXAlignment = Enum.TextXAlignment.Left
         teleportStatus.Parent = contentContainer
         
+        -- Заполняем список
         updateTeleportPlayersList(innerContainer, teleportStatus)
         
+        -- Обновляем CanvasSize
         local function updateCanvas()
             playersContainer.CanvasSize = UDim2.new(0, 0, 0, innerContainer.Size.Y.Offset + 10)
         end
@@ -1792,6 +1776,7 @@ local function updateContent()
         innerContainer:GetPropertyChangedSignal("Size"):Connect(updateCanvas)
         updateCanvas()
         
+        -- Автообновление при изменении игроков
         local function refreshList()
             updateTeleportPlayersList(innerContainer, teleportStatus)
             updateCanvas()
@@ -1801,6 +1786,7 @@ local function updateContent()
         Players.PlayerRemoving:Connect(refreshList)
         
     elseif activeTab == "ESP" then
+        -- Заголовок
         local espLabel = Instance.new("TextLabel")
         espLabel.Size = UDim2.new(1, -40, 0, 30)
         espLabel.Position = UDim2.new(0, 20, 0, 20)
@@ -1812,24 +1798,37 @@ local function updateContent()
         espLabel.TextXAlignment = Enum.TextXAlignment.Left
         espLabel.Parent = contentContainer
         
-        createSwitchWithDesc(
+        -- ESP свитч с описанием
+        local espContainer, setEspState = createSwitchWithDesc(
             contentContainer, 20, 55, "ESP",
             (currentLang == "ru") and "Подсветка игроков через стены" or "Highlight players through walls",
             espEnabled,
             function(state)
-                if state then enableESP() else disableESP() end
+                if state then
+                    enableESP()
+                else
+                    disableESP()
+                end
+                setEspState(state)
             end
         )
         
-        createSwitchWithDesc(
+        -- Свитч для имён игроков (отдельная функция)
+        local nameTagContainer, setNameTagState = createSwitchWithDesc(
             contentContainer, 20, 125, (currentLang == "ru") and "Показывать имена" or "Show names",
             (currentLang == "ru") and "Отображать никнеймы над игроками (работает без ESP)" or "Display player names above heads (works without ESP)",
             nameTagsEnabled,
             function(state)
-                if state then enableNameTags() else disableNameTags() end
+                if state then
+                    enableNameTags()
+                else
+                    disableNameTags()
+                end
+                setNameTagState(state)
             end
         )
         
+        -- Информация о цветах для MM2
         local colorInfoLabel = Instance.new("TextLabel")
         colorInfoLabel.Size = UDim2.new(1, -40, 0, 25)
         colorInfoLabel.Position = UDim2.new(0, 20, 0, 195)
@@ -1841,6 +1840,7 @@ local function updateContent()
         colorInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
         colorInfoLabel.Parent = contentContainer
         
+        -- Описание цветов для MM2
         local colorDesc = Instance.new("TextLabel")
         colorDesc.Size = UDim2.new(1, -40, 0, 60)
         colorDesc.Position = UDim2.new(0, 20, 0, 220)
@@ -1853,6 +1853,7 @@ local function updateContent()
         colorDesc.TextYAlignment = Enum.TextYAlignment.Top
         colorDesc.Parent = contentContainer
         
+        -- Дополнительная информация
         local espInfo = Instance.new("TextLabel")
         espInfo.Size = UDim2.new(1, -40, 0, 35)
         espInfo.Position = UDim2.new(0, 20, 0, 295)
@@ -1961,52 +1962,220 @@ local function updateContent()
         end)
         
     elseif activeTab == "Settings" then
+        -- Заголовок
         local settingsLabel = Instance.new("TextLabel")
         settingsLabel.Size = UDim2.new(1, -40, 0, 30)
         settingsLabel.Position = UDim2.new(0, 20, 0, 20)
-        settingsLabel.Text = (currentLang == "ru") and "Настройки" or "Settings"
+        settingsLabel.Text = (currentLang == "ru") and "🎨 Цветовая тема" or "🎨 Color Theme"
         settingsLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
         settingsLabel.BackgroundTransparency = 1
         settingsLabel.Font = Enum.Font.GothamBold
-        settingsLabel.TextSize = 16
+        settingsLabel.TextSize = 18
         settingsLabel.TextXAlignment = Enum.TextXAlignment.Left
         settingsLabel.Parent = contentContainer
         
-        -- Информация о хоткеях
-        local keybindInfo = Instance.new("TextLabel")
-        keybindInfo.Size = UDim2.new(1, -40, 0, 200)
-        keybindInfo.Position = UDim2.new(0, 20, 0, 60)
-        keybindInfo.Text = (currentLang == "ru") and 
-            "⌨️ Хоткеи:\n\n" ..
-            "Q - Режим полёта\n" ..
-            "N - Ноклип\n" ..
-            "E - ESP\n" ..
-            "V - Скорость\n" ..
-            "J - Infinity Jump\n" ..
-            "F - FullBright\n" ..
-            "G - Аимбот\n" ..
-            "T - Имена игроков\n" ..
-            "K - Анти-AFK\n\n" ..
-            "🎯 Аимбот: наводится на голову при зажатой LeftControl" or 
-            "⌨️ Keybinds:\n\n" ..
-            "Q - Fly mode\n" ..
-            "N - Noclip\n" ..
-            "E - ESP\n" ..
-            "V - Speed\n" ..
-            "J - Infinity Jump\n" ..
-            "F - FullBright\n" ..
-            "G - Aimbot\n" ..
-            "T - Name Tags\n" ..
-            "K - Anti-AFK\n\n" ..
-            "🎯 Aimbot: aims at head while holding LeftControl"
-        keybindInfo.TextColor3 = Color3.fromRGB(180, 185, 200)
-        keybindInfo.BackgroundTransparency = 1
-        keybindInfo.Font = Enum.Font.Gotham
-        keybindInfo.TextSize = 12
-        keybindInfo.TextXAlignment = Enum.TextXAlignment.Left
-        keybindInfo.TextYAlignment = Enum.TextYAlignment.Top
-        keybindInfo.TextWrapped = true
-        keybindInfo.Parent = contentContainer
+        local themeDesc = Instance.new("TextLabel")
+        themeDesc.Size = UDim2.new(1, -40, 0, 25)
+        themeDesc.Position = UDim2.new(0, 20, 0, 55)
+        themeDesc.Text = (currentLang == "ru") and "Выбери цветовое оформление интерфейса" or "Choose interface color scheme"
+        themeDesc.TextColor3 = Color3.fromRGB(150, 155, 170)
+        themeDesc.BackgroundTransparency = 1
+        themeDesc.Font = Enum.Font.Gotham
+        themeDesc.TextSize = 12
+        themeDesc.TextXAlignment = Enum.TextXAlignment.Left
+        themeDesc.Parent = contentContainer
+        
+        -- Scrolling контейнер для тем (исправлено — теперь можно листать!)
+        local themeScrollFrame = Instance.new("ScrollingFrame")
+        themeScrollFrame.Size = UDim2.new(1, -40, 0, 220)
+        themeScrollFrame.Position = UDim2.new(0, 20, 0, 90)
+        themeScrollFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+        themeScrollFrame.BackgroundTransparency = 0.3
+        themeScrollFrame.BorderSizePixel = 0
+        themeScrollFrame.ScrollBarThickness = 4
+        themeScrollFrame.ScrollBarImageColor3 = Color3.fromRGB(0, 150, 255)
+        themeScrollFrame.Parent = contentContainer
+        
+        local themeScrollCorner = Instance.new("UICorner")
+        themeScrollCorner.CornerRadius = UDim.new(0, 12)
+        themeScrollCorner.Parent = themeScrollFrame
+        
+        local themeContainer = Instance.new("Frame")
+        themeContainer.Size = UDim2.new(1, 0, 0, 0)
+        themeContainer.BackgroundTransparency = 1
+        themeContainer.Parent = themeScrollFrame
+        
+        local themesList = {"Blue", "Black", "Red", "Pink", "Purple", "Green", "Orange"}
+        local buttonsPerRow = 2
+        local buttonWidth = 130
+        local buttonHeight = 90
+        local spacing = 15
+        local containerHeight = 0
+        
+        for i, themeName in pairs(themesList) do
+            local row = math.floor((i - 1) / buttonsPerRow)
+            local col = (i - 1) % buttonsPerRow
+            local x = col * (buttonWidth + spacing)
+            local y = row * (buttonHeight + spacing)
+            
+            -- Карточка темы
+            local themeCard = Instance.new("Frame")
+            themeCard.Size = UDim2.new(0, buttonWidth, 0, buttonHeight)
+            themeCard.Position = UDim2.new(0, x, 0, y)
+            themeCard.BackgroundColor3 = ColorThemes[themeName].bg
+            themeCard.BackgroundTransparency = 0.2
+            themeCard.BorderSizePixel = 0
+            themeCard.Parent = themeContainer
+            
+            local cardCorner = Instance.new("UICorner")
+            cardCorner.CornerRadius = UDim.new(0, 12)
+            cardCorner.Parent = themeCard
+            
+            -- Эффект свечения при выборе
+            if currentTheme == themeName then
+                local glowBorder = Instance.new("Frame")
+                glowBorder.Size = UDim2.new(1, 4, 1, 4)
+                glowBorder.Position = UDim2.new(0, -2, 0, -2)
+                glowBorder.BackgroundColor3 = ColorThemes[themeName].main
+                glowBorder.BackgroundTransparency = 0.3
+                glowBorder.BorderSizePixel = 0
+                glowBorder.Parent = themeCard
+                
+                local glowCorner = Instance.new("UICorner")
+                glowCorner.CornerRadius = UDim.new(0, 14)
+                glowCorner.Parent = glowBorder
+            end
+            
+            -- Цветной индикатор (круг)
+            local colorIndicator = Instance.new("Frame")
+            colorIndicator.Size = UDim2.new(0, 45, 0, 45)
+            colorIndicator.Position = UDim2.new(0.5, -22.5, 0, 12)
+            colorIndicator.BackgroundColor3 = ColorThemes[themeName].main
+            colorIndicator.BorderSizePixel = 0
+            colorIndicator.Parent = themeCard
+            
+            local indicatorCorner = Instance.new("UICorner")
+            indicatorCorner.CornerRadius = UDim.new(1, 0)
+            indicatorCorner.Parent = colorIndicator
+            
+            -- Название темы (теперь на правильном языке)
+            local themeNameLabel = Instance.new("TextLabel")
+            themeNameLabel.Size = UDim2.new(1, 0, 0, 25)
+            themeNameLabel.Position = UDim2.new(0, 0, 1, -28)
+            themeNameLabel.Text = getThemeName(themeName)
+            themeNameLabel.TextColor3 = Color3.fromRGB(200, 210, 230)
+            themeNameLabel.BackgroundTransparency = 1
+            themeNameLabel.Font = Enum.Font.GothamBold
+            themeNameLabel.TextSize = 12
+            themeNameLabel.TextScaled = true
+            themeNameLabel.Parent = themeCard
+            
+            -- Кнопка выбора темы
+            local themeBtn = Instance.new("TextButton")
+            themeBtn.Size = UDim2.new(1, 0, 1, 0)
+            themeBtn.BackgroundTransparency = 1
+            themeBtn.Text = ""
+            themeBtn.Parent = themeCard
+            
+            themeBtn.MouseButton1Click:Connect(function()
+                currentTheme = themeName
+                applyTheme()
+                
+                -- Обновляем выделение
+                for _, card in pairs(themeContainer:GetChildren()) do
+                    if card:IsA("Frame") and card ~= themeCard then
+                        local oldBorder = card:FindFirstChildWhichIsA("Frame")
+                        if oldBorder and oldBorder ~= card and oldBorder.Size == UDim2.new(1, 4, 1, 4) then
+                            oldBorder:Destroy()
+                        end
+                    end
+                end
+                
+                -- Добавляем свечение к выбранной теме
+                local existingGlow = themeCard:FindFirstChildWhichIsA("Frame")
+                if existingGlow and existingGlow ~= themeCard then
+                    existingGlow:Destroy()
+                end
+                
+                local newGlow = Instance.new("Frame")
+                newGlow.Size = UDim2.new(1, 4, 1, 4)
+                newGlow.Position = UDim2.new(0, -2, 0, -2)
+                newGlow.BackgroundColor3 = ColorThemes[themeName].main
+                newGlow.BackgroundTransparency = 0.3
+                newGlow.BorderSizePixel = 0
+                newGlow.Parent = themeCard
+                
+                local newGlowCorner = Instance.new("UICorner")
+                newGlowCorner.CornerRadius = UDim.new(0, 14)
+                newGlowCorner.Parent = newGlow
+                
+                -- Обновляем текст названий тем на текущем языке
+                for _, card in pairs(themeContainer:GetChildren()) do
+                    if card:IsA("Frame") then
+                        local label = card:FindFirstChildOfClass("TextLabel")
+                        if label and label ~= themeNameLabel then
+                            for name, data in pairs(ColorThemes) do
+                                if card.BackgroundColor3 == data.bg then
+                                    label.Text = getThemeName(name)
+                                    break
+                                end
+                            end
+                        end
+                    end
+                end
+            end)
+            
+            -- Hover эффект
+            themeBtn.MouseEnter:Connect(function()
+                TweenService:Create(themeCard, TweenInfo.new(0.2), {BackgroundTransparency = 0.1}):Play()
+            end)
+            
+            themeBtn.MouseLeave:Connect(function()
+                TweenService:Create(themeCard, TweenInfo.new(0.2), {BackgroundTransparency = 0.2}):Play()
+            end)
+            
+            containerHeight = y + buttonHeight + spacing
+        end
+        
+        themeContainer.Size = UDim2.new(1, 0, 0, containerHeight)
+        themeScrollFrame.CanvasSize = UDim2.new(0, 0, 0, containerHeight + 20)
+        
+        -- Информационная панель
+        local infoFrame = Instance.new("Frame")
+        infoFrame.Size = UDim2.new(1, -40, 0, 80)
+        infoFrame.Position = UDim2.new(0, 20, 0, 330)
+        infoFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        infoFrame.BackgroundTransparency = 0.3
+        infoFrame.BorderSizePixel = 0
+        infoFrame.Parent = contentContainer
+        
+        local infoCorner = Instance.new("UICorner")
+        infoCorner.CornerRadius = UDim.new(0, 10)
+        infoCorner.Parent = infoFrame
+        
+        local infoTitle = Instance.new("TextLabel")
+        infoTitle.Size = UDim2.new(1, -20, 0, 25)
+        infoTitle.Position = UDim2.new(0, 10, 0, 5)
+        infoTitle.Text = (currentLang == "ru") and "ℹ️ Информация" or "ℹ️ Info"
+        infoTitle.TextColor3 = Color3.fromRGB(0, 200, 255)
+        infoTitle.BackgroundTransparency = 1
+        infoTitle.Font = Enum.Font.GothamBold
+        infoTitle.TextSize = 14
+        infoTitle.TextXAlignment = Enum.TextXAlignment.Left
+        infoTitle.Parent = infoFrame
+        
+        local infoText = Instance.new("TextLabel")
+        infoText.Size = UDim2.new(1, -20, 0, 45)
+        infoText.Position = UDim2.new(0, 10, 0, 32)
+        infoText.Text = (currentLang == "ru") and "Цветовая тема влияет на весь интерфейс.\nДоступно 7 цветов: Синий, Чёрный, Красный, Розовый, Фиолетовый, Зелёный, Оранжевый" or "Color theme affects the entire interface.\nAvailable: Blue, Black, Red, Pink, Purple, Green, Orange"
+        infoText.TextColor3 = Color3.fromRGB(180, 185, 200)
+        infoText.BackgroundTransparency = 1
+        infoText.Font = Enum.Font.Gotham
+        infoText.TextSize = 11
+        infoText.TextXAlignment = Enum.TextXAlignment.Left
+        infoText.TextYAlignment = Enum.TextYAlignment.Top
+        infoText.TextWrapped = true
+        infoText.Parent = infoFrame
     end
     
     updateContentHeight()
@@ -2049,8 +2218,6 @@ local function applyLanguage(lang)
 end
 
 -- ========== СОЗДАНИЕ ОСНОВНОГО UI ==========
-local glowFrame, xLetter, subtitleLabel, blueLine, rightStroke
-
 local function createUI()
     mainFrame = Instance.new("Frame")
     mainFrame.Size = UDim2.new(0, currentWidth, 0, currentHeight)
@@ -2096,7 +2263,7 @@ local function createUI()
     topOnlyCorner.BorderSizePixel = 0
     topOnlyCorner.Parent = topBar
     
-    local topGradient = Instance.new("UIGradient")
+    topGradient = Instance.new("UIGradient")
     topGradient.Color = ColorSequence.new{
         ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 100, 200)),
         ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 150, 255)),
@@ -2260,7 +2427,7 @@ local function createUI()
     contentContainer.BackgroundTransparency = 1
     contentContainer.Parent = rightContent
     
-    local tabsList = {"Main", "Visual", "Players", "Teleport", "ESP", "Feedback", "Settings"}
+    local tabsList = {"Main", "Players", "Visual", "Teleport", "ESP", "Feedback", "Settings"}
     local buttonHeight = 40
     local buttonSpacing = 5
     local currentY = 10
@@ -2280,7 +2447,14 @@ local function createUI()
             elseif tab == "Settings" then btn.Text = "Настройки"
             end
         else
-            btn.Text = tab
+            if tab == "Main" then btn.Text = "Main"
+            elseif tab == "Visual" then btn.Text = "Visual"
+            elseif tab == "Players" then btn.Text = "Players"
+            elseif tab == "Teleport" then btn.Text = "Teleport"
+            elseif tab == "ESP" then btn.Text = "ESP"
+            elseif tab == "Feedback" then btn.Text = "Feedback"
+            elseif tab == "Settings" then btn.Text = "Settings"
+            end
         end
         
         btn.TextColor3 = Color3.fromRGB(160, 170, 190)
@@ -2329,9 +2503,6 @@ local function createUI()
     updateContent()
     applyTheme()
     
-    -- Запускаем обработчик хоткеев
-    setupKeybinds()
-    
     local isMinimized = false
     minimizeBtn.MouseButton1Click:Connect(function()
         isMinimized = not isMinimized
@@ -2348,7 +2519,6 @@ local function createUI()
     end)
     
     closeBtn.MouseButton1Click:Connect(function()
-        if aimbotConnection then aimbotConnection:Disconnect() end
         TweenService:Create(mainFrame, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
         task.wait(0.2)
         screenGui:Destroy()
@@ -2477,8 +2647,7 @@ print("   - Режим полёта (клавиша Q)")
 print("   - Ноклип, Анти-AFK, FullBright")
 print("   - Телепорт к игроку")
 print("   - Infinity Jump (бесконечные прыжки)")
-print("   - ESP (подсветка игроков)")
+print("   - ESP (подсветка игроков) с определением ролей")
 print("   - Имена игроков (работают отдельно от ESP)")
 print("   - Отзывы в Discord")
-print("   - 🆕 Аимбот (клавиша G, наведение при LeftControl)")
-print("   - 🆕 Хоткеи для всех функций")
+print("   - 7 цветовых тем с визуальными карточками")
