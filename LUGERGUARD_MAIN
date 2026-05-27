@@ -1,6 +1,4 @@
--- LugerGuard X | Black Edition (инжектор-версия)
--- Исправленная версия: имена и ESP работают независимо
-
+-- LugerGuard X | Полная версия с цветовыми темами
 -- ========== ПОДКЛЮЧЕНИЕ СЕРВИСОВ ==========
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -26,6 +24,103 @@ end
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "LugerGuardX"
 screenGui.Parent = parentGui
+screenGui.ResetOnSpawn = false
+
+-- ========== ЦВЕТОВЫЕ ТЕМЫ ==========
+local ColorThemes = {
+    Blue = {
+        main = Color3.fromRGB(0, 150, 255),
+        bg = Color3.fromRGB(0, 70, 140),
+        glow = Color3.fromRGB(0, 150, 255),
+        text = Color3.fromRGB(0, 200, 255),
+        accent = Color3.fromRGB(0, 120, 200),
+        name = "Синий",
+        gradient = {
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 100, 200)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 150, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 100, 200))
+        }
+    },
+    Black = {
+        main = Color3.fromRGB(80, 80, 90),
+        bg = Color3.fromRGB(40, 40, 50),
+        glow = Color3.fromRGB(100, 100, 120),
+        text = Color3.fromRGB(180, 180, 200),
+        accent = Color3.fromRGB(60, 60, 70),
+        name = "Чёрный",
+        gradient = {
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 50, 60)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(80, 80, 90)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(50, 50, 60))
+        }
+    },
+    Red = {
+        main = Color3.fromRGB(200, 50, 50),
+        bg = Color3.fromRGB(140, 30, 30),
+        glow = Color3.fromRGB(220, 80, 80),
+        text = Color3.fromRGB(255, 100, 100),
+        accent = Color3.fromRGB(160, 40, 40),
+        name = "Красный",
+        gradient = {
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(180, 40, 40)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(220, 60, 60)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 40, 40))
+        }
+    },
+    Pink = {
+        main = Color3.fromRGB(255, 100, 150),
+        bg = Color3.fromRGB(180, 60, 100),
+        glow = Color3.fromRGB(255, 130, 180),
+        text = Color3.fromRGB(255, 150, 200),
+        accent = Color3.fromRGB(200, 80, 120),
+        name = "Розовый",
+        gradient = {
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(220, 70, 120)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 120, 170)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 70, 120))
+        }
+    },
+    Purple = {
+        main = Color3.fromRGB(150, 50, 200),
+        bg = Color3.fromRGB(100, 30, 140),
+        glow = Color3.fromRGB(170, 80, 220),
+        text = Color3.fromRGB(180, 100, 255),
+        accent = Color3.fromRGB(120, 40, 160),
+        name = "Фиолетовый",
+        gradient = {
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(120, 40, 160)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(160, 70, 210)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(120, 40, 160))
+        }
+    },
+    Green = {
+        main = Color3.fromRGB(50, 200, 50),
+        bg = Color3.fromRGB(30, 140, 30),
+        glow = Color3.fromRGB(80, 220, 80),
+        text = Color3.fromRGB(100, 255, 100),
+        accent = Color3.fromRGB(40, 160, 40),
+        name = "Зелёный",
+        gradient = {
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 160, 40)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(70, 210, 70)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(40, 160, 40))
+        }
+    },
+    Orange = {
+        main = Color3.fromRGB(255, 150, 50),
+        bg = Color3.fromRGB(180, 100, 30),
+        glow = Color3.fromRGB(255, 180, 80),
+        text = Color3.fromRGB(255, 200, 100),
+        accent = Color3.fromRGB(200, 120, 40),
+        name = "Оранжевый",
+        gradient = {
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(200, 120, 40)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 160, 70)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 120, 40))
+        }
+    }
+}
+local currentTheme = "Blue"
 
 -- ========== ВЫБОР ЯЗЫКА ==========
 local langChoiceFrame = Instance.new("Frame")
@@ -84,7 +179,7 @@ enCorner.Parent = enBtn
 
 -- ========== ПЕРЕМЕННЫЕ ==========
 local currentLang = nil
-local mainFrame, topBar, contentFrame, leftPanel, rightContent, contentContainer
+local mainFrame, topBar, contentFrame, leftPanel, rightContent, contentContainer, glowFrame, xLetter, subtitleLabel, blueLine, rightStroke, topGradient
 local tabButtons = {}
 local activeTab = "Main"
 
@@ -143,6 +238,36 @@ local maxWidth = 1000
 local maxHeight = 700
 local currentWidth = 750
 local currentHeight = 520
+
+-- ========== ФУНКЦИЯ ПРИМЕНЕНИЯ ТЕМЫ ==========
+local function applyTheme()
+    local theme = ColorThemes[currentTheme]
+    if not theme then return end
+    
+    pcall(function()
+        if topBar then 
+            topBar.BackgroundColor3 = theme.bg
+            if topGradient then
+                topGradient.Color = ColorSequence.new(theme.gradient)
+            end
+        end
+        if glowFrame then glowFrame.BackgroundColor3 = theme.glow end
+        if xLetter then xLetter.TextColor3 = theme.text end
+        if subtitleLabel then subtitleLabel.TextColor3 = theme.text end
+        if blueLine then blueLine.BackgroundColor3 = theme.main end
+        if rightStroke then rightStroke.Color = theme.main end
+        
+        for tab, btn in pairs(tabButtons) do
+            if activeTab == tab then
+                btn.TextColor3 = theme.text
+                btn.BackgroundColor3 = theme.accent
+            else
+                btn.TextColor3 = Color3.fromRGB(160, 170, 190)
+                btn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+            end
+        end
+    end)
+end
 
 -- ========== ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ ==========
 
@@ -325,10 +450,10 @@ local ESP_CONFIG = {
 
 -- Цвета для разных ролей в MM2
 local ROLE_COLORS = {
-    Murderer = Color3.fromRGB(255, 50, 50),    -- Красный для маньяка
-    Sheriff = Color3.fromRGB(50, 150, 255),    -- Синий для шерифа
-    Normal = Color3.fromRGB(150, 150, 150),    -- Серый для обычных
-    Unknown = Color3.fromRGB(200, 200, 100)    -- Жёлтый для неизвестных
+    Murderer = Color3.fromRGB(255, 50, 50),
+    Sheriff = Color3.fromRGB(50, 150, 255),
+    Normal = Color3.fromRGB(150, 150, 150),
+    Unknown = Color3.fromRGB(200, 200, 100)
 }
 
 -- Список оружия маньяка
@@ -1139,7 +1264,6 @@ end
 
 -- ========== ФУНКЦИЯ ОБНОВЛЕНИЯ СПИСКА ИГРОКОВ ДЛЯ ТЕЛЕПОРТА ==========
 local function updateTeleportPlayersList(container, statusLabel)
-    -- Очищаем контейнер
     for _, child in pairs(container:GetChildren()) do
         child:Destroy()
     end
@@ -1151,7 +1275,6 @@ local function updateTeleportPlayersList(container, statusLabel)
         if player ~= LocalPlayer then
             playerCount = playerCount + 1
             
-            -- Контейнер для одного игрока
             local playerFrame = Instance.new("Frame")
             playerFrame.Size = UDim2.new(1, -20, 0, 35)
             playerFrame.Position = UDim2.new(0, 0, 0, yOffset)
@@ -1164,7 +1287,6 @@ local function updateTeleportPlayersList(container, statusLabel)
             frameCorner.CornerRadius = UDim.new(0, 6)
             frameCorner.Parent = playerFrame
             
-            -- Имя игрока
             local nameLabel = Instance.new("TextLabel")
             nameLabel.Size = UDim2.new(1, -70, 1, 0)
             nameLabel.Position = UDim2.new(0, 12, 0, 0)
@@ -1176,7 +1298,6 @@ local function updateTeleportPlayersList(container, statusLabel)
             nameLabel.TextXAlignment = Enum.TextXAlignment.Left
             nameLabel.Parent = playerFrame
             
-            -- Кнопка телепорта
             local teleportPlayerBtn = Instance.new("TextButton")
             teleportPlayerBtn.Size = UDim2.new(0, 55, 0, 26)
             teleportPlayerBtn.Position = UDim2.new(1, -62, 0, 4.5)
@@ -1193,7 +1314,6 @@ local function updateTeleportPlayersList(container, statusLabel)
             btnCorner.CornerRadius = UDim.new(0, 4)
             btnCorner.Parent = teleportPlayerBtn
             
-            -- Hover эффект
             teleportPlayerBtn.MouseEnter:Connect(function()
                 teleportPlayerBtn.BackgroundTransparency = 0.4
                 teleportPlayerBtn.TextColor3 = Color3.fromRGB(0, 200, 255)
@@ -1480,7 +1600,6 @@ local function updateContent()
             end
         end)
         
-        -- Информация о полёте
         local keybindInfoLabel = Instance.new("TextLabel")
         keybindInfoLabel.Size = UDim2.new(0, 350, 0, 20)
         keybindInfoLabel.Position = UDim2.new(0, 20, 0, 420)
@@ -1553,7 +1672,6 @@ local function updateContent()
         visualLabel.TextXAlignment = Enum.TextXAlignment.Left
         visualLabel.Parent = contentContainer
         
-        -- FullBright свитч
         local fullBrightContainer, setFullBrightState = createSwitchWithDesc(
             contentContainer, 20, 55, "FullBright",
             (currentLang == "ru") and "Полная яркость на карте (видно всё)" or "Maximum brightness on map (see everything)",
@@ -1565,7 +1683,6 @@ local function updateContent()
         )
         
     elseif activeTab == "Teleport" then
-        -- Заголовок
         local teleportLabel = Instance.new("TextLabel")
         teleportLabel.Size = UDim2.new(1, -40, 0, 30)
         teleportLabel.Position = UDim2.new(0, 20, 0, 20)
@@ -1577,7 +1694,6 @@ local function updateContent()
         teleportLabel.TextXAlignment = Enum.TextXAlignment.Left
         teleportLabel.Parent = contentContainer
         
-        -- Описание
         local teleportDesc = Instance.new("TextLabel")
         teleportDesc.Size = UDim2.new(1, -40, 0, 25)
         teleportDesc.Position = UDim2.new(0, 20, 0, 50)
@@ -1589,7 +1705,6 @@ local function updateContent()
         teleportDesc.TextXAlignment = Enum.TextXAlignment.Left
         teleportDesc.Parent = contentContainer
         
-        -- Контейнер для списка игроков
         local playersContainer = Instance.new("ScrollingFrame")
         playersContainer.Size = UDim2.new(1, -40, 0, 280)
         playersContainer.Position = UDim2.new(0, 20, 0, 85)
@@ -1604,13 +1719,11 @@ local function updateContent()
         playersContainerCorner.CornerRadius = UDim.new(0, 8)
         playersContainerCorner.Parent = playersContainer
         
-        -- Внутренний контейнер для кнопок
         local innerContainer = Instance.new("Frame")
         innerContainer.Size = UDim2.new(1, -10, 0, 0)
         innerContainer.BackgroundTransparency = 1
         innerContainer.Parent = playersContainer
         
-        -- Статус телепорта
         local teleportStatus = Instance.new("TextLabel")
         teleportStatus.Size = UDim2.new(1, -40, 0, 25)
         teleportStatus.Position = UDim2.new(0, 20, 0, 375)
@@ -1622,10 +1735,8 @@ local function updateContent()
         teleportStatus.TextXAlignment = Enum.TextXAlignment.Left
         teleportStatus.Parent = contentContainer
         
-        -- Заполняем список
         updateTeleportPlayersList(innerContainer, teleportStatus)
         
-        -- Обновляем CanvasSize
         local function updateCanvas()
             playersContainer.CanvasSize = UDim2.new(0, 0, 0, innerContainer.Size.Y.Offset + 10)
         end
@@ -1633,7 +1744,6 @@ local function updateContent()
         innerContainer:GetPropertyChangedSignal("Size"):Connect(updateCanvas)
         updateCanvas()
         
-        -- Автообновление при изменении игроков
         local function refreshList()
             updateTeleportPlayersList(innerContainer, teleportStatus)
             updateCanvas()
@@ -1643,7 +1753,6 @@ local function updateContent()
         Players.PlayerRemoving:Connect(refreshList)
         
     elseif activeTab == "ESP" then
-        -- Заголовок
         local espLabel = Instance.new("TextLabel")
         espLabel.Size = UDim2.new(1, -40, 0, 30)
         espLabel.Position = UDim2.new(0, 20, 0, 20)
@@ -1655,37 +1764,26 @@ local function updateContent()
         espLabel.TextXAlignment = Enum.TextXAlignment.Left
         espLabel.Parent = contentContainer
         
-        -- ESP свитч с описанием
         local espContainer, setEspState = createSwitchWithDesc(
             contentContainer, 20, 55, "ESP",
             (currentLang == "ru") and "Подсветка игроков через стены" or "Highlight players through walls",
             espEnabled,
             function(state)
-                if state then
-                    enableESP()
-                else
-                    disableESP()
-                end
+                if state then enableESP() else disableESP() end
                 setEspState(state)
             end
         )
         
-        -- Свитч для имён игроков (отдельная функция)
         local nameTagContainer, setNameTagState = createSwitchWithDesc(
             contentContainer, 20, 125, (currentLang == "ru") and "Показывать имена" or "Show names",
             (currentLang == "ru") and "Отображать никнеймы над игроками (работает без ESP)" or "Display player names above heads (works without ESP)",
             nameTagsEnabled,
             function(state)
-                if state then
-                    enableNameTags()
-                else
-                    disableNameTags()
-                end
+                if state then enableNameTags() else disableNameTags() end
                 setNameTagState(state)
             end
         )
         
-        -- Информация о цветах для MM2
         local colorInfoLabel = Instance.new("TextLabel")
         colorInfoLabel.Size = UDim2.new(1, -40, 0, 25)
         colorInfoLabel.Position = UDim2.new(0, 20, 0, 195)
@@ -1697,7 +1795,6 @@ local function updateContent()
         colorInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
         colorInfoLabel.Parent = contentContainer
         
-        -- Описание цветов для MM2
         local colorDesc = Instance.new("TextLabel")
         colorDesc.Size = UDim2.new(1, -40, 0, 60)
         colorDesc.Position = UDim2.new(0, 20, 0, 220)
@@ -1710,7 +1807,6 @@ local function updateContent()
         colorDesc.TextYAlignment = Enum.TextYAlignment.Top
         colorDesc.Parent = contentContainer
         
-        -- Дополнительная информация
         local espInfo = Instance.new("TextLabel")
         espInfo.Size = UDim2.new(1, -40, 0, 35)
         espInfo.Position = UDim2.new(0, 20, 0, 295)
@@ -1822,13 +1918,172 @@ local function updateContent()
         local settingsLabel = Instance.new("TextLabel")
         settingsLabel.Size = UDim2.new(1, -40, 0, 30)
         settingsLabel.Position = UDim2.new(0, 20, 0, 20)
-        settingsLabel.Text = (currentLang == "ru") and "Настройки (в разработке)" or "Settings (in development)"
+        settingsLabel.Text = (currentLang == "ru") and "🎨 Цветовая тема" or "🎨 Color Theme"
         settingsLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
         settingsLabel.BackgroundTransparency = 1
         settingsLabel.Font = Enum.Font.GothamBold
-        settingsLabel.TextSize = 16
+        settingsLabel.TextSize = 18
         settingsLabel.TextXAlignment = Enum.TextXAlignment.Left
         settingsLabel.Parent = contentContainer
+        
+        local themeDesc = Instance.new("TextLabel")
+        themeDesc.Size = UDim2.new(1, -40, 0, 25)
+        themeDesc.Position = UDim2.new(0, 20, 0, 55)
+        themeDesc.Text = (currentLang == "ru") and "Выбери цветовое оформление интерфейса" or "Choose interface color scheme"
+        themeDesc.TextColor3 = Color3.fromRGB(150, 155, 170)
+        themeDesc.BackgroundTransparency = 1
+        themeDesc.Font = Enum.Font.Gotham
+        themeDesc.TextSize = 12
+        themeDesc.TextXAlignment = Enum.TextXAlignment.Left
+        themeDesc.Parent = contentContainer
+        
+        local themeContainer = Instance.new("Frame")
+        themeContainer.Size = UDim2.new(1, -40, 0, 200)
+        themeContainer.Position = UDim2.new(0, 20, 0, 90)
+        themeContainer.BackgroundTransparency = 1
+        themeContainer.Parent = contentContainer
+        
+        local themes = {"Blue", "Black", "Red", "Pink", "Purple", "Green", "Orange"}
+        local buttonsPerRow = 3
+        local buttonWidth = 100
+        local buttonHeight = 80
+        local spacing = 15
+        
+        for i, themeName in pairs(themes) do
+            local row = math.floor((i - 1) / buttonsPerRow)
+            local col = (i - 1) % buttonsPerRow
+            local x = col * (buttonWidth + spacing)
+            local y = row * (buttonHeight + spacing)
+            
+            local themeCard = Instance.new("Frame")
+            themeCard.Size = UDim2.new(0, buttonWidth, 0, buttonHeight)
+            themeCard.Position = UDim2.new(0, x, 0, y)
+            themeCard.BackgroundColor3 = ColorThemes[themeName].bg
+            themeCard.BackgroundTransparency = 0.2
+            themeCard.BorderSizePixel = 0
+            themeCard.Parent = themeContainer
+            
+            local cardCorner = Instance.new("UICorner")
+            cardCorner.CornerRadius = UDim.new(0, 12)
+            cardCorner.Parent = themeCard
+            
+            if currentTheme == themeName then
+                local glowBorder = Instance.new("Frame")
+                glowBorder.Size = UDim2.new(1, 4, 1, 4)
+                glowBorder.Position = UDim2.new(0, -2, 0, -2)
+                glowBorder.BackgroundColor3 = ColorThemes[themeName].main
+                glowBorder.BackgroundTransparency = 0.3
+                glowBorder.BorderSizePixel = 0
+                glowBorder.Parent = themeCard
+                
+                local glowCorner = Instance.new("UICorner")
+                glowCorner.CornerRadius = UDim.new(0, 14)
+                glowCorner.Parent = glowBorder
+            end
+            
+            local colorIndicator = Instance.new("Frame")
+            colorIndicator.Size = UDim2.new(0, 40, 0, 40)
+            colorIndicator.Position = UDim2.new(0.5, -20, 0, 12)
+            colorIndicator.BackgroundColor3 = ColorThemes[themeName].main
+            colorIndicator.BorderSizePixel = 0
+            colorIndicator.Parent = themeCard
+            
+            local indicatorCorner = Instance.new("UICorner")
+            indicatorCorner.CornerRadius = UDim.new(1, 0)
+            indicatorCorner.Parent = colorIndicator
+            
+            local themeNameLabel = Instance.new("TextLabel")
+            themeNameLabel.Size = UDim2.new(1, 0, 0, 25)
+            themeNameLabel.Position = UDim2.new(0, 0, 1, -28)
+            themeNameLabel.Text = ColorThemes[themeName].name
+            themeNameLabel.TextColor3 = Color3.fromRGB(200, 210, 230)
+            themeNameLabel.BackgroundTransparency = 1
+            themeNameLabel.Font = Enum.Font.GothamBold
+            themeNameLabel.TextSize = 12
+            themeNameLabel.TextScaled = true
+            themeNameLabel.Parent = themeCard
+            
+            local themeBtn = Instance.new("TextButton")
+            themeBtn.Size = UDim2.new(1, 0, 1, 0)
+            themeBtn.BackgroundTransparency = 1
+            themeBtn.Text = ""
+            themeBtn.Parent = themeCard
+            
+            themeBtn.MouseButton1Click:Connect(function()
+                currentTheme = themeName
+                applyTheme()
+                
+                for _, card in pairs(themeContainer:GetChildren()) do
+                    if card:IsA("Frame") and card ~= themeCard then
+                        local oldBorder = card:FindFirstChildWhichIsA("Frame")
+                        if oldBorder and oldBorder ~= card then
+                            oldBorder:Destroy()
+                        end
+                    end
+                end
+                
+                local existingGlow = themeCard:FindFirstChildWhichIsA("Frame")
+                if existingGlow and existingGlow ~= themeCard then
+                    existingGlow:Destroy()
+                end
+                
+                local newGlow = Instance.new("Frame")
+                newGlow.Size = UDim2.new(1, 4, 1, 4)
+                newGlow.Position = UDim2.new(0, -2, 0, -2)
+                newGlow.BackgroundColor3 = ColorThemes[themeName].main
+                newGlow.BackgroundTransparency = 0.3
+                newGlow.BorderSizePixel = 0
+                newGlow.Parent = themeCard
+                
+                local newGlowCorner = Instance.new("UICorner")
+                newGlowCorner.CornerRadius = UDim.new(0, 14)
+                newGlowCorner.Parent = newGlow
+            end)
+            
+            themeBtn.MouseEnter:Connect(function()
+                TweenService:Create(themeCard, TweenInfo.new(0.2), {BackgroundTransparency = 0.1}):Play()
+            end)
+            
+            themeBtn.MouseLeave:Connect(function()
+                TweenService:Create(themeCard, TweenInfo.new(0.2), {BackgroundTransparency = 0.2}):Play()
+            end)
+        end
+        
+        local infoFrame = Instance.new("Frame")
+        infoFrame.Size = UDim2.new(1, -40, 0, 80)
+        infoFrame.Position = UDim2.new(0, 20, 0, 310)
+        infoFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        infoFrame.BackgroundTransparency = 0.3
+        infoFrame.BorderSizePixel = 0
+        infoFrame.Parent = contentContainer
+        
+        local infoCorner = Instance.new("UICorner")
+        infoCorner.CornerRadius = UDim.new(0, 10)
+        infoCorner.Parent = infoFrame
+        
+        local infoTitle = Instance.new("TextLabel")
+        infoTitle.Size = UDim2.new(1, -20, 0, 25)
+        infoTitle.Position = UDim2.new(0, 10, 0, 5)
+        infoTitle.Text = (currentLang == "ru") and "ℹ️ Информация" or "ℹ️ Info"
+        infoTitle.TextColor3 = Color3.fromRGB(0, 200, 255)
+        infoTitle.BackgroundTransparency = 1
+        infoTitle.Font = Enum.Font.GothamBold
+        infoTitle.TextSize = 14
+        infoTitle.TextXAlignment = Enum.TextXAlignment.Left
+        infoTitle.Parent = infoFrame
+        
+        local infoText = Instance.new("TextLabel")
+        infoText.Size = UDim2.new(1, -20, 0, 45)
+        infoText.Position = UDim2.new(0, 10, 0, 32)
+        infoText.Text = (currentLang == "ru") and "Цветовая тема влияет на весь интерфейс.\nДоступно 7 цветов: Синий, Чёрный, Красный, Розовый, Фиолетовый, Зелёный, Оранжевый" or "Color theme affects the entire interface.\nAvailable: Blue, Black, Red, Pink, Purple, Green, Orange"
+        infoText.TextColor3 = Color3.fromRGB(180, 185, 200)
+        infoText.BackgroundTransparency = 1
+        infoText.Font = Enum.Font.Gotham
+        infoText.TextSize = 11
+        infoText.TextXAlignment = Enum.TextXAlignment.Left
+        infoText.TextYAlignment = Enum.TextYAlignment.Top
+        infoText.TextWrapped = true
+        infoText.Parent = infoFrame
     end
     
     updateContentHeight()
@@ -1867,6 +2122,7 @@ local function applyLanguage(lang)
     end
     
     updateContent()
+    applyTheme()
 end
 
 -- ========== СОЗДАНИЕ ОСНОВНОГО UI ==========
@@ -1884,7 +2140,7 @@ local function createUI()
     mainCorner.CornerRadius = UDim.new(0, 20)
     mainCorner.Parent = mainFrame
     
-    local glowFrame = Instance.new("Frame")
+    glowFrame = Instance.new("Frame")
     glowFrame.Size = UDim2.new(1, 6, 1, 6)
     glowFrame.Position = UDim2.new(0, -3, 0, -3)
     glowFrame.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
@@ -1915,7 +2171,7 @@ local function createUI()
     topOnlyCorner.BorderSizePixel = 0
     topOnlyCorner.Parent = topBar
     
-    local topGradient = Instance.new("UIGradient")
+    topGradient = Instance.new("UIGradient")
     topGradient.Color = ColorSequence.new{
         ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 100, 200)),
         ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 150, 255)),
@@ -1942,7 +2198,7 @@ local function createUI()
     title.TextYAlignment = Enum.TextYAlignment.Center
     title.Parent = titleContainer
     
-    local xLetter = Instance.new("TextLabel")
+    xLetter = Instance.new("TextLabel")
     xLetter.Size = UDim2.new(0, 50, 0, 40)
     xLetter.Position = UDim2.new(0, 200, 0, 8)
     xLetter.Text = "X"
@@ -1966,7 +2222,7 @@ local function createUI()
     versionLabel.TextYAlignment = Enum.TextYAlignment.Center
     versionLabel.Parent = titleContainer
     
-    local subtitleLabel = Instance.new("TextLabel")
+    subtitleLabel = Instance.new("TextLabel")
     subtitleLabel.Name = "SubtitleLabel"
     subtitleLabel.Size = UDim2.new(1, -80, 0, 25)
     subtitleLabel.Position = UDim2.new(0, 30, 0, 45)
@@ -2040,7 +2296,7 @@ local function createUI()
     leftCorner.CornerRadius = UDim.new(0, 12)
     leftCorner.Parent = leftPanel
     
-    local blueLine = Instance.new("Frame")
+    blueLine = Instance.new("Frame")
     blueLine.Size = UDim2.new(0, 2, 1, -20)
     blueLine.Position = UDim2.new(1, -2, 0, 10)
     blueLine.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
@@ -2068,7 +2324,7 @@ local function createUI()
     rightCorner.CornerRadius = UDim.new(0, 12)
     rightCorner.Parent = rightContent
     
-    local rightStroke = Instance.new("UIStroke")
+    rightStroke = Instance.new("UIStroke")
     rightStroke.Color = Color3.fromRGB(0, 150, 255)
     rightStroke.Thickness = 1
     rightStroke.Transparency = 0.6
@@ -2079,7 +2335,7 @@ local function createUI()
     contentContainer.BackgroundTransparency = 1
     contentContainer.Parent = rightContent
     
-    local tabsList = {"Main", "Visual", "Players", "Teleport", "ESP", "Feedback", "Settings"}
+    local tabsList = {"Main", "Players", "Visual", "Teleport", "ESP", "Feedback", "Settings"}
     local buttonHeight = 40
     local buttonSpacing = 5
     local currentY = 10
@@ -2099,7 +2355,14 @@ local function createUI()
             elseif tab == "Settings" then btn.Text = "Настройки"
             end
         else
-            btn.Text = tab
+            if tab == "Main" then btn.Text = "Main"
+            elseif tab == "Visual" then btn.Text = "Visual"
+            elseif tab == "Players" then btn.Text = "Players"
+            elseif tab == "Teleport" then btn.Text = "Teleport"
+            elseif tab == "ESP" then btn.Text = "ESP"
+            elseif tab == "Feedback" then btn.Text = "Feedback"
+            elseif tab == "Settings" then btn.Text = "Settings"
+            end
         end
         
         btn.TextColor3 = Color3.fromRGB(160, 170, 190)
@@ -2128,6 +2391,7 @@ local function createUI()
             btn.TextColor3 = Color3.fromRGB(0, 200, 255)
             activeTab = tab
             updateContent()
+            applyTheme()
         end)
         
         tabButtons[tab] = btn
@@ -2145,6 +2409,7 @@ local function createUI()
     end
     
     updateContent()
+    applyTheme()
     
     local isMinimized = false
     minimizeBtn.MouseButton1Click:Connect(function()
@@ -2248,12 +2513,15 @@ local function createUI()
     local avatarImageCorner = Instance.new("UICorner")
     avatarImageCorner.CornerRadius = UDim.new(1, 0)
     avatarImageCorner.Parent = avatarImage
-    avatarImage.Image = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. LocalPlayer.UserId .. "&width=100&height=100&format=png"
+    
+    pcall(function()
+        avatarImage.Image = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. LocalPlayer.UserId .. "&width=100&height=100&format=png"
+    end)
     
     local playerName = Instance.new("TextLabel")
     playerName.Size = UDim2.new(0, 100, 0, 20)
     playerName.Position = UDim2.new(0, 60, 1, -50)
-    playerName.Text = "@" .. LocalPlayer.Name
+    playerName.Text = "@" .. (LocalPlayer and LocalPlayer.Name or "Player")
     playerName.TextColor3 = Color3.fromRGB(100, 180, 230)
     playerName.BackgroundTransparency = 1
     playerName.Font = Enum.Font.GothamBold
@@ -2290,6 +2558,7 @@ print("   - Режим полёта (клавиша Q)")
 print("   - Ноклип, Анти-AFK, FullBright")
 print("   - Телепорт к игроку")
 print("   - Infinity Jump (бесконечные прыжки)")
-print("   - ESP (подсветка игроков)")
+print("   - ESP (подсветка игроков) с определением ролей")
 print("   - Имена игроков (работают отдельно от ESP)")
 print("   - Отзывы в Discord")
+print("   - 7 цветовых тем с визуальными карточками")
