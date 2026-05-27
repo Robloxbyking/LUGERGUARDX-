@@ -1,5 +1,5 @@
 -- ============================================
--- LugerGuard X | Стабильная версия для Xeno
+-- LugerGuard X | Полная версия для Xeno
 -- ============================================
 
 -- ========== ПОДКЛЮЧЕНИЕ СЕРВИСОВ ==========
@@ -12,26 +12,17 @@ local VirtualUser = game:GetService("VirtualUser")
 local Lighting = game:GetService("Lighting")
 local HttpService = game:GetService("HttpService")
 
--- ========== ПРОВЕРКА ЧТО ИГРОК СУЩЕСТВУЕТ ==========
-if not LocalPlayer then
-    warn("LugerGuard X: LocalPlayer not found")
-    return
-end
+-- ========== ПРОВЕРКИ ==========
+if not LocalPlayer then warn("LugerGuard: LocalPlayer not found") return end
 
--- ========== СОЗДАНИЕ GUI В PlayerGui (СТАБИЛЬНО) ==========
 local playerGui = LocalPlayer:WaitForChild("PlayerGui", 5)
-if not playerGui then
-    warn("LugerGuard X: PlayerGui not found")
-    return
-end
+if not playerGui then warn("LugerGuard: PlayerGui not found") return end
 
--- ========== УДАЛЕНИЕ СТАРОГО GUI ==========
 pcall(function()
-    local oldGui = playerGui:FindFirstChild("LugerGuardX")
-    if oldGui then oldGui:Destroy() end
+    local old = playerGui:FindFirstChild("LugerGuardX")
+    if old then old:Destroy() end
 end)
 
--- ========== ОСНОВНОЙ GUI ==========
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "LugerGuardX"
 screenGui.Parent = playerGui
@@ -39,16 +30,16 @@ screenGui.ResetOnSpawn = false
 
 -- ========== ЦВЕТОВЫЕ ТЕМЫ ==========
 local ColorThemes = {
-    Blue = {main = Color3.fromRGB(0, 150, 255), bg = Color3.fromRGB(0, 70, 140), text = Color3.fromRGB(0, 200, 255), name = "Синий"},
-    Black = {main = Color3.fromRGB(80, 80, 90), bg = Color3.fromRGB(40, 40, 50), text = Color3.fromRGB(180, 180, 200), name = "Чёрный"},
-    Red = {main = Color3.fromRGB(200, 50, 50), bg = Color3.fromRGB(140, 30, 30), text = Color3.fromRGB(255, 100, 100), name = "Красный"},
-    Pink = {main = Color3.fromRGB(255, 100, 150), bg = Color3.fromRGB(180, 60, 100), text = Color3.fromRGB(255, 150, 200), name = "Розовый"},
-    Purple = {main = Color3.fromRGB(150, 50, 200), bg = Color3.fromRGB(100, 30, 140), text = Color3.fromRGB(180, 100, 255), name = "Фиолетовый"}
+    Blue = {main = Color3.fromRGB(0, 150, 255), bg = Color3.fromRGB(0, 70, 140), glow = Color3.fromRGB(0, 150, 255), text = Color3.fromRGB(0, 200, 255), name = "Синий"},
+    Black = {main = Color3.fromRGB(80, 80, 90), bg = Color3.fromRGB(40, 40, 50), glow = Color3.fromRGB(100, 100, 120), text = Color3.fromRGB(180, 180, 200), name = "Чёрный"},
+    Red = {main = Color3.fromRGB(200, 50, 50), bg = Color3.fromRGB(140, 30, 30), glow = Color3.fromRGB(220, 80, 80), text = Color3.fromRGB(255, 100, 100), name = "Красный"},
+    Pink = {main = Color3.fromRGB(255, 100, 150), bg = Color3.fromRGB(180, 60, 100), glow = Color3.fromRGB(255, 130, 180), text = Color3.fromRGB(255, 150, 200), name = "Розовый"},
+    Purple = {main = Color3.fromRGB(150, 50, 200), bg = Color3.fromRGB(100, 30, 140), glow = Color3.fromRGB(170, 80, 220), text = Color3.fromRGB(180, 100, 255), name = "Фиолетовый"}
 }
 local currentTheme = "Blue"
 
 -- ========== ПЕРЕМЕННЫЕ ==========
-local currentLang = "ru"  -- по умолчанию русский
+local currentLang = "ru"
 local mainFrame, topBar, contentFrame, leftPanel, rightContent, contentContainer, glowFrame, xLetter, subtitleLabel, blueLine, rightStroke
 local tabButtons = {}
 local activeTab = "Main"
@@ -91,12 +82,16 @@ local espEnabled = false
 local espHighlightObjects = {}
 local espPlayerAddedConnection = nil
 local espColorUpdateLoop = nil
+local espWeaponConnections = {}
 
 -- Имена
 local nameTagsEnabled = false
 local nameTagObjects = {}
 local nameTagUpdateLoop = nil
 local nameTagPlayerAddedConnection = nil
+
+-- Webhook
+local feedbackWebhook = "https://discord.com/api/webhooks/1508120103416500274/eyr2dGOq6DeLRWbkJ2II4bW0iwQdw3sS1lWOjiW7SV6oP0UHC0cnFANrjvpyDTZkCbf_"
 
 -- Размеры
 local currentWidth = 750
@@ -112,15 +107,13 @@ local function applyTheme()
     if not theme then return end
     pcall(function()
         if topBar then topBar.BackgroundColor3 = theme.bg end
-        if glowFrame then glowFrame.BackgroundColor3 = theme.main end
+        if glowFrame then glowFrame.BackgroundColor3 = theme.glow end
         if xLetter then xLetter.TextColor3 = theme.text end
         if subtitleLabel then subtitleLabel.TextColor3 = theme.text end
         if blueLine then blueLine.BackgroundColor3 = theme.main end
         if rightStroke then rightStroke.Color = theme.main end
         for tab, btn in pairs(tabButtons) do
-            if activeTab == tab then
-                btn.TextColor3 = theme.text
-            end
+            if activeTab == tab then btn.TextColor3 = theme.text end
         end
     end)
 end
@@ -134,9 +127,7 @@ local function enableInfiniteJump()
             local char = LocalPlayer.Character
             if char then
                 local hum = char:FindFirstChildOfClass("Humanoid")
-                if hum and hum.Health > 0 then
-                    hum:ChangeState(Enum.HumanoidStateType.Jumping)
-                end
+                if hum and hum.Health > 0 then hum:ChangeState(Enum.HumanoidStateType.Jumping) end
             end
         end
     end)
@@ -145,10 +136,7 @@ end
 local function disableInfiniteJump()
     if not infiniteJumpEnabled then return end
     infiniteJumpEnabled = false
-    if infiniteJumpConnection then
-        infiniteJumpConnection:Disconnect()
-        infiniteJumpConnection = nil
-    end
+    if infiniteJumpConnection then infiniteJumpConnection:Disconnect() infiniteJumpConnection = nil end
 end
 
 -- ========== FULLBRIGHT ==========
@@ -156,10 +144,8 @@ local function enableFullBright()
     if fullBrightEnabled then return end
     pcall(function()
         originalLightingSettings = {
-            Ambient = Lighting.Ambient,
-            Brightness = Lighting.Brightness,
-            OutdoorAmbient = Lighting.OutdoorAmbient,
-            GlobalShadows = Lighting.GlobalShadows,
+            Ambient = Lighting.Ambient, Brightness = Lighting.Brightness,
+            OutdoorAmbient = Lighting.OutdoorAmbient, GlobalShadows = Lighting.GlobalShadows,
             FogEnd = Lighting.FogEnd
         }
         Lighting.Ambient = Color3.fromRGB(255, 255, 255)
@@ -206,10 +192,7 @@ end
 local function stopAntiAfk()
     if not antiAfkEnabled then return end
     antiAfkEnabled = false
-    if antiAfkConnection then
-        antiAfkConnection:Disconnect()
-        antiAfkConnection = nil
-    end
+    if antiAfkConnection then antiAfkConnection:Disconnect() antiAfkConnection = nil end
     afkTicks = 0
 end
 
@@ -222,9 +205,7 @@ local function startNoclip()
         local char = LocalPlayer.Character
         if char then
             for _, part in pairs(char:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    part.CanCollide = false
-                end
+                if part:IsA("BasePart") then part.CanCollide = false end
             end
         end
     end)
@@ -233,16 +214,11 @@ end
 local function stopNoclip()
     if not noclipEnabled then return end
     noclipEnabled = false
-    if noclipConnection then
-        noclipConnection:Disconnect()
-        noclipConnection = nil
-    end
+    if noclipConnection then noclipConnection:Disconnect() noclipConnection = nil end
     local char = LocalPlayer.Character
     if char then
         for _, part in pairs(char:GetDescendants()) do
-            if part:IsA("BasePart") then
-                part.CanCollide = true
-            end
+            if part:IsA("BasePart") then part.CanCollide = true end
         end
     end
 end
@@ -292,9 +268,7 @@ local function startFly()
                 else
                     flyBodyVelocity.velocity = Vector3.new(0, 0, 0)
                 end
-                if flyBodyGyro then
-                    flyBodyGyro.cframe = cf
-                end
+                if flyBodyGyro then flyBodyGyro.cframe = cf end
             end
         end
     end
@@ -307,8 +281,7 @@ local function startFly()
             if k == Enum.KeyCode.W then flyCtrl.f = 1
             elseif k == Enum.KeyCode.S then flyCtrl.b = 1
             elseif k == Enum.KeyCode.A then flyCtrl.l = 1
-            elseif k == Enum.KeyCode.D then flyCtrl.r = 1
-            end
+            elseif k == Enum.KeyCode.D then flyCtrl.r = 1 end
         end)
         UserInputService.InputEnded:Connect(function(inp)
             if not flying then return end
@@ -316,8 +289,7 @@ local function startFly()
             if k == Enum.KeyCode.W then flyCtrl.f = 0
             elseif k == Enum.KeyCode.S then flyCtrl.b = 0
             elseif k == Enum.KeyCode.A then flyCtrl.l = 0
-            elseif k == Enum.KeyCode.D then flyCtrl.r = 0
-            end
+            elseif k == Enum.KeyCode.D then flyCtrl.r = 0 end
         end)
     end
     
@@ -340,6 +312,14 @@ local function stopFly()
     flySpeedValue = flySpeed
     if currentFlySwitchState then currentFlySwitchState(false) end
 end
+
+-- ========== ОБРАБОТЧИК КЛАВИШИ Q ==========
+UserInputService.InputBegan:Connect(function(inp, gp)
+    if gp then return end
+    if inp.KeyCode == Enum.KeyCode.Q then
+        if flying then stopFly() else startFly() end
+    end
+end)
 
 -- ========== ESP ==========
 local function getPlayerRole(player)
@@ -403,13 +383,8 @@ end
 local function disableESP()
     if not espEnabled then return end
     espEnabled = false
-    if espPlayerAddedConnection then
-        espPlayerAddedConnection:Disconnect()
-        espPlayerAddedConnection = nil
-    end
-    for _, h in pairs(espHighlightObjects) do
-        pcall(function() h:Destroy() end)
-    end
+    if espPlayerAddedConnection then espPlayerAddedConnection:Disconnect() espPlayerAddedConnection = nil end
+    for _, h in pairs(espHighlightObjects) do pcall(function() h:Destroy() end) end
     espHighlightObjects = {}
 end
 
@@ -471,20 +446,15 @@ end
 local function disableNameTags()
     if not nameTagsEnabled then return end
     nameTagsEnabled = false
-    if nameTagPlayerAddedConnection then
-        nameTagPlayerAddedConnection:Disconnect()
-        nameTagPlayerAddedConnection = nil
-    end
-    for _, t in pairs(nameTagObjects) do
-        pcall(function() t:Destroy() end)
-    end
+    if nameTagPlayerAddedConnection then nameTagPlayerAddedConnection:Disconnect() nameTagPlayerAddedConnection = nil end
+    for _, t in pairs(nameTagObjects) do pcall(function() t:Destroy() end) end
     nameTagObjects = {}
 end
 
 -- ========== ТЕЛЕПОРТ ==========
 local function teleportToPlayer(targetPlayer)
     if not targetPlayer then return false end
-    pcall(function()
+    return pcall(function()
         local char = targetPlayer.Character
         if not char then return false end
         local root = char:FindFirstChild("HumanoidRootPart")
@@ -494,11 +464,31 @@ local function teleportToPlayer(targetPlayer)
         local localRoot = localChar:FindFirstChild("HumanoidRootPart")
         if not localRoot then return false end
         localRoot.CFrame = root.CFrame + Vector3.new(0, 2, 0)
+        return true
     end)
-    return true
 end
 
--- ========== СОЗДАНИЕ UI ==========
+-- ========== ОТПРАВКА ОТЗЫВА ==========
+local function sendFeedback(playerName, message, lang)
+    if not message or message == "" then return end
+    pcall(function()
+        local data = {
+            embeds = {{
+                title = "📝 Новый отзыв от " .. playerName,
+                description = "```" .. message .. "```",
+                color = 0x00aaff,
+                fields = {
+                    {name = (lang == "ru") and "📌 Язык" or "📌 Language", value = (lang == "ru") and "🇷🇺 Русский" or "🇺🇸 English", inline = true},
+                    {name = "🕐 Время", value = os.date("%Y-%m-%d %H:%M:%S"), inline = true}
+                },
+                footer = {text = "LugerGuard X | Feedback System"}
+            }}
+        }
+        request({Url = feedbackWebhook, Method = "POST", Headers = {["Content-Type"] = "application/json"}, Body = HttpService:JSONEncode(data)})
+    end)
+end
+
+-- ========== СОЗДАНИЕ UI КОМПОНЕНТОВ ==========
 local function createSwitch(parent, x, y, text, isOn, callback)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(0, 200, 0, 30)
@@ -686,11 +676,12 @@ local function updateTeleportPlayersList(container, statusLabel)
     end)
 end
 
--- ========== ГЛАВНОЕ МЕНЮ ==========
+-- ========== ОБНОВЛЕНИЕ КОНТЕНТА ВКЛАДОК ==========
 local function updateContent()
     for _, child in pairs(contentContainer:GetChildren()) do child:Destroy() end
     
     if activeTab == "Main" then
+        -- Speed
         createSwitch(contentContainer, 20, 20, getText("Скорость", "Speed"), speedEnabled, function(s)
             speedEnabled = s
             local char = LocalPlayer.Character
@@ -740,6 +731,7 @@ local function updateContent()
             end
         end)
         
+        -- Jump Power
         createSwitch(contentContainer, 20, 105, getText("Сила прыжка", "Jump Power"), jumpEnabled, function(s)
             jumpEnabled = s
             local char = LocalPlayer.Character
@@ -789,9 +781,15 @@ local function updateContent()
             end
         end)
         
-        createSwitchWithDesc(contentContainer, 20, 200, getText("Анти-AFK", "Anti-AFK"), getText("Защита от автоматического отключения", "Anti-AFK protection"), antiAfkEnabled, function(s) if s then startAntiAfk() else stopAntiAfk() end end)
+        -- Anti-AFK
+        createSwitchWithDesc(contentContainer, 20, 200, getText("Анти-AFK", "Anti-AFK"), getText("Защита от автоматического отключения", "Anti-AFK protection"), antiAfkEnabled, function(s)
+            if s then startAntiAfk() else stopAntiAfk() end
+        end)
         
-        local flyCon, setFly = createSwitch(contentContainer, 20, 270, getText("Режим полёта", "Fly Mode"), flying, function(s) if s then startFly() else stopFly() end end)
+        -- Fly Mode
+        local flyCon, setFly = createSwitch(contentContainer, 20, 270, getText("Режим полёта", "Fly Mode"), flying, function(s)
+            if s then startFly() else stopFly() end
+        end)
         currentFlySwitchState = setFly
         
         local flyInfo = Instance.new("TextLabel")
@@ -805,17 +803,58 @@ local function updateContent()
         flyInfo.TextXAlignment = Enum.TextXAlignment.Left
         flyInfo.Parent = contentContainer
         
-        createSwitchWithDesc(contentContainer, 20, 350, getText("Ноклип", "Noclip"), getText("Проход сквозь стены", "Walk through walls"), noclipEnabled, function(s) if s then startNoclip() else stopNoclip() end end)
+        -- Noclip
+        createSwitchWithDesc(contentContainer, 20, 350, getText("Ноклип", "Noclip"), getText("Проход сквозь стены", "Walk through walls"), noclipEnabled, function(s)
+            if s then startNoclip() else stopNoclip() end
+        end)
         
-        createSwitchWithDesc(contentContainer, 20, 420, "Infinity Jump", getText("Бесконечные прыжки в воздухе", "Infinite jumps in air"), infiniteJumpEnabled, function(s) if s then enableInfiniteJump() else disableInfiniteJump() end end)
+        -- Infinity Jump
+        createSwitchWithDesc(contentContainer, 20, 420, "Infinity Jump", getText("Бесконечные прыжки в воздухе", "Infinite jumps in air"), infiniteJumpEnabled, function(s)
+            if s then enableInfiniteJump() else disableInfiniteJump() end
+        end)
+        
+    elseif activeTab == "Players" then
+        local plLbl = Instance.new("TextLabel")
+        plLbl.Size = UDim2.new(1, -40, 0, 30)
+        plLbl.Position = UDim2.new(0, 20, 0, 20)
+        plLbl.Text = getText("Игроки на сервере:", "Players on server:")
+        plLbl.TextColor3 = Color3.fromRGB(0, 200, 255)
+        plLbl.BackgroundTransparency = 1
+        plLbl.Font = Enum.Font.GothamBold
+        plLbl.TextSize = 16
+        plLbl.TextXAlignment = Enum.TextXAlignment.Left
+        plLbl.Parent = contentContainer
+        
+        local yOff = 60
+        for _, p in pairs(Players:GetPlayers()) do
+            if p ~= LocalPlayer then
+                local pLbl = Instance.new("TextLabel")
+                pLbl.Size = UDim2.new(1, -40, 0, 25)
+                pLbl.Position = UDim2.new(0, 20, 0, yOff)
+                pLbl.Text = "• " .. p.Name
+                pLbl.TextColor3 = Color3.fromRGB(200, 210, 230)
+                pLbl.BackgroundTransparency = 1
+                pLbl.Font = Enum.Font.Gotham
+                pLbl.TextSize = 14
+                pLbl.TextXAlignment = Enum.TextXAlignment.Left
+                pLbl.Parent = contentContainer
+                yOff = yOff + 30
+            end
+        end
         
     elseif activeTab == "Visual" then
-        createSwitchWithDesc(contentContainer, 20, 20, "FullBright", getText("Полная яркость на карте", "Maximum brightness on map"), fullBrightEnabled, function(s) if s then enableFullBright() else disableFullBright() end end)
+        createSwitchWithDesc(contentContainer, 20, 20, "FullBright", getText("Полная яркость на карте", "Maximum brightness on map"), fullBrightEnabled, function(s)
+            if s then enableFullBright() else disableFullBright() end
+        end)
         
     elseif activeTab == "ESP" then
-        createSwitchWithDesc(contentContainer, 20, 20, "ESP", getText("Подсветка игроков через стены", "Highlight players through walls"), espEnabled, function(s) if s then enableESP() else disableESP() end end)
+        createSwitchWithDesc(contentContainer, 20, 20, "ESP", getText("Подсветка игроков через стены", "Highlight players through walls"), espEnabled, function(s)
+            if s then enableESP() else disableESP() end
+        end)
         
-        createSwitchWithDesc(contentContainer, 20, 90, getText("Показывать имена", "Show names"), getText("Отображать никнеймы над игроками", "Display names above heads"), nameTagsEnabled, function(s) if s then enableNameTags() else disableNameTags() end end)
+        createSwitchWithDesc(contentContainer, 20, 90, getText("Показывать имена", "Show names"), getText("Отображать никнеймы над игроками", "Display names above heads"), nameTagsEnabled, function(s)
+            if s then enableNameTags() else disableNameTags() end
+        end)
         
         local colorInfo = Instance.new("TextLabel")
         colorInfo.Size = UDim2.new(1, -40, 0, 50)
@@ -866,10 +905,97 @@ local function updateContent()
         tpStatus.Parent = contentContainer
         
         updateTeleportPlayersList(inner, tpStatus)
-        plCont.CanvasSize = UDim2.new(0, 0, 0, inner.Size.Y.Offset + 10)
         
-        Players.PlayerAdded:Connect(function() updateTeleportPlayersList(inner, tpStatus) plCont.CanvasSize = UDim2.new(0, 0, 0, inner.Size.Y.Offset + 10) end)
-        Players.PlayerRemoving:Connect(function() updateTeleportPlayersList(inner, tpStatus) plCont.CanvasSize = UDim2.new(0, 0, 0, inner.Size.Y.Offset + 10) end)
+        local function updateCanvas()
+            plCont.CanvasSize = UDim2.new(0, 0, 0, inner.Size.Y.Offset + 10)
+        end
+        inner:GetPropertyChangedSignal("Size"):Connect(updateCanvas)
+        updateCanvas()
+        
+        Players.PlayerAdded:Connect(function() updateTeleportPlayersList(inner, tpStatus) updateCanvas() end)
+        Players.PlayerRemoving:Connect(function() updateTeleportPlayersList(inner, tpStatus) updateCanvas() end)
+        
+    elseif activeTab == "Feedback" then
+        local fbLbl = Instance.new("TextLabel")
+        fbLbl.Size = UDim2.new(1, -40, 0, 30)
+        fbLbl.Position = UDim2.new(0, 20, 0, 20)
+        fbLbl.Text = getText("📢 Оставить отзыв", "📢 Leave Feedback")
+        fbLbl.TextColor3 = Color3.fromRGB(0, 200, 255)
+        fbLbl.BackgroundTransparency = 1
+        fbLbl.Font = Enum.Font.GothamBold
+        fbLbl.TextSize = 18
+        fbLbl.TextXAlignment = Enum.TextXAlignment.Left
+        fbLbl.Parent = contentContainer
+        
+        local fbDesc = Instance.new("TextLabel")
+        fbDesc.Size = UDim2.new(1, -40, 0, 40)
+        fbDesc.Position = UDim2.new(0, 20, 0, 55)
+        fbDesc.Text = getText("Напиши свои впечатления о скрипте, предложения или сообщи об ошибке.", "Write your impressions, suggestions, or report a bug.")
+        fbDesc.TextColor3 = Color3.fromRGB(180, 180, 200)
+        fbDesc.BackgroundTransparency = 1
+        fbDesc.Font = Enum.Font.Gotham
+        fbDesc.TextSize = 12
+        fbDesc.TextWrapped = true
+        fbDesc.Parent = contentContainer
+        
+        local fbBox = Instance.new("TextBox")
+        fbBox.Size = UDim2.new(1, -40, 0, 120)
+        fbBox.Position = UDim2.new(0, 20, 0, 110)
+        fbBox.PlaceholderText = getText("Введите ваш отзыв здесь...", "Enter your feedback here...")
+        fbBox.Text = ""
+        fbBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+        fbBox.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        fbBox.BackgroundTransparency = 0.3
+        fbBox.BorderSizePixel = 0
+        fbBox.Font = Enum.Font.Gotham
+        fbBox.TextSize = 14
+        fbBox.TextWrapped = true
+        fbBox.TextXAlignment = Enum.TextXAlignment.Left
+        fbBox.TextYAlignment = Enum.TextYAlignment.Top
+        fbBox.Parent = contentContainer
+        Instance.new("UICorner").CornerRadius = UDim.new(0, 8).Parent = fbBox
+        
+        local sendBtn = Instance.new("TextButton")
+        sendBtn.Size = UDim2.new(0, 200, 0, 40)
+        sendBtn.Position = UDim2.new(0, 20, 0, 245)
+        sendBtn.Text = getText("📨 Отправить отзыв", "📨 Send Feedback")
+        sendBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        sendBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
+        sendBtn.BackgroundTransparency = 0.3
+        sendBtn.BorderSizePixel = 0
+        sendBtn.Font = Enum.Font.GothamBold
+        sendBtn.TextSize = 14
+        sendBtn.Parent = contentContainer
+        Instance.new("UICorner").CornerRadius = UDim.new(0, 8).Parent = sendBtn
+        
+        local statusLabel = Instance.new("TextLabel")
+        statusLabel.Size = UDim2.new(1, -40, 0, 30)
+        statusLabel.Position = UDim2.new(0, 20, 0, 295)
+        statusLabel.Text = ""
+        statusLabel.TextColor3 = Color3.fromRGB(150, 200, 150)
+        statusLabel.BackgroundTransparency = 1
+        statusLabel.Font = Enum.Font.Gotham
+        statusLabel.TextSize = 12
+        statusLabel.TextXAlignment = Enum.TextXAlignment.Left
+        statusLabel.Parent = contentContainer
+        
+        sendBtn.MouseButton1Click:Connect(function()
+            local msg = fbBox.Text
+            if not msg or msg == "" then
+                statusLabel.Text = getText("❌ Введите текст отзыва!", "❌ Enter feedback text!")
+                statusLabel.TextColor3 = Color3.fromRGB(255, 150, 150)
+                task.wait(2)
+                statusLabel.Text = ""
+                return
+            end
+            statusLabel.Text = getText("⏳ Отправка...", "⏳ Sending...")
+            sendFeedback(LocalPlayer.Name, msg, currentLang)
+            statusLabel.Text = getText("✅ Спасибо за отзыв!", "✅ Thanks for your feedback!")
+            statusLabel.TextColor3 = Color3.fromRGB(150, 255, 150)
+            fbBox.Text = ""
+            task.wait(3)
+            statusLabel.Text = ""
+        end)
         
     elseif activeTab == "Settings" then
         local themeLbl = Instance.new("TextLabel")
@@ -919,7 +1045,7 @@ local function updateContent()
         end
     end
     
-    -- Обновление высоты
+    -- Обновление высоты контента
     local totalHeight = 0
     for _, child in pairs(contentContainer:GetChildren()) do
         totalHeight = totalHeight + child.Size.Y.Offset + 10
@@ -989,6 +1115,16 @@ local function createUI()
     subtitleLabel.TextXAlignment = Enum.TextXAlignment.Left
     subtitleLabel.Parent = topBar
     
+    local minimizeBtn = Instance.new("TextButton")
+    minimizeBtn.Size = UDim2.new(0, 28, 0, 28)
+    minimizeBtn.Position = UDim2.new(1, -75, 0, 28)
+    minimizeBtn.Text = "—"
+    minimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    minimizeBtn.BackgroundTransparency = 1
+    minimizeBtn.Font = Enum.Font.GothamBold
+    minimizeBtn.TextSize = 24
+    minimizeBtn.Parent = topBar
+    
     local closeBtn = Instance.new("TextButton")
     closeBtn.Size = UDim2.new(0, 28, 0, 28)
     closeBtn.Position = UDim2.new(1, -40, 0, 28)
@@ -1053,14 +1189,16 @@ local function createUI()
     contentContainer.BackgroundTransparency = 1
     contentContainer.Parent = rightContent
     
-    -- Кнопки вкладок
-    local tabs = {"Main", "Visual", "ESP", "Teleport", "Settings"}
+    -- Кнопки вкладок (ВСЕ 7)
+    local tabs = {"Main", "Players", "Visual", "Teleport", "ESP", "Feedback", "Settings"}
     local yOff = 10
     local tabNames = {
         Main = getText("Главная", "Main"),
+        Players = getText("Игроки", "Players"),
         Visual = getText("Визуал", "Visual"),
-        ESP = "ESP",
         Teleport = getText("Телепорт", "Teleport"),
+        ESP = "ESP",
+        Feedback = getText("Отзывы", "Feedback"),
         Settings = getText("Настройки", "Settings")
     }
     
@@ -1098,7 +1236,7 @@ local function createUI()
     btnContainer.Size = UDim2.new(1, 0, 0, yOff + 10)
     leftPanel.CanvasSize = UDim2.new(0, 0, 0, yOff + 20)
     
-    -- Активация первой вкладки
+    -- Активация главной вкладки
     if tabButtons["Main"] then
         tabButtons["Main"].BackgroundColor3 = Color3.fromRGB(0, 80, 140)
         tabButtons["Main"].BackgroundTransparency = 0.3
@@ -1107,6 +1245,19 @@ local function createUI()
     
     updateContent()
     applyTheme()
+    
+    -- Минимизация
+    local isMinimized = false
+    minimizeBtn.MouseButton1Click:Connect(function()
+        isMinimized = not isMinimized
+        if isMinimized then
+            TweenService:Create(mainFrame, TweenInfo.new(0.3), {Size = UDim2.new(0, currentWidth, 0, 85)}):Play()
+            contentFrame.Visible = false
+        else
+            contentFrame.Visible = true
+            TweenService:Create(mainFrame, TweenInfo.new(0.3), {Size = UDim2.new(0, currentWidth, 0, currentHeight)}):Play()
+        end
+    end)
     
     -- Закрытие
     closeBtn.MouseButton1Click:Connect(function()
@@ -1134,5 +1285,5 @@ end
 -- ========== ЗАПУСК ==========
 pcall(function()
     createUI()
-    print("✅ LugerGuard X успешно загружен! Для Xeno инжектора")
+    print("✅ LugerGuard X полностью загружен! Все 7 вкладок работают")
 end)
